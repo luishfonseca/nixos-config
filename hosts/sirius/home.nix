@@ -4,13 +4,10 @@
 
   home.packages = with pkgs; [
     neofetch
+    neovim
   ];
 
   programs = {
-
-    neovim = {
-      enable = true;
-    };
 
     rofi = let theme_dir = pkgs.fetchFromGitHub {
       owner="bardisty";
