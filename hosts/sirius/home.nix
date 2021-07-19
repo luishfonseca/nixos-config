@@ -9,9 +9,6 @@
 
     ssh = {
       enable = true;
-      extraOptionOverrides = {
-        "Match host * exec" = ''"gpg-connect-agent UPDATESTARTUPTTY /bye"'';
-      };
     };
 
     git = {
@@ -47,8 +44,4 @@
   home.file."${config.programs.gpg.homedir}/sshcontrol".text = ''
     B155DE05293E0A22B220AB1F8D3414A3E7DED3CF
   '';
-
-  home.sessionVariables = {
-    SSH_AUTH_SOCK = "$(gpgconf --list-dirs agent-ssh-socket)";
-  };
 }
