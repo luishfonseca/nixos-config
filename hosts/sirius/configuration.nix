@@ -38,6 +38,7 @@
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
+    videoDrivers = [ "nvidia" ];
     
     displayManager.defaultSession = "none+bspwm";
 
