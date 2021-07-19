@@ -8,10 +8,12 @@
     userEmail = "luis@lhf.pt";
   };
 
-  xdg.enable = true;
-  xdg.configFile = {
-    "sxhkd" = { source = ../../config/sxhkd; recursive = true; };
-    "bspwm" = { source = ../../config/bspwm; recursive = true; };
+  xdg = {
+    enable = true;
+    configFile = {
+      "sxhkd".source = ../../config/sxhkd;
+      "bspwm" = { source = ../../config/bspwm; recursive = true; };
+    };
   };
 
 }
