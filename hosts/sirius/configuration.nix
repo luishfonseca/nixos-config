@@ -79,17 +79,6 @@
     };
   };
 
-  environment = {
-    systemPackages = with pkgs; [
-      neovim
-      zsh
-      git
-      wget
-      firefox
-      alacritty
-    ];
-  };
-
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 

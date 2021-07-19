@@ -3,6 +3,14 @@
 {
 
   programs = {
+
+    neovim = {
+      enable = true;
+    };
+
+    alacritty = {
+      enable = true;
+    };
     
     starship = {
       enable = true;
