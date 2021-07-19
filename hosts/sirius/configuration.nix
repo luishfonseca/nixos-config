@@ -57,22 +57,15 @@
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
   users.users.luis = {
+    shell = pkgs.zsh;
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
 
-  # home.users.luis.xdg.enable = true;
-
   environment = {
-    variables = {
-      XDG_CONFIG_HOME = "$HOME/.config";
-      XDG_CACHE_HOME = "$HOME/.cache";
-      XDG_DATA_HOME = "$HOME/.local/share";
-      XDG_BIN_HOME = "$HOME/.local/bin";
-    };
-
     systemPackages = with pkgs; [
       neovim
+      zsh
       git
       wget
       firefox

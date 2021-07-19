@@ -3,6 +3,10 @@
 {
 
   programs = {
+    zsh = {
+      enable = true;
+    };
+
     ssh = {
       enable = true;
       extraConfig = ''
