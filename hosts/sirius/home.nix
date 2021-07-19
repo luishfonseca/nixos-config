@@ -10,6 +10,8 @@
 
   programs = {
 
+    firefox.enable = true;
+
     rofi = let theme_dir = pkgs.fetchFromGitHub {
       owner="bardisty";
       repo="gruvbox-rofi";
