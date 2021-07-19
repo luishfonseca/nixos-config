@@ -2,6 +2,10 @@
 
 {
 
+  home.packages = with pkgs; [
+    neofetch
+  ];
+
   programs = {
 
     neovim = {
