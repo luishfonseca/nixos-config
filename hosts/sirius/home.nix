@@ -27,7 +27,7 @@
       enable = true;
       settings = {
         window = {
-          padding = { x = 15; y = 15; };
+          padding = { x = 10; y = 10; };
 	  dynamic_padding = true;
 	};
         colors = { # gruvbox
