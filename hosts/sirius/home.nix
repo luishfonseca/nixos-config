@@ -119,6 +119,7 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
+    sshKeys = [ "B155DE05293E0A22B220AB1F8D3414A3E7DED3CF" ];
   };
 
   xdg = {
@@ -126,11 +127,6 @@
     configFile = {
       "sxhkd".source = ../../config/sxhkd;
       "bspwm" = { source = ../../config/bspwm; recursive = true; };
-    };
-    dataFile = {
-      "sshcontrol" = { target = "./gnupg/sshcontrol"; text = ''
-        B155DE05293E0A22B220AB1F8D3414A3E7DED3CF
-      '';};
     };
   };
 
