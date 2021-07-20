@@ -6,5 +6,6 @@
 # Overrides nixpkgs. Useful from getting a pkg from latest.
 
 self: super: {
-  inherit (self.latest) neovim;
+  inherit (self.unstable) neovim;
+  inherit (self.unstable) xkeyboard_config; # Version 2.33 is needed for colemak_dh
 }
