@@ -58,7 +58,7 @@
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
   users.users.luis = {
-    shell = pkgs.zsh;
+    shell = pkgs.fish;
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
