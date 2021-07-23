@@ -165,6 +165,14 @@
       sshKeys = [ "B155DE05293E0A22B220AB1F8D3414A3E7DED3CF" ];
     };
 
+    picom = {
+      enable = true;
+      blur = true;
+      fade = true;
+      inactiveDim = "0.2";
+      vSync = true;
+    };
+
     sxhkd = {
       enable = true;
       keybindings = {
