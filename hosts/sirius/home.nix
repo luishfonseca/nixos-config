@@ -204,6 +204,11 @@
         "super + alt + shift + {h,j,k,l}" = "bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}"; # contract
       };
     };
+
+    random-background = {
+      enable = true;
+      imageDirectory = "${../../img}";
+    };
   };
 
   xdg.enable = true;
@@ -214,10 +219,6 @@
     windowManager.bspwm = {
       enable = true;
     };
-
-    initExtra = ''
-      ${pkgs.feh}/bin/feh --bg-fill --no-fehbg ${../../img/wall.png}
-    '';
   };
 
   home.keyboard = {
