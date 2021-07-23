@@ -5,7 +5,6 @@
   home.packages = with pkgs; [
     neofetch
     neovim
-    neovide
   ];
 
   programs = {
