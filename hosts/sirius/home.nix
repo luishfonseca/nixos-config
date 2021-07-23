@@ -165,10 +165,41 @@
     sshKeys = [ "B155DE05293E0A22B220AB1F8D3414A3E7DED3CF" ];
   };
 
+  services.sxhkd = {
+    enable = true;
+    keybindings = {
+
+      # wm independent hotkeys
+
+      "super + Return" = "alacritty"; # terminal emulator
+      "super + @space" = "rofi -show run"; # program launcher
+      "super + Escape" = "pkill -USR1 -x sxhkd"; # reload sxhkd
+
+
+      # bspwm hotkeys
+
+      "super + shift + {q,r}" = "bspc {quit,wm -r}"; # quit/restart bspwm
+      "super + {_,shift + }c" = "bspc node -{c,k}"; # close/kill node
+      "super + m"             = "bspc desktop -l next"; # toggle monocle layout
+      "super + g"             = "bspc node -s biggest.window"; # swap with biggest
+
+
+      # focus/swap
+
+      "super + {_,shift + }{h,j,k,l}" = "bspc node -{f,s} {west,south,north,east}"; # direction
+      "super + {p,b,comma,period}"    = "bspc node -f @{parent,brother,first,second}"; # path
+
+
+      # resize
+
+      "super + alt + {h,j,k,l}"         = "bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}"; # expand
+      "super + alt + shift + {h,j,k,l}" = "bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}"; # contract
+    };
+  };
+
   xdg = {
     enable = true;
     configFile = {
-      "sxhkd".source = ../../config/sxhkd;
       "bspwm" = { source = ../../config/bspwm; recursive = true; };
     };
   };
