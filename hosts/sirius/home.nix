@@ -230,4 +230,6 @@
   home.sessionVariables = {
     EDITOR = "nvim";
   };
+
+  home.stateVersion = "21.05";
 }
