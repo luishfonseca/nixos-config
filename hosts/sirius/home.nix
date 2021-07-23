@@ -206,12 +206,7 @@
     };
   };
 
-  xdg = {
-    enable = true;
-    configFile = {
-      "bspwm" = { source = ../../config/bspwm; recursive = true; };
-    };
-  };
+  xdg.enable = true;
 
   xsession = {
     enable = true;
