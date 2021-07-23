@@ -219,6 +219,10 @@
     windowManager.bspwm = {
       enable = true;
     };
+
+    initExtra = ''
+      ${pkgs.feh}/bin/feh --bg-fill --no-fehbg ${../../img/wall.png}
+    '';
   };
 
   home.keyboard = {
