@@ -82,6 +82,9 @@
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+  # Required for gtk
+  services.dbus.packages = [ pkgs.gnome3.dconf ];
+
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
