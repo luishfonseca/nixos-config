@@ -45,6 +45,11 @@
     };
   };
 
+  services.interception-tools = {
+    enable = true;
+    plugins = [ pkgs.interception-tools-plugins.caps2esc ];
+  };
+
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
