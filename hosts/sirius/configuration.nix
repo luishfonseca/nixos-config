@@ -29,10 +29,7 @@
   console.useXkbConfig = true;
   services.xserver = {
     layout = "us";
-    xkbOptions = "ralt:compose,caps:escape";
     xkbVariant = "colemak_dh";
-    autoRepeatDelay = 200;
-    autoRepeatInterval = 25;
   };
 
   # Enable the X11 windowing system.
@@ -40,9 +37,6 @@
     enable = true;
     videoDrivers = [ "nvidia" ];
     
-    displayManager.defaultSession = "none+bspwm";
-
-    windowManager.bspwm.enable = true; 
     displayManager.lightdm.enable = true;
 
     displayManager.lightdm.greeters.mini = {

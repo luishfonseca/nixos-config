@@ -213,6 +213,20 @@
     };
   };
 
+  xsession = {
+    enable = true;
+
+    windowManager.bspwm = {
+      enable = true;
+    };
+  };
+
+  home.keyboard = {
+    layout = "us";
+    variant = "colemak_dh";
+    options = [ "ralt:compose" ];
+  };
+
   home.sessionVariables = {
     EDITOR = "nvim";
   };
