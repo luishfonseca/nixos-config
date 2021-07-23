@@ -8,4 +8,5 @@
 self: super: {
   inherit (self.unstable) neovim;
   inherit (self.unstable) xkeyboard_config; # Version 2.33 is needed for colemak_dh
+  inherit (self.latest) discord; # Will soft lock trying to get latest version
 }
