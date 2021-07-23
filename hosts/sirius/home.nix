@@ -25,6 +25,7 @@
     alacritty = {
       enable = true;
       settings = {
+        background_opacity = 0.8;
         window = {
           padding = { x = 10; y = 10; };
 	  dynamic_padding = true;
