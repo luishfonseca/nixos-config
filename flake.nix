@@ -9,8 +9,7 @@
   description = "Dotfiles for a comprehensive single user system.";
 
   inputs = {
-    nixpkgs  = { url = "github:nixos/nixpkgs/nixos-21.05"; };
-    unstable = { url = "github:nixos/nixpkgs/nixos-unstable"; };
+    nixpkgs  = { url = "github:nixos/nixpkgs/nixos-unstable"; };
     latest   = { url = "github:nixos/nixpkgs/master"; };
     # hardware = { url = "github:nixos/nixos-hardware/master"; };
     home     = { url = "github:nix-community/home-manager/release-21.05"; inputs.nixpkgs.follows = "nixpkgs"; };
@@ -59,12 +58,6 @@
     in {
 
       overlays = mkOverlays ./overlays // {
-        unstable = final: prev: {
-          unstable = import inputs.unstable {
-            inherit system;
-            config.allowUnfree = true;
-          };
-        };
         latest = final: prev: {
           latest = import inputs.latest {
             inherit system;
