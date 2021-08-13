@@ -16,6 +16,7 @@
 
   # /tmp shouldn't persist over reboots
   boot.tmpOnTmpfs = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "sirius"; # Define your hostname.
 
@@ -35,7 +36,7 @@
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
-    videoDrivers = [ "nvidia" ];
+    videoDrivers = [ "amdgpu" ];
     
     displayManager.lightdm.enable = true;
 
