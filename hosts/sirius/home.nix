@@ -209,7 +209,7 @@
 
     random-background = {
       enable = true;
-      imageDirectory = "${../../img}";
+      imageDirectory = "${../../assets/wallpaper}";
     };
   };
 
