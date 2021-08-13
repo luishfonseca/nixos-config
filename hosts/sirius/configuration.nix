@@ -46,11 +46,11 @@
         user = "luis";
       };
 
-      defaultSession = "xsession";
+      defaultSession = "none+hm-xsession";
       session = [{
-        manage = "desktop";
-	name = "xsession";
-	start = "exec $HOME/.xsession";
+        manage = "window";
+	name = "hm-xsession";
+	start = "";
       }];
     };
   };
