@@ -14,8 +14,6 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # /tmp shouldn't persist over reboots
-  boot.tmpOnTmpfs = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "sirius"; # Define your hostname.
@@ -58,6 +56,7 @@
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
   users.users.luis = {
+    initialPassword = "123";
     shell = pkgs.fish;
     isNormalUser = true;
     extraGroups = [ "wheel" ];
