@@ -17,6 +17,7 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "sirius"; # Define your hostname.
+  networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
 
   # Set your time zone.
   time.timeZone = "Europe/Lisbon";
