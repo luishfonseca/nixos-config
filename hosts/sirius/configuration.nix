@@ -66,9 +66,9 @@
 
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
+  users.defaultUserShell = pkgs.fish;
   users.users.luis = {
     initialPassword = "123";
-    shell = pkgs.fish;
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
