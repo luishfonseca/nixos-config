@@ -6,5 +6,4 @@
 # Extra packages.
 
 self: super: rec {
-  pinentry-rofi = super.callPackage ../packages/pinentry-rofi {};
 }
