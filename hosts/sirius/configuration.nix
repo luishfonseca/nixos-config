@@ -35,11 +35,23 @@
 
     videoDrivers = [ "amdgpu" ];
     
-    displayManager.lightdm.enable = true;
+    displayManager = {
+      lightdm = {
+        enable = true;
+        greeter.enable = false;
+      };
 
-    displayManager.lightdm.greeters.mini = {
-      enable = true;
-      user = "luis";
+      autoLogin = {
+        enable = true;
+        user = "luis";
+      };
+
+      defaultSession = "xsession";
+      session = [{
+        manage = "desktop";
+	name = "xsession";
+	start = "exec $HOME/.xsession";
+      }];
     };
   };
 
