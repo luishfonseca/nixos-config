@@ -24,16 +24,15 @@
   networking.useDHCP = false;
   networking.interfaces.enp35s0.useDHCP = true;
 
-  # Keyboard Layout
   console.useXkbConfig = true;
-  services.xserver = {
-    layout = "us";
-    xkbVariant = "colemak_dh";
-  };
 
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
+
+    layout = "us";
+    xkbVariant = "colemak_dh";
+
     videoDrivers = [ "amdgpu" ];
     
     displayManager.lightdm.enable = true;
