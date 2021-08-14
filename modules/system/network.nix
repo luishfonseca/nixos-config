@@ -14,4 +14,8 @@
   users.users.luis.extraGroups = [ "networkmanager" ];
 
   systemd.services.NetworkManager-wait-online.enable = false;
+
+  environment.persistence."/nix/persist".directories = [
+    "/etc/NetworkManager/system-connections"
+  ];
 }
