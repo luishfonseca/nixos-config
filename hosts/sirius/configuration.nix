@@ -15,6 +15,7 @@
       ../../modules/system/kbd_layout.nix
       ../../modules/system/lightdm.nix
       ../../modules/system/audio.nix
+      ../../modules/system/network.nix
 
       ../../modules/system/hardware/generic_amdgpu.nix
       ../../modules/system/hardware/generic_amdcpu.nix
@@ -23,10 +24,6 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "sirius"; # Define your hostname.
-  networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
-
-  networking.useDHCP = false;
-  networking.interfaces.enp35s0.useDHCP = true;
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
