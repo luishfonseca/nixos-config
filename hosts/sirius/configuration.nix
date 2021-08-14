@@ -34,6 +34,7 @@
   nix.trustedUsers = [ "root" "@wheel" ];
   users.defaultUserShell = pkgs.fish;
   users.users.luis = {
+    initialPassword = "changeme";
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
