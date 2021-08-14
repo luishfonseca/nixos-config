@@ -8,62 +8,29 @@
 
   imports = [
       ./hardware-configuration.nix
+      
+      ../../modules/system/bootloader.nix
+      ../../modules/system/fonts.nix
+      ../../modules/system/gtk.nix
+      ../../modules/system/kbd_layout.nix
+      ../../modules/system/lightdm.nix
   ];
-
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "sirius"; # Define your hostname.
   networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
 
-  # Set your time zone.
-  time.timeZone = "Europe/Lisbon";
-
   networking.useDHCP = false;
   networking.interfaces.enp35s0.useDHCP = true;
-
-  console.useXkbConfig = true;
 
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
 
-    layout = "us";
-    xkbVariant = "colemak_dh";
-
     videoDrivers = [ "amdgpu" ];
     
-    displayManager = {
-      lightdm = {
-        enable = true;
-        greeter.enable = false;
-      };
-
-      autoLogin = {
-        enable = true;
-        user = "luis";
-      };
-
-      defaultSession = "none+hm-xsession";
-      session = [{
-        manage = "window";
-	name = "hm-xsession";
-	start = "";
-      }];
-    };
   };
-
-  services.interception-tools = {
-    enable = true;
-    plugins = [ pkgs.interception-tools-plugins.caps2esc ];
-  };
-
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
 
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
@@ -74,36 +41,9 @@
     extraGroups = [ "wheel" ];
   };
 
-  fonts = {
-    enableDefaultFonts = true;
-    fonts = with pkgs; [
-      (nerdfonts.override { fonts = [ "IBMPlexMono" ]; })
-      ibm-plex
-      noto-fonts-cjk
-      noto-fonts-emoji
-    ];
-
-    fontconfig.defaultFonts = {
-      serif = [ "IBM Plex Serif" "Noto Sans CJK JP" ];
-      sansSerif = [ "IBM Plex Sans" "Noto Sans CJK JP" ];
-      monospace = [ "BlexMono Nerd Font Mono" "Noto Sans Mono CJK JP" ];
-      emoji = [ "Noto Color Emoji" ];
-    };
-  };
-
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
-  # Required for gtk
-  services.dbus.packages = [ pkgs.gnome3.dconf ];
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.11"; # Did you read the comment?
-
+  system.stateVersion = "21.11";
 }
 

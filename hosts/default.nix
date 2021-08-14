@@ -8,6 +8,12 @@
 { pkgs, ... }:
 
 {
+  # Enable flakes.
   nix.package = pkgs.nixUnstable;
   nix.extraOptions = "experimental-features = nix-command flakes";
+
+  # Set the time zone.
+  time.timeZone = "Europe/Lisbon";
+
+  
 }
