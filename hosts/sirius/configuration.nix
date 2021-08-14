@@ -9,6 +9,8 @@
   imports = [
       ./hardware-configuration.nix
 
+      ../../modules/system/tmpfs_root.nix
+
       ../../modules/system/bootloader.nix
       ../../modules/system/fonts.nix
       ../../modules/system/gtk.nix
@@ -32,7 +34,6 @@
   nix.trustedUsers = [ "root" "@wheel" ];
   users.defaultUserShell = pkgs.fish;
   users.users.luis = {
-    initialPassword = "123";
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };

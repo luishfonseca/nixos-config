@@ -9,9 +9,10 @@
   description = "Dotfiles for a comprehensive single user system.";
 
   inputs = {
-    nixpkgs  = { url = "github:nixos/nixpkgs/nixos-unstable"; };
-    latest   = { url = "github:nixos/nixpkgs/master"; };
-    home     = { url = "github:nix-community/home-manager/master"; inputs.nixpkgs.follows = "nixpkgs"; };
+    nixpkgs      = { url = "github:nixos/nixpkgs/nixos-unstable"; };
+    latest       = { url = "github:nixos/nixpkgs/master"; };
+    impermanence = { url = "github:nix-community/impermanence/master"; };
+    home         = { url = "github:nix-community/home-manager/master"; inputs.nixpkgs.follows = "nixpkgs"; };
   };
 
   outputs = inputs @ { self, ... }:
@@ -49,6 +50,7 @@
                 home-manager.useUserPackages = true;
                 home-manager.users.${user} = import (dir + "/${name}/home.nix");
               }
+	      inputs.impermanence.nixosModules.impermanence
             ];
           };
        })
