@@ -8,12 +8,16 @@
 
   imports = [
       ./hardware-configuration.nix
-      
+
       ../../modules/system/bootloader.nix
       ../../modules/system/fonts.nix
       ../../modules/system/gtk.nix
       ../../modules/system/kbd_layout.nix
       ../../modules/system/lightdm.nix
+      ../../modules/system/audio.nix
+
+      ../../modules/system/hardware/generic_amdgpu.nix
+      ../../modules/system/hardware/generic_amdcpu.nix
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -25,12 +29,7 @@
   networking.interfaces.enp35s0.useDHCP = true;
 
   # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
-
-    videoDrivers = [ "amdgpu" ];
-    
-  };
+  services.xserver.enable = true;
 
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
