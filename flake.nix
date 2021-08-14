@@ -12,7 +12,7 @@
     nixpkgs  = { url = "github:nixos/nixpkgs/nixos-unstable"; };
     latest   = { url = "github:nixos/nixpkgs/master"; };
     # hardware = { url = "github:nixos/nixos-hardware/master"; };
-    home     = { url = "github:nix-community/home-manager/release-21.05"; inputs.nixpkgs.follows = "nixpkgs"; };
+    home     = { url = "github:nix-community/home-manager/master"; inputs.nixpkgs.follows = "nixpkgs"; };
   };
 
   outputs = inputs @ { self, ... }:
