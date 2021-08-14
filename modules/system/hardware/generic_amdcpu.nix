@@ -5,7 +5,8 @@
 #
 # Generic AMD CPU system configuration.
 
-{ config, ... }:
+{ ... }:
 {
-  hardware.cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
+  hardware.enableRedistributableFirmware = true;
+  hardware.cpu.amd.updateMicrocode = true;
 }
