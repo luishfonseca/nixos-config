@@ -8,11 +8,12 @@
 
     ../../modules/home/git.nix
     ../../modules/home/gpg.nix
+    ../../modules/home/sxhkd.nix
+    ../../modules/home/picom.nix
 
     ../../modules/home/bspwm.nix
 
     ../../modules/home/gruvbox.nix
-    ../../modules/home/picom.nix
   ];
 
   home.packages = with pkgs; [
@@ -32,14 +33,6 @@
   };
 
   services = {
-
-    sxhkd = {
-      enable = true;
-      keybindings = {
-
-        "super + Escape" = "pkill -USR1 -x sxhkd"; # reload sxhkd
-      };
-    };
 
     random-background = {
       enable = true;
