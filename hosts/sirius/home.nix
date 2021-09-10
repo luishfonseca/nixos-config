@@ -6,6 +6,7 @@
     ../../modules/home/rofi.nix
     ../../modules/home/alacritty.nix
     ../../modules/home/git.nix
+    ../../modules/home/gpg.nix
   ];
 
   home.packages = with pkgs; [
@@ -22,19 +23,9 @@
       enable = true;
     };
 
-    gpg = {
-      enable = true;
-      homedir = "${config.xdg.dataHome}/gnupg";
-    };
   };
 
   services = {
-    gpg-agent = {
-      enable = true;
-      enableSshSupport = true;
-      sshKeys = [ "B155DE05293E0A22B220AB1F8D3414A3E7DED3CF" ];
-    };
-
     picom = {
       enable = true;
       blur = true;
