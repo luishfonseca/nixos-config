@@ -5,10 +5,14 @@
   imports = [
     ../../modules/home/rofi.nix
     ../../modules/home/alacritty.nix
+
     ../../modules/home/git.nix
     ../../modules/home/gpg.nix
+
     ../../modules/home/bspwm.nix
+
     ../../modules/home/gruvbox.nix
+    ../../modules/home/picom.nix
   ];
 
   home.packages = with pkgs; [
@@ -28,13 +32,6 @@
   };
 
   services = {
-    picom = {
-      enable = true;
-      blur = true;
-      fade = true;
-      inactiveDim = "0.2";
-      vSync = true;
-    };
 
     sxhkd = {
       enable = true;
