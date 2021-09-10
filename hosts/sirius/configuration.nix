@@ -36,7 +36,6 @@
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
   users.users.luis = {
-    initialPassword = "changeme";
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
