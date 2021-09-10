@@ -8,6 +8,7 @@
     ../../modules/home/git.nix
     ../../modules/home/gpg.nix
     ../../modules/home/bspwm.nix
+    ../../modules/home/gruvbox.nix
   ];
 
   home.packages = with pkgs; [
@@ -50,18 +51,6 @@
   };
 
   xdg.enable = true;
-
-  qt = {
-    enable = true;
-    platformTheme = "gtk";
-  };
-
-  gtk = {
-    enable = true;
-    theme = { package = pkgs.gruvbox-dark-gtk; name = "gruvbox-dark"; };
-    iconTheme = { package = pkgs.gruvbox-dark-icons-gtk; name = "oomox-gruvbox-dark"; };
-    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
-  };
 
   home.keyboard = {
     layout = "us";
