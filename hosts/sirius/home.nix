@@ -14,6 +14,7 @@
     ../../modules/home/bspwm.nix
 
     ../../modules/home/gruvbox.nix
+    ../../modules/home/wallpaper.nix
   ];
 
   home.packages = with pkgs; [
@@ -23,20 +24,10 @@
   ];
 
   programs = {
-
     firefox.enable = true;
 
     ssh = {
       enable = true;
-    };
-
-  };
-
-  services = {
-
-    random-background = {
-      enable = true;
-      imageDirectory = "${../../assets/wallpaper}";
     };
   };
 
