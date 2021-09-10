@@ -16,9 +16,11 @@
       ../../modules/system/fonts.nix
       ../../modules/system/gtk.nix
       ../../modules/system/kbd_layout.nix
-      ../../modules/system/lightdm.nix
       ../../modules/system/audio.nix
       ../../modules/system/network.nix
+
+      ../../modules/system/autologin.nix
+      ../../modules/system/hm-session.nix
 
       ../../modules/system/steam.nix
 
