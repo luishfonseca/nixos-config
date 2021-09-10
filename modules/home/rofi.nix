@@ -8,6 +8,11 @@
 { pkgs, ... }:
 
 {
+  services.sxhkd.keybindings = {
+    "super + @space" = "rofi -show drun";
+    "super + shift + @space" = "rofi -show run";
+  };
+
   programs.rofi = let theme_dir = pkgs.fetchFromGitHub {
     owner="bardisty";
     repo="gruvbox-rofi";

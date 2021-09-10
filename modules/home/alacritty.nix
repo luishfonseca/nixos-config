@@ -8,6 +8,10 @@
 { ... }:
 
 {
+  services.sxhkd.keybindings = {
+    "super + Return" = "alacritty";
+  };
+
   programs.alacritty = {
     enable = true;
     settings = {
