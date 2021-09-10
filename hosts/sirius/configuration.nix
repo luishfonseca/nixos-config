@@ -19,6 +19,8 @@
       ../../modules/system/audio.nix
       ../../modules/system/network.nix
 
+      ../../modules/system/steam.nix
+
       ../../modules/system/hardware/generic_amdgpu.nix
       ../../modules/system/hardware/generic_amdcpu.nix
   ];
