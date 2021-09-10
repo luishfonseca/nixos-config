@@ -11,6 +11,7 @@
 
       ../../modules/system/tmpfs_root.nix
 
+      ../../modules/system/shell.nix
       ../../modules/system/bootloader.nix
       ../../modules/system/fonts.nix
       ../../modules/system/gtk.nix
@@ -34,7 +35,6 @@
 
   # Define a user account.
   nix.trustedUsers = [ "root" "@wheel" ];
-  users.defaultUserShell = pkgs.fish;
   users.users.luis = {
     initialPassword = "changeme";
     isNormalUser = true;
