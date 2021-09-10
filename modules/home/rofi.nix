@@ -17,5 +17,6 @@
     enable = true;
     theme = "${theme_dir}/gruvbox-dark.rasi";
     terminal = "${pkgs.alacritty}/bin/alacritty";
+    extraConfig.modi = "run,drun,ssh";
   };
 }
