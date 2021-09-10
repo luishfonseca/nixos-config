@@ -5,6 +5,7 @@
   imports = [
     ../../modules/home/rofi.nix
     ../../modules/home/alacritty.nix
+    ../../modules/home/git.nix
   ];
 
   home.packages = with pkgs; [
@@ -19,20 +20,6 @@
 
     ssh = {
       enable = true;
-    };
-
-    git = {
-      enable = true;
-      userName = "Luís Fonseca";
-      userEmail = "luis@lhf.pt";
-      signing = {
-	key = null; # Use the key that matches userEmail
-	signByDefault = true;
-      };
-      extraConfig = {
-	init.defaultBranch = "main";
-	url."git@github.com".pushinsteadOf = "https://github.com/";
-      };
     };
 
     gpg = {
