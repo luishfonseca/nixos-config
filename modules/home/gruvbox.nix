@@ -9,23 +9,15 @@
 { pkgs, ... }:
 
 let
-  bg0 = "#070808";
-  bg1 = "#131414";
-  bg = "#202020";
-  bg2 = "#2a2827";
-  bg3 = "#2e2c2b";
-  bg4 = "#32302f";
-  bg5 = "#3d3835";
-  bg6 = "#46403d";
-  bg7 = "#514945";
-  bg8 = "#5a524c";
-  bg9 = "#665c54";
+  bg0 = "#1d2021";
+  bg1 = "#282828";
+  bg2 = "#3c3836";
+  bg3 = "#594945";
   grey0 = "#7c6f64";
   grey1 = "#928374";
   grey2 = "#a89984";
-  fg0 = "#ddc7a1";
-  fg = "#d4be98";
-  fg1 = "#c5b18d";
+  fg0 = "#d4be98";
+  fg1 = "#ddc7a1";
   red = "#ea6962";
   orange = "#e78a4e";
   yellow = "#d8a657";
@@ -33,13 +25,6 @@ let
   aqua = "#89b482";
   blue = "#7daea3";
   purple = "#d3869b";
-  dimRed = "#b85651";
-  dimOrange = "#bd6f3e";
-  dimYellow = "#c18f41";
-  dimGreen = "#8f9a52";
-  dimAqua = "#72966c";
-  dimBlue = "#68948a";
-  dimPurple = "#ab6c7d";
 in {
   qt = {
     enable = true;
@@ -63,9 +48,7 @@ in {
   programs.alacritty.settings.colors = {
     primary = {
       background = "${bg0}";
-      foreground = "${fg}";
-      bright_foreground = "${fg0}";
-      dim_foreground = "${fg1}";
+      foreground = "${fg0}";
     };
     cursor = {
       text = "CellBackground";
@@ -80,24 +63,24 @@ in {
       cursor = "CellForeground";
     };
     bright = {
-      black   = "${bg}";
+      black   = "${bg3}";
       red     = "${red}";
       green   = "${green}";
       yellow  = "${yellow}";
       blue    = "${blue}";
       magenta = "${purple}";
       cyan    = "${aqua}";
-      white   = "${fg}";
+      white   = "${fg0}";
     };
     normal = {
-      black   = "${bg1}";
-      red     = "${dimRed}";
-      green   = "${dimGreen}";
-      yellow  = "${dimYellow}";
-      blue    = "${dimBlue}";
-      magenta = "${dimPurple}";
-      cyan    = "${dimAqua}";
-      white   = "${fg1}";
+      black   = "${bg3}";
+      red     = "${red}";
+      green   = "${green}";
+      yellow  = "${yellow}";
+      blue    = "${blue}";
+      magenta = "${purple}";
+      cyan    = "${aqua}";
+      white   = "${fg0}";
     };
   };
 }
