@@ -4,10 +4,43 @@
 # URL:    https://github.com/luishfonseca/dotfiles
 #
 # Enable gruvbox theme in multiple programs.
+# Based on https://github.com/sainnhe/gruvbox-material when possible.
 
 { pkgs, ... }:
 
-{
+let
+  bg0 = "#070808";
+  bg1 = "#131414";
+  bg = "#202020";
+  bg2 = "#2a2827";
+  bg3 = "#2e2c2b";
+  bg4 = "#32302f";
+  bg5 = "#3d3835";
+  bg6 = "#46403d";
+  bg7 = "#514945";
+  bg8 = "#5a524c";
+  bg9 = "#665c54";
+  grey0 = "#7c6f64";
+  grey1 = "#928374";
+  grey2 = "#a89984";
+  fg0 = "#ddc7a1";
+  fg = "#d4be98";
+  fg1 = "#c5b18d";
+  red = "#ea6962";
+  orange = "#e78a4e";
+  yellow = "#d8a657";
+  green = "#a9b665";
+  aqua = "#89b482";
+  blue = "#7daea3";
+  purple = "#d3869b";
+  dimRed = "#b85651";
+  dimOrange = "#bd6f3e";
+  dimYellow = "#c18f41";
+  dimGreen = "#8f9a52";
+  dimAqua = "#72966c";
+  dimBlue = "#68948a";
+  dimPurple = "#ab6c7d";
+in {
   qt = {
     enable = true;
     platformTheme = "gtk";
@@ -29,10 +62,10 @@
 
   programs.alacritty.settings.colors = {
     primary = {
-      background = "#1d2021";
-      foreground = "#ebdbb2";
-      bright_foreground = "#fbf1c7";
-      dim_foreground = "#a89984";
+      background = "${bg0}";
+      foreground = "${fg}";
+      bright_foreground = "${fg0}";
+      dim_foreground = "${fg1}";
     };
     cursor = {
       text = "CellBackground";
@@ -47,34 +80,24 @@
       cursor = "CellForeground";
     };
     bright = {
-      black   = "#928374";
-      red     = "#fb4934";
-      green   = "#b8bb26";
-      yellow  = "#fabd2f";
-      blue    = "#83a598";
-      magenta = "#d3869b";
-      cyan    = "#8ec07c";
-      white   = "#ebdbb2";
+      black   = "${bg}";
+      red     = "${red}";
+      green   = "${green}";
+      yellow  = "${yellow}";
+      blue    = "${blue}";
+      magenta = "${purple}";
+      cyan    = "${aqua}";
+      white   = "${fg}";
     };
     normal = {
-      black   = "#1d2021";
-      red     = "#cc241d";
-      green   = "#98971a";
-      yellow  = "#d79921";
-      blue    = "#458588";
-      magenta = "#b16286";
-      cyan    = "#689d6a";
-      white   = "#a89984";
-    };
-    dim = {
-      black   = "#32302f";
-      red     = "#9d0006";
-      green   = "#79740e";
-      yellow  = "#b57614";
-      blue    = "#076678";
-      magenta = "#8f3f71";
-      cyan    = "#427b58";
-      white   = "#928374";
+      black   = "${bg1}";
+      red     = "${dimRed}";
+      green   = "${dimGreen}";
+      yellow  = "${dimYellow}";
+      blue    = "${dimBlue}";
+      magenta = "${dimPurple}";
+      cyan    = "${dimAqua}";
+      white   = "${fg1}";
     };
   };
 }
