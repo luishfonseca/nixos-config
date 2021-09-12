@@ -1,4 +1,4 @@
-# modules/home/bspwm.nix
+# modules/home/bspwm/default.nix
 #
 # Author: Luís Fonseca <luis@lhf.pt>
 # URL:    https://github.com/luishfonseca/dotfiles

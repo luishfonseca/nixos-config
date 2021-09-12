@@ -1,4 +1,4 @@
-# modules/system/hardware/generic_amdcpu.nix
+# modules/system/hardware/generic_amdcpu/default.nix
 #
 # Author: Luís Fonseca <luis@lhf.pt>
 # URL:    https://github.com/luishfonseca/dotfiles
