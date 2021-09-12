@@ -15,7 +15,7 @@
   programs.alacritty = {
     enable = true;
     settings = {
-      background_opacity = 0.8;
+      background_opacity = 0.85;
       window = {
         padding = { x = 10; y = 10; };
         dynamic_padding = true;
