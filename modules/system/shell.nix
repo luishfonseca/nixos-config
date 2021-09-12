@@ -7,6 +7,8 @@
 
 { pkgs, ... }:
 {
+  environment.systemPackages = with pkgs; [ any-nix-shell ];
+
   users.defaultUserShell = pkgs.fish;
 
   programs.fish = {
@@ -44,6 +46,10 @@
 
       # Enable starship
       eval (${pkgs.starship}/bin/starship init fish)
+    '';
+
+    promptInit = ''
+      any-nix-shell fish --info-right | source
     '';
   };
 }
