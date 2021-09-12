@@ -11,6 +11,8 @@
     ../../modules/home/sxhkd.nix
     ../../modules/home/picom.nix
 
+    ../../modules/home/userdirs.nix
+
     ../../modules/home/bspwm.nix
     ../../modules/home/polybar.nix
 
