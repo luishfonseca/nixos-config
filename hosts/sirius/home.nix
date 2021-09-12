@@ -5,6 +5,7 @@
   imports = [
     ../../modules/home/rofi
     ../../modules/home/alacritty
+    ../../modules/home/neovim
 
     ../../modules/home/git
     ../../modules/home/gpg
@@ -40,10 +41,6 @@
     layout = "us";
     variant = "colemak_dh";
     options = [ "ralt:compose" ];
-  };
-
-  home.sessionVariables = {
-    EDITOR = "nvim";
   };
 
   home.stateVersion = "21.05";
