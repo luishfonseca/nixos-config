@@ -11,7 +11,7 @@
   services.picom = {
     enable = true;
     blur = true;
-    fade = true;
+    fade = false;
     inactiveDim = "0.2";
     vSync = true;
   };
