@@ -5,12 +5,15 @@
 #
 # BSPWM home configuration.
 
-{ ... }:
+{ lib, ... }:
 
 {
   xsession = {
     enable = true;
-    windowManager.bspwm.enable = true;
+    windowManager.bspwm = {
+      enable = true;
+      monitors.primary = with lib; forEach (range 1 9) (x: toString x);
+    };
   };
   
   services.sxhkd.keybindings = {
@@ -26,6 +29,9 @@
 
     "super + {_,shift + }{h,j,k,l}" = "bspc node -{f,s} {west,south,north,east}"; # direction
     "super + {p,b,comma,period}"    = "bspc node -f @{parent,brother,first,second}"; # path
+
+    # focus/send node to workspace
+    "super + {_,shift +}{1-9}"	    = "bspc {desktop -f,node -d} {1-9}";
 
     # resize
 
