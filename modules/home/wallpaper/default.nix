@@ -10,6 +10,6 @@
 {
   services.random-background = {
     enable = true;
-    imageDirectory = "${../../assets/wallpaper}";
+    imageDirectory = "${./imgs}";
   };
 }

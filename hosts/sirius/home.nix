@@ -3,21 +3,21 @@
 {
 
   imports = [
-    ../../modules/home/rofi.nix
-    ../../modules/home/alacritty.nix
+    ../../modules/home/rofi
+    ../../modules/home/alacritty
 
-    ../../modules/home/git.nix
-    ../../modules/home/gpg.nix
-    ../../modules/home/sxhkd.nix
-    ../../modules/home/picom.nix
+    ../../modules/home/git
+    ../../modules/home/gpg
+    ../../modules/home/sxhkd
+    ../../modules/home/picom
 
-    ../../modules/home/userdirs.nix
+    ../../modules/home/userdirs
 
-    ../../modules/home/bspwm.nix
-    ../../modules/home/polybar.nix
+    ../../modules/home/bspwm
+    ../../modules/home/polybar
 
-    ../../modules/home/gruvbox.nix
-    ../../modules/home/wallpaper.nix
+    ../../modules/home/gruvbox
+    ../../modules/home/wallpaper
   ];
 
   home.packages = with pkgs; [

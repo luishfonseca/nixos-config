@@ -9,23 +9,23 @@
   imports = [
       ./hardware-configuration.nix
 
-      ../../modules/system/tmpfs_root.nix
+      ../../modules/system/tmpfs_root
 
-      ../../modules/system/shell.nix
-      ../../modules/system/bootloader.nix
-      ../../modules/system/fonts.nix
-      ../../modules/system/gtk.nix
-      ../../modules/system/kbd_layout.nix
-      ../../modules/system/audio.nix
-      ../../modules/system/network.nix
+      ../../modules/system/shell
+      ../../modules/system/bootloader
+      ../../modules/system/fonts
+      ../../modules/system/gtk
+      ../../modules/system/kbd_layout
+      ../../modules/system/audio
+      ../../modules/system/network
 
-      ../../modules/system/autologin.nix
-      ../../modules/system/hm-session.nix
+      ../../modules/system/autologin
+      ../../modules/system/hm-session
 
-      ../../modules/system/steam.nix
+      ../../modules/system/steam
 
-      ../../modules/system/hardware/generic_amdgpu.nix
-      ../../modules/system/hardware/generic_amdcpu.nix
+      ../../modules/system/hardware/generic_amdgpu
+      ../../modules/system/hardware/generic_amdcpu
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
