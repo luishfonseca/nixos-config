@@ -12,6 +12,7 @@
     ../../modules/home/picom.nix
 
     ../../modules/home/bspwm.nix
+    ../../modules/home/polybar.nix
 
     ../../modules/home/gruvbox.nix
     ../../modules/home/wallpaper.nix

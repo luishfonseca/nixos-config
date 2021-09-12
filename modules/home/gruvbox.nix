@@ -83,4 +83,23 @@ in {
       white   = "${fg0}";
     };
   };
+
+  services.polybar.settings."colors" = {
+    bg0 = "${bg0}";
+    bg1 = "${bg1}";
+    bg2 = "${bg2}";
+    bg3 = "${bg3}";
+    grey0 = "${grey0}";
+    grey1 = "${grey1}";
+    grey2 = "${grey2}";
+    fg0 = "${fg0}";
+    fg1 = "${fg1}";
+    red = "${red}";
+    green = "${green}";
+    yellow = "${yellow}";
+    blue = "${blue}";
+    magenta = "${purple}";
+    cyan = "${aqua}";
+    accent = "${orange}";
+  };
 }
