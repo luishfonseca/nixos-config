@@ -9,8 +9,15 @@
 {
   home.packages = with pkgs; [
     neovim
+
+    # TS dependencies
     gcc
     git
+
+    # LSP servers
+    rust-analyzer
+    nodePackages.pyright
+    sumneko-lua-language-server
   ];
 
   home.sessionVariables = {
