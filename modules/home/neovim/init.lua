@@ -27,5 +27,10 @@ vim.defer_fn(function()
         filetype on
         filetype plugin indent on
         PackerLoad impatient.nvim
+
+        augroup Format
+            autocmd!
+            autocmd BufWritePost * FormatWrite
+        augroup END
     ]]
 end, 0)
