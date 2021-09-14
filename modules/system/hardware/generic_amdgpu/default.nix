@@ -5,8 +5,7 @@
 #
 # Generic AMD GPU system configuration.
 
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 
@@ -16,9 +15,7 @@
     amdvlk
   ];
 
-  hardware.opengl.extraPackages32 = with pkgs; [
-    driversi686Linux.amdvlk
-  ];
+  hardware.opengl.extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
 
   hardware.opengl = {
     driSupport = true;

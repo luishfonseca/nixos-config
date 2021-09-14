@@ -9,13 +9,16 @@
   description = "Dotfiles for a comprehensive single user system.";
 
   inputs = {
-    nixpkgs      = { url = "github:nixos/nixpkgs/nixos-unstable"; };
-    latest       = { url = "github:nixos/nixpkgs/master"; };
+    nixpkgs = { url = "github:nixos/nixpkgs/nixos-unstable"; };
+    latest = { url = "github:nixos/nixpkgs/master"; };
     impermanence = { url = "github:nix-community/impermanence/master"; };
-    home         = { url = "github:nix-community/home-manager/master"; inputs.nixpkgs.follows = "nixpkgs"; };
+    home = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs @ { self, ... }:
+  outputs = inputs@{ self, ... }:
     let
       inherit (builtins) listToAttrs attrValues attrNames readDir;
       inherit (inputs.nixpkgs) lib;
@@ -30,31 +33,30 @@
         overlays = attrValues self.overlays;
       };
 
-      mkOverlays = dir: listToAttrs (map
-        (name: {
+      mkOverlays = dir:
+        listToAttrs (map (name: {
           name = removeSuffix ".nix" name;
           value = import (dir + "/${name}");
-        })
-        (attrNames (readDir dir)));
+        }) (attrNames (readDir dir)));
 
-      mkHosts = dir: listToAttrs (map
-        (name: {
+      mkHosts = dir:
+        listToAttrs (map (name: {
           inherit name;
           value = inputs.nixpkgs.lib.nixosSystem {
             inherit system pkgs;
             modules = [
               dir
               (dir + "/${name}/configuration.nix")
-              inputs.home.nixosModules.home-manager {
+              inputs.home.nixosModules.home-manager
+              {
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
                 home-manager.users.${user} = import (dir + "/${name}/home.nix");
               }
-	      inputs.impermanence.nixosModules.impermanence
+              inputs.impermanence.nixosModules.impermanence
             ];
           };
-       })
-       (attrNames (readDir dir)));
+        }) (attrNames (readDir dir)));
 
     in {
 

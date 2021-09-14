@@ -11,9 +11,7 @@
   programs.gpg = {
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
-    settings = {
-      default-key = "0xA79367D3D8F78AAD!";
-    };
+    settings = { default-key = "0xA79367D3D8F78AAD!"; };
   };
 
   services.gpg-agent = {

@@ -33,17 +33,25 @@ in {
 
   gtk = {
     enable = true;
-    theme = { package = pkgs.gruvbox-dark-gtk; name = "gruvbox-dark"; };
-    iconTheme = { package = pkgs.gruvbox-dark-icons-gtk; name = "oomox-gruvbox-dark"; };
+    theme = {
+      package = pkgs.gruvbox-dark-gtk;
+      name = "gruvbox-dark";
+    };
+    iconTheme = {
+      package = pkgs.gruvbox-dark-icons-gtk;
+      name = "oomox-gruvbox-dark";
+    };
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
   };
 
-  programs.rofi.theme = let theme_dir = pkgs.fetchFromGitHub {
-    owner="bardisty";
-    repo="gruvbox-rofi";
-    rev="0.3.1";
-    sha256="sha256-FcA92YGlNDrhiDXJgVJ5+8CiEmwXka/pMrDOF3rKJ/4=";
-  }; in "${theme_dir}/gruvbox-dark.rasi";
+  programs.rofi.theme = let
+    theme_dir = pkgs.fetchFromGitHub {
+      owner = "bardisty";
+      repo = "gruvbox-rofi";
+      rev = "0.3.1";
+      sha256 = "sha256-FcA92YGlNDrhiDXJgVJ5+8CiEmwXka/pMrDOF3rKJ/4=";
+    };
+  in "${theme_dir}/gruvbox-dark.rasi";
 
   programs.alacritty.settings.colors = {
     primary = {
@@ -63,24 +71,24 @@ in {
       cursor = "CellForeground";
     };
     bright = {
-      black   = "${bg3}";
-      red     = "${red}";
-      green   = "${green}";
-      yellow  = "${yellow}";
-      blue    = "${blue}";
+      black = "${bg3}";
+      red = "${red}";
+      green = "${green}";
+      yellow = "${yellow}";
+      blue = "${blue}";
       magenta = "${purple}";
-      cyan    = "${aqua}";
-      white   = "${fg0}";
+      cyan = "${aqua}";
+      white = "${fg0}";
     };
     normal = {
-      black   = "${bg3}";
-      red     = "${red}";
-      green   = "${green}";
-      yellow  = "${yellow}";
-      blue    = "${blue}";
+      black = "${bg3}";
+      red = "${red}";
+      green = "${green}";
+      yellow = "${yellow}";
+      blue = "${blue}";
       magenta = "${purple}";
-      cyan    = "${aqua}";
-      white   = "${fg0}";
+      cyan = "${aqua}";
+      white = "${fg0}";
     };
   };
 

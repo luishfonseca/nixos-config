@@ -5,8 +5,7 @@
 #
 # Sound system configuration.
 
-{ ... }:
-{
+{ ... }: {
   sound.enable = false;
 
   security.rtkit.enable = true;

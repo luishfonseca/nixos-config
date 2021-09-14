@@ -22,16 +22,9 @@
     ../../modules/home/wallpaper
   ];
 
-  home.packages = with pkgs; [
-    neofetch
-    discord
-  ];
+  home.packages = with pkgs; [ neofetch discord ];
 
-  programs = {
-    ssh = {
-      enable = true;
-    };
-  };
+  programs = { ssh = { enable = true; }; };
 
   xdg.enable = true;
 

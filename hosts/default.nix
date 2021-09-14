@@ -15,5 +15,4 @@
   # Set the time zone.
   time.timeZone = "Europe/Lisbon";
 
-  
 }

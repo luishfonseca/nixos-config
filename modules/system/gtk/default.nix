@@ -5,7 +5,6 @@
 #
 # System configuration gtk requires.
 
-{ pkgs, ... }: 
-{
+{ pkgs, ... }: {
   services.dbus.packages = [ pkgs.gnome3.dconf ];
 }

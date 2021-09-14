@@ -5,8 +5,7 @@
 #
 # Dummy session that only runs home manager's .xsession.
 
-{ ... }:
-{
+{ ... }: {
   services.xserver.displayManager = {
     defaultSession = "none+hm-xsession";
     session = [{

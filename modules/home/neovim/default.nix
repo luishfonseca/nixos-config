@@ -24,9 +24,7 @@
     nixfmt
   ];
 
-  home.sessionVariables = {
-    EDITOR = "nvim";
-  };
+  home.sessionVariables = { EDITOR = "nvim"; };
 
   # Bootstrap Packer
   xdg.dataFile."nvim/site/pack/packer/opt/packer.nvim" = {

@@ -1,5 +1,4 @@
 -- Configuration file for Luís' configuration
-
 local neolhf = require('neolhf')
 
 -- Set the leader to <Space>
@@ -55,7 +54,7 @@ vim.opt.softtabstop = 4
 vim.opt.virtualedit = "block"
 
 -- Set up the undofile directory
-vim.opt.undodir = os.getenv("XDG_CACHE_HOME").."/nvim/undo"
+vim.opt.undodir = os.getenv("XDG_CACHE_HOME") .. "/nvim/undo"
 
 -- Show previews for substitutions etc.
 vim.opt.inccommand = "split"

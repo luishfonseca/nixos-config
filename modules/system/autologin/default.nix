@@ -5,10 +5,9 @@
 #
 # Auto login system configuration.
 
-{ ... }:
-{
+{ ... }: {
   services.xserver.displayManager.autoLogin = {
     enable = true;
-    user = "luis"; #TODO: make this a variable
+    user = "luis"; # TODO: make this a variable
   };
 }

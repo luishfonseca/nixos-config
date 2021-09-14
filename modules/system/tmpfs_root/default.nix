@@ -6,8 +6,7 @@
 # System config for having root on tmpfs.
 # More info here: https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/
 
-{ ... }:
-{
+{ ... }: {
   fileSystems."/" = {
     device = "none";
     fsType = "tmpfs";
@@ -15,11 +14,7 @@
   };
 
   environment.persistence."/nix/persist" = {
-    directories = [
-      "/var/lib"
-      "/var/log"
-      "/var/db/sudo/lectured"
-    ];
+    directories = [ "/var/lib" "/var/log" "/var/db/sudo/lectured" ];
     files = [
       "/etc/shadow"
       "/etc/machine-id"

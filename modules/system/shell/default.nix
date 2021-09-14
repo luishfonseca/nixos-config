@@ -5,15 +5,14 @@
 #
 # Shell system configuration.
 
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   environment.systemPackages = with pkgs; [ any-nix-shell ];
 
   users.defaultUserShell = pkgs.fish;
 
   programs.fish = {
     enable = true;
-    
+
     interactiveShellInit = ''
       # Disable greeting
       set -U fish_greeting
@@ -52,8 +51,6 @@
       any-nix-shell fish --info-right | source
     '';
 
-    shellAbbrs = {
-	  "o" = "xdg-open";
-    };
+    shellAbbrs = { "o" = "xdg-open"; };
   };
 }

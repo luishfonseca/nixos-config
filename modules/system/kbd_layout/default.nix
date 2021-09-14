@@ -5,8 +5,7 @@
 #
 # Keyboard layout system configuration.
 
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   console.useXkbConfig = true;
 
   services.xserver = {

@@ -5,8 +5,7 @@
 #
 # Network system configuration.
 
-{ ... }:
-{
+{ ... }: {
   networking.networkmanager = {
     enable = true;
     insertNameservers = [ "1.1.1.1" "1.0.0.1" ];
@@ -15,9 +14,8 @@
 
   systemd.services.NetworkManager-wait-online.enable = false;
 
-  environment.persistence."/nix/persist".directories = [
-    "/etc/NetworkManager/system-connections"
-  ];
+  environment.persistence."/nix/persist".directories =
+    [ "/etc/NetworkManager/system-connections" ];
 
   boot.kernel.sysctl = {
     # The Magic SysRq key is a key combo that allows users connected to the

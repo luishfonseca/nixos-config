@@ -5,5 +5,6 @@
 #
 # Extra packages.
 
-self: super: rec {
+self: super:
+rec {
 }

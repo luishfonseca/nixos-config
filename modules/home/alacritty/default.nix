@@ -8,16 +8,17 @@
 { ... }:
 
 {
-  services.sxhkd.keybindings = {
-    "super + Return" = "alacritty";
-  };
+  services.sxhkd.keybindings = { "super + Return" = "alacritty"; };
 
   programs.alacritty = {
     enable = true;
     settings = {
       background_opacity = 0.85;
       window = {
-        padding = { x = 10; y = 10; };
+        padding = {
+          x = 10;
+          y = 10;
+        };
         dynamic_padding = true;
       };
     };

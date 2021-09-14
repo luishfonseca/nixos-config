@@ -1,43 +1,31 @@
 -- Bootstrap packer.nvim
-
 vim.cmd('packadd packer.nvim')
 
 local packer = require('packer')
 
 packer.init({
-    git = {
-        clone_timeout = 350,
-    },
+    git = {clone_timeout = 350},
     display = {
         title = "Packer",
         done_sym = "",
         error_syn = "×",
-        keybindings = {
-            toggle_info = "o"
-        }
+        keybindings = {toggle_info = "o"}
     }
 })
 
 packer.startup(function(use)
 
-    use {
-        "wbthomason/packer.nvim",
-        opt = true
-    }
+    use {"wbthomason/packer.nvim", opt = true}
 
     use {
         "sainnhe/gruvbox-material",
-        config = function()
-            vim.cmd("colorscheme gruvbox-material")
-        end
+        config = function() vim.cmd("colorscheme gruvbox-material") end
     }
 
     use {
         "lewis6991/impatient.nvim",
         opt = true,
-        config = function()
-            require('impatient')
-        end
+        config = function() require('impatient') end
     }
 
     use {
@@ -48,9 +36,9 @@ packer.startup(function(use)
             require('nvim-treesitter.configs').setup {
                 ensure_installed = "all",
 
-                highlight = { enable = true },
-                indent = { enable = true },
-                autopairs = { enable = true },
+                highlight = {enable = true},
+                indent = {enable = true},
+                autopairs = {enable = true},
 
                 incremental_selection = {
                     enable = true,
@@ -74,16 +62,21 @@ packer.startup(function(use)
             -- Use an on_attach function to only map the following keys
             -- after the language server attaches to the current buffer
             local on_attach = function(client, bufnr)
-                local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-                local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+                local function buf_set_keymap(...)
+                    vim.api.nvim_buf_set_keymap(bufnr, ...)
+                end
+                local function buf_set_option(...)
+                    vim.api.nvim_buf_set_option(bufnr, ...)
+                end
 
                 -- Enable completion triggered by <c-x><c-o>
                 buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
                 -- Mappings.
-                local opts = { noremap=true, silent=true }
+                local opts = {noremap = true, silent = true}
 
                 -- See `:help vim.lsp.*` for documentation on any of the below functions
+                -- LuaFormatter off
                 buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
                 buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
                 buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
@@ -101,16 +94,17 @@ packer.startup(function(use)
                 buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
                 buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
                 buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+                -- LuaFormatter on
             end
 
             -- Use a loop to conveniently call 'setup' on multiple servers and
             -- map buffer local keybindings when the language server attaches
-            local servers = { 'pyright', 'rust_analyzer' }
+            local servers = {'pyright', 'rust_analyzer'}
             for _, lsp in ipairs(servers) do
                 nvim_lsp[lsp].setup {
                     on_attach = on_attach,
-                    flags = { debounce_text_changes = 150 }
-                      }
+                    flags = {debounce_text_changes = 150}
+                }
             end
 
             -- Lua Language Server config
@@ -120,38 +114,33 @@ packer.startup(function(use)
             table.insert(runtime_path, "lua/?/init.lua")
 
             nvim_lsp.sumneko_lua.setup {
-                cmd = { 'lua-language-server' },
+                cmd = {'lua-language-server'},
                 settings = {
                     Lua = {
-                        runtime = {
-                            version = 'LuaJIT',
-                            path = runtime_path
-                        },
+                        runtime = {version = 'LuaJIT', path = runtime_path},
                         workspace = {
                             library = vim.api.nvim_get_runtime_file("", true)
                         },
-                        diagnostics = { globals = { 'vim' } },
-                        telemetry = { enable = false }
+                        diagnostics = {globals = {'vim'}},
+                        telemetry = {enable = false}
                     }
                 },
                 on_attach = on_attach,
-                flags = { debounce_text_changes = 150 }
+                flags = {debounce_text_changes = 150}
             }
         end
     }
 
     use {
         "hrsh7th/nvim-cmp",
-        after = { "nvim-lspconfig", "nvim-autopairs" },
+        after = {"nvim-lspconfig", "nvim-autopairs"},
         config = function()
             local cmp = require('cmp')
 
             cmp.setup {
                 preselect = cmp.PreselectMode.None,
 
-                completion = {
-                    completeopt = "menu,menuone,noselect"
-                },
+                completion = {completeopt = "menu,menuone,noselect"},
 
                 snippet = {
                     expand = function(args)
@@ -165,18 +154,14 @@ packer.startup(function(use)
                     ["<C-d>"] = cmp.mapping.scroll_docs(-4),
                     ["<C-u>"] = cmp.mapping.scroll_docs(4),
                     ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<C-c>"] = cmp.mapping.close(),
+                    ["<C-c>"] = cmp.mapping.close()
                 },
 
                 sources = {
-                    { name = "buffer" },
-                    { name = "nvim_lua" },
-                    { name = "nvim_lsp" },
-                    { name = "luasnip" },
-                    { name = "calc" },
-                    { name = "path" },
+                    {name = "buffer"}, {name = "nvim_lua"}, {name = "nvim_lsp"},
+                    {name = "luasnip"}, {name = "calc"}, {name = "path"}
                     -- { name = "neorg" },
-                },
+                }
             }
 
             require('nvim-autopairs.completion.cmp').setup({
@@ -187,73 +172,41 @@ packer.startup(function(use)
         end,
 
         requires = {
-            {
-                "hrsh7th/cmp-buffer",
-                after = "nvim-cmp"
-            },
-            {
-                "hrsh7th/cmp-nvim-lua",
-                after = "nvim-cmp"
-            },
-            {
-                "hrsh7th/cmp-nvim-lsp",
-                after = "nvim-cmp"
-            },
-            {
-                "saadparwaiz1/cmp_luasnip",
-                after = "nvim-cmp"
-            },
-            {
-                "hrsh7th/cmp-calc",
-                after = "nvim-cmp"
-            },
-            {
-                "hrsh7th/cmp-path",
-                after = "nvim-cmp"
-            },
+            {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
+            {"hrsh7th/cmp-nvim-lua", after = "nvim-cmp"},
+            {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
+            {"saadparwaiz1/cmp_luasnip", after = "nvim-cmp"},
+            {"hrsh7th/cmp-calc", after = "nvim-cmp"},
+            {"hrsh7th/cmp-path", after = "nvim-cmp"}
         }
     }
 
-    use {
-        "L3MON4D3/LuaSnip",
-        module = "cmp"
-    }
+    use {"L3MON4D3/LuaSnip", module = "cmp"}
 
     use {
         "windwp/nvim-autopairs",
         after = "nvim-treesitter",
         config = function()
-            require('nvim-autopairs').setup { check_ts = true }
+            require('nvim-autopairs').setup {check_ts = true}
         end
     }
 
-    use {
-        'jghauser/mkdir.nvim',
-        config = function()
-            require('mkdir')
-        end
-    }
+    use {'jghauser/mkdir.nvim', config = function() require('mkdir') end}
 
-    use {
-        "tpope/vim-sleuth"
-    }
+    use {"tpope/vim-sleuth"}
 
     use {
         "lukas-reineke/format.nvim",
         config = function()
             require('format').setup {
                 ["*"] = {
-                    { cmd = { "sed -i 's/[ \t]*$//'" } } -- Remove trailing whitespace
+                    {cmd = {"sed -i 's/[ \t]*$//'"}} -- Remove trailing whitespace
                 },
-                lua = {
-                    { cmd = { "lua-format" } }
-                },
-                nix = {
-                    { cmd = { "nixfmt" } }
-                }
+                lua = {{cmd = {"lua-format"}}},
+                nix = {{cmd = {"nixfmt"}}}
             }
         end,
-        cmd = { "Format", "FormatWrite" }
+        cmd = {"Format", "FormatWrite"}
     }
 
 end)
