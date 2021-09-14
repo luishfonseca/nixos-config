@@ -202,7 +202,7 @@ packer.startup(function(use)
                 ["*"] = {
                     {cmd = {"sed -i 's/[ \t]*$//'"}} -- Remove trailing whitespace
                 },
-                lua = {{cmd = {"lua-format"}}},
+                lua = {{cmd = {"lua-format -i"}}},
                 nix = {{cmd = {"nixfmt"}}}
             }
         end,
