@@ -47,7 +47,6 @@ vim.opt.ttimeoutlen = 5
 
 -- Set up indenting
 vim.opt.expandtab = false
-vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 
