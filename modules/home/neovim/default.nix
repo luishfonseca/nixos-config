@@ -32,4 +32,30 @@
 
   xdg.configFile."nvim/init.lua".source = ./init.lua;
   xdg.configFile."nvim/lua".source = ./lua;
+
+  xdg.desktopEntries.nvim = {
+    name = "Neovim";
+    genericName = "Text Editor";
+    exec = "nvim %F";
+    terminal = true;
+    icon = "nvim";
+    categories = [ "Application" "Utility" "TextEditor" ];
+    mimeType = [
+      "text/english"
+      "text/plain"
+      "text/x-makefile"
+      "text/x-c++hdr"
+      "text/x-c++src"
+      "text/x-chdr"
+      "text/x-csrc"
+      "text/x-java"
+      "text/x-moc"
+      "text/x-pascal"
+      "text/x-tcl"
+      "text/x-tex"
+      "application/x-shellscript"
+      "text/x-c"
+      "text/x-c++"
+    ];
+  };
 }
