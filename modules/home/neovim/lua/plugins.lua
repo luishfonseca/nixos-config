@@ -142,7 +142,7 @@ packer.startup(function(use)
 
 	use {
 		"hrsh7th/nvim-cmp",
-		after = "nvim-lspconfig",
+		after = { "nvim-lspconfig", "nvim-autopairs" },
 		config = function()
 			local cmp = require('cmp')
 
@@ -221,8 +221,17 @@ packer.startup(function(use)
 
 	use {
 		"windwp/nvim-autopairs",
+		after = "nvim-treesitter",
 		config = function()
 			require('nvim-autopairs').setup { check_ts = true }
 		end
 	}
+
+	use {
+		'jghauser/mkdir.nvim',
+		config = function()
+			require('mkdir')
+  		end
+	}
+
 end)
