@@ -6,6 +6,7 @@
     ../../modules/home/rofi
     ../../modules/home/alacritty
     ../../modules/home/neovim
+    ../../modules/home/chromium
 
     ../../modules/home/git
     ../../modules/home/gpg
@@ -28,8 +29,6 @@
   ];
 
   programs = {
-    firefox.enable = true;
-
     ssh = {
       enable = true;
     };
