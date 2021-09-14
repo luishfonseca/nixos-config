@@ -18,6 +18,7 @@
     rust-analyzer
     nodePackages.pyright
     sumneko-lua-language-server
+    rnix-lsp
 
     # Formatters
     luaformatter
