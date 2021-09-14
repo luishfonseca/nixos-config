@@ -51,5 +51,9 @@
     promptInit = ''
       any-nix-shell fish --info-right | source
     '';
+
+    shellAbbrs = {
+	  "o" = "xdg-open";
+    };
   };
 }
