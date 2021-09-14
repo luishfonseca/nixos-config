@@ -65,7 +65,7 @@ function neolhf:on_file_enter()
     -- Enable undo files for every buffer
     vim.opt.undofile = true
 
-	-- Enable smart indentation
+    -- Enable smart indentation
     vim.opt.autoindent = true
     vim.opt.smartindent = true
     vim.opt.copyindent = true
@@ -73,7 +73,7 @@ function neolhf:on_file_enter()
 
     vim.cmd [[
         if line("'\"") > 1 && line("'\"") <= line("$") |
-	    exe "normal! g'\"" |
+        exe "normal! g'\"" |
         endif
     ]]
 end
