@@ -33,6 +33,15 @@ packer.startup(function(use)
         run = ":TSUpdate",
         after = "impatient.nvim",
         config = function()
+
+            require('nvim-treesitter.parsers').get_parser_configs().norg = {
+                install_info = {
+                    url = "https://github.com/nvim-neorg/tree-sitter-norg",
+                    files = {"src/parser.c", "src/scanner.cc"},
+                    branch = "main"
+                }
+            }
+
             require('nvim-treesitter.configs').setup {
                 ensure_installed = "all",
 
@@ -159,8 +168,8 @@ packer.startup(function(use)
 
                 sources = {
                     {name = "buffer"}, {name = "nvim_lua"}, {name = "nvim_lsp"},
-                    {name = "luasnip"}, {name = "calc"}, {name = "path"}
-                    -- { name = "neorg" },
+                    {name = "luasnip"}, {name = "calc"}, {name = "path"},
+                    {name = "neorg"}
                 }
             }
 
@@ -207,6 +216,38 @@ packer.startup(function(use)
             }
         end,
         cmd = {"Format", "FormatWrite"}
+    }
+
+    use {
+        "nvim-neorg/neorg",
+        branch = "unstable",
+        config = function()
+            require('neorg').setup {
+                -- Tell Neorg what modules to load
+                load = {
+                    ["core.defaults"] = {}, -- Load all the default modules
+                    ["core.keybinds"] = {config = {default_keybinds = true}},
+                    ["core.norg.concealer"] = {}, -- Allows for use of icons
+                    ["core.norg.completion"] = {config = {engine = "nvim-cmp"}},
+                    ["core.norg.dirman"] = { -- Manage your directories with Neorg
+                        config = {
+                            workspaces = {notes = "~/documents/notes"},
+                            autodetect = true,
+                            autochdir = true
+                        }
+                    },
+                    ["core.integrations.telescope"] = {}
+                }
+            }
+        end,
+        requires = {"nvim-neorg/neorg-telescope"}
+    }
+
+    use {
+        "nvim-telescope/telescope.nvim",
+        cmd = "Telescope",
+        module = "telescope",
+        requires = {"nvim-lua/plenary.nvim", "nvim-lua/popup.nvim"}
     }
 
 end)
