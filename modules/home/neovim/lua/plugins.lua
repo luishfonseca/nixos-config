@@ -231,11 +231,29 @@ packer.startup(function(use)
         'jghauser/mkdir.nvim',
         config = function()
             require('mkdir')
-          end
+        end
     }
 
     use {
         "tpope/vim-sleuth"
+    }
+
+    use {
+        "lukas-reineke/format.nvim",
+        config = function()
+            require('format').setup {
+                ["*"] = {
+                    { cmd = { "sed -i 's/[ \t]*$//'" } } -- Remove trailing whitespace
+                },
+                lua = {
+                    { cmd = { "lua-format" } }
+                },
+                nix = {
+                    { cmd = { "nixfmt" } }
+                }
+            }
+        end,
+        cmd = { "Format", "FormatWrite" }
     }
 
 end)

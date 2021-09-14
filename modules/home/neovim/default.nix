@@ -18,6 +18,10 @@
     rust-analyzer
     nodePackages.pyright
     sumneko-lua-language-server
+
+    # Formatters
+    luaformatter
+    nixfmt
   ];
 
   home.sessionVariables = {
