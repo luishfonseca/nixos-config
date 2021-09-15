@@ -59,6 +59,9 @@ vim.opt.undodir = os.getenv("XDG_CACHE_HOME") .. "/nvim/undo"
 -- Show previews for substitutions etc.
 vim.opt.inccommand = "split"
 
+-- Set conceal level for neorg
+vim.opt.conceallevel = 2
+
 function neolhf:on_file_enter()
 
     -- Enable undo files for every buffer
