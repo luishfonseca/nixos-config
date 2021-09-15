@@ -250,4 +250,13 @@ packer.startup(function(use)
         requires = {"nvim-lua/plenary.nvim", "nvim-lua/popup.nvim"}
     }
 
+    use {
+        "lukas-reineke/indent-blankline.nvim",
+        char = "│",
+        use_treesitter = true,
+        show_first_indent_level = false,
+        filetype_exclude = {"help", "packer", "norg"},
+        buftype_exclude = {"terminal"}
+    }
+
 end)
