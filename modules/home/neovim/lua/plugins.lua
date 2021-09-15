@@ -256,6 +256,7 @@ packer.startup(function(use)
             require("indent_blankline").setup {
                 char = "│",
                 use_treesitter = true,
+                show_current_context = true,
                 show_first_indent_level = false,
                 filetype_exclude = {"help", "packer", "norg"},
                 buftype_exclude = {"terminal"}
