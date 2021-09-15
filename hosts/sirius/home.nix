@@ -3,6 +3,7 @@
 {
 
   imports = [
+    ../../modules/home/miscprogs
     ../../modules/home/rofi
     ../../modules/home/alacritty
     ../../modules/home/neovim
@@ -21,8 +22,6 @@
     ../../modules/home/gruvbox
     ../../modules/home/wallpaper
   ];
-
-  home.packages = with pkgs; [ neofetch discord ];
 
   programs = { ssh = { enable = true; }; };
 
