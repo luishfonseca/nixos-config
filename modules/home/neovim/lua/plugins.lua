@@ -252,11 +252,14 @@ packer.startup(function(use)
 
     use {
         "lukas-reineke/indent-blankline.nvim",
-        char = "│",
-        use_treesitter = true,
-        show_first_indent_level = false,
-        filetype_exclude = {"help", "packer", "norg"},
-        buftype_exclude = {"terminal"}
+        config = function()
+            require("indent_blankline").setup {
+                char = "│",
+                use_treesitter = true,
+                show_first_indent_level = false,
+                filetype_exclude = {"help", "packer", "norg"},
+                buftype_exclude = {"terminal"}
+            }
+        end
     }
-
 end)
