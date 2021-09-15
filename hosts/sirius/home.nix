@@ -27,11 +27,5 @@
 
   xdg.enable = true;
 
-  home.keyboard = {
-    layout = "us";
-    variant = "colemak_dh";
-    options = [ "ralt:compose" ];
-  };
-
   home.stateVersion = "21.05";
 }

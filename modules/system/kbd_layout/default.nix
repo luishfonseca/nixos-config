@@ -11,6 +11,7 @@
   services.xserver = {
     layout = "us";
     xkbVariant = "colemak_dh";
+    xkbOptions = "ralt:compose";
   };
 
   services.interception-tools = {
