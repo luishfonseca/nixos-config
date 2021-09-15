@@ -14,7 +14,8 @@
   };
 
   environment.persistence."/nix/persist" = {
-    directories = [ "/var/lib" "/var/log" "/var/db/sudo/lectured" ];
+    directories =
+      [ "/var/lib" "/var/log" "/var/db/sudo/lectured" "/etc/nixos" ];
     files = [ "/etc/shadow" "/etc/machine-id" ];
   };
 
