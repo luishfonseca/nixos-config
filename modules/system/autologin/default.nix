@@ -6,8 +6,14 @@
 # Auto login system configuration.
 
 { ... }: {
-  services.xserver.displayManager.autoLogin = {
-    enable = true;
-    user = "luis"; # TODO: make this a variable
+  services.xserver.displayManager = {
+    autoLogin = {
+      enable = true;
+      user = "luis"; # TODO: make this a variable
+    };
+    lightdm = {
+      enable = true;
+      greeter.enable = false;
+    };
   };
 }
