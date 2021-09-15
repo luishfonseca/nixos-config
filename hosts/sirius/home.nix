@@ -23,8 +23,6 @@
     ../../modules/home/wallpaper
   ];
 
-  programs = { ssh = { enable = true; }; };
-
   xdg.enable = true;
 
   home.stateVersion = "21.05";

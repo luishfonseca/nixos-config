@@ -11,6 +11,8 @@
 
     ../../modules/system/tmpfs_root
 
+    ../../modules/system/ssh
+
     ../../modules/system/shell
     ../../modules/system/bootloader
     ../../modules/system/fonts
@@ -41,9 +43,6 @@
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
 
   system.stateVersion = "21.11";
 }
