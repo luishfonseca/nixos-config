@@ -80,6 +80,6 @@ function neolhf:on_file_enter()
     ]]
 end
 
-vim.cmd [[ 
+vim.cmd [[
     autocmd FileType * :lua require('neolhf').on_file_enter()
 ]]
