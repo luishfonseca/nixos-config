@@ -13,6 +13,7 @@
     ../../modules/home/gpg
     ../../modules/home/sxhkd
     ../../modules/home/picom
+    ../../modules/home/password_store
 
     ../../modules/home/userdirs
 
