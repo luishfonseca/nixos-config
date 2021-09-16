@@ -40,18 +40,21 @@
         }) (attrNames (readDir dir)));
 
       mkHosts = dir:
-        listToAttrs (map (name: {
-          inherit name;
+        listToAttrs (map (hostName: {
+          name = hostName;
           value = inputs.nixpkgs.lib.nixosSystem {
             inherit system pkgs;
+            extraArgs = { inherit hostName user; };
             modules = [
               dir
-              (dir + "/${name}/configuration.nix")
+              (dir + "/${hostName}/configuration.nix")
               inputs.home.nixosModules.home-manager
               {
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
-                home-manager.users.${user} = import (dir + "/${name}/home.nix");
+                home-manager.extraSpecialArgs = { inherit hostName user; };
+                home-manager.users.${user} =
+                  import (dir + "/${hostName}/home.nix");
               }
               inputs.impermanence.nixosModules.impermanence
             ];

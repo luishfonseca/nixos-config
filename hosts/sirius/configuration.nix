@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ lib, pkgs, config, hostName, user, ... }:
 
 {
 
@@ -30,20 +30,26 @@
     ../../modules/system/hardware/generic_amdcpu
   ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  config.boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "sirius"; # Define your hostname.
+  config.networking.hostName = hostName;
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  config.services.xserver.enable = true;
 
   # Define a user account.
-  nix.trustedUsers = [ "root" "@wheel" ];
-  users.users.luis = {
+  config.nix.trustedUsers = [ "root" "@wheel" ];
+  config.users.users.${user} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
 
-  system.stateVersion = "21.11";
+  options = with lib; {
+    hostName = mkOption { type = types.str; };
+    user = mkOption { type = types.str; };
+  };
+  config = { inherit hostName user; };
+
+  config.system.stateVersion = "21.11";
 }
 

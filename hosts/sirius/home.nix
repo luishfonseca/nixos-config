@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ lib, pkgs, config, hostName, user, ... }:
 
 {
 
@@ -23,7 +23,11 @@
     ../../modules/home/wallpaper
   ];
 
-  xdg.enable = true;
+  options = with lib; {
+    hostName = mkOption { type = types.str; };
+    user = mkOption { type = types.str; };
+  };
+  config = { inherit hostName user; };
 
-  home.stateVersion = "21.05";
+  config.home.stateVersion = "21.05";
 }
