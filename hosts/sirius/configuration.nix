@@ -42,6 +42,7 @@
   config.users.users.${user} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
+    uid = 1000;
   };
 
   options = with lib; {
