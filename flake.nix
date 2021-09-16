@@ -64,6 +64,8 @@
                 common-gpu-amd
                 common-cpu-amd
               ];
+              altair = with inputs.hardware.nixosModules;
+                [ lenovo-thinkpad-t440p ];
             }.hostName or [ ];
           };
         }) (attrNames (readDir dir)));
