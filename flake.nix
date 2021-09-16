@@ -11,6 +11,7 @@
   inputs = {
     nixpkgs = { url = "github:nixos/nixpkgs/nixos-unstable"; };
     latest = { url = "github:nixos/nixpkgs/master"; };
+    hardware = { url = "github:nixos/nixos-hardware/master"; };
     impermanence = { url = "github:nix-community/impermanence/master"; };
     home = {
       url = "github:nix-community/home-manager/master";
@@ -57,7 +58,13 @@
                   import (dir + "/${hostName}/home.nix");
               }
               inputs.impermanence.nixosModules.impermanence
-            ];
+            ] ++ {
+              sirius = with inputs.hardware.nixosModules; [
+                common-pc
+                common-gpu-amd
+                common-cpu-amd
+              ];
+            }.hostName or [ ];
           };
         }) (attrNames (readDir dir)));
 
