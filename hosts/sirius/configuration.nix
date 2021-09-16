@@ -32,8 +32,6 @@
 
   config.boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  config.networking.hostName = hostName;
-
   # Enable the X11 windowing system.
   config.services.xserver.enable = true;
 

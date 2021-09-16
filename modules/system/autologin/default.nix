@@ -5,11 +5,11 @@
 #
 # Auto login system configuration.
 
-{ ... }: {
+{ config, ... }: {
   services.xserver.displayManager = {
     autoLogin = {
       enable = true;
-      user = "luis"; # TODO: make this a variable
+      inherit (config) user;
     };
     lightdm = {
       enable = true;

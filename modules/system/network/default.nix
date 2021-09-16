@@ -5,12 +5,15 @@
 #
 # Network system configuration.
 
-{ ... }: {
+{ config, ... }: {
+
+  networking.hostName = config.hostName;
+
   networking.networkmanager = {
     enable = true;
     insertNameservers = [ "1.1.1.1" "1.0.0.1" ];
   };
-  users.users.luis.extraGroups = [ "networkmanager" ];
+  users.users.${config.user}.extraGroups = [ "networkmanager" ];
 
   systemd.services.NetworkManager-wait-online.enable = false;
 
