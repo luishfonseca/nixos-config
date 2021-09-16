@@ -1,4 +1,11 @@
-{ lib, pkgs, config, hostName, user, ... }:
+# hosts/sirius/home.nix
+#
+# Author: Luís Fonseca <luis@lhf.pt>
+# URL:    https://github.com/luishfonseca/dotfiles
+#
+# Sirius home configuration.
+
+{ lib, config, hostName, user, ... }:
 
 {
 

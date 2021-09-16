@@ -1,8 +1,11 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# hosts/sirius/configuration.nix
+#
+# Author: Luís Fonseca <luis@lhf.pt>
+# URL:    https://github.com/luishfonseca/dotfiles
+#
+# Sirius system configuration.
 
-{ lib, pkgs, config, hostName, user, ... }:
+{ lib, config, hostName, user, ... }:
 
 {
 
@@ -29,16 +32,11 @@
 
     ../../modules/system/steam
 
+    ../../modules/system/latest_kernel
     ../../modules/system/hardware/generic_amdgpu
     ../../modules/system/hardware/generic_amdcpu
   ];
 
-  config.boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # Enable the X11 windowing system.
-  config.services.xserver.enable = true;
-
-  # Define a user account.
   config.nix.trustedUsers = [ "root" "@wheel" ];
   config.users.users.${user} = {
     isNormalUser = true;
