@@ -12,6 +12,7 @@
     ../../modules/system/tmpfs_root
 
     ../../modules/system/ssh
+    ../../modules/system/syncthing
 
     ../../modules/system/rnl
 
