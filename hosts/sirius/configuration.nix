@@ -12,7 +12,8 @@
     ../../modules/system/tmpfs_root
 
     ../../modules/system/ssh
-    ../../modules/system/wireguard
+
+    ../../modules/system/rnl
 
     ../../modules/system/shell
     ../../modules/system/bootloader

@@ -1,9 +1,9 @@
-# modules/system/wireguard/default.nix
+# modules/system/rnl/default.nix
 #
 # Author: Luís Fonseca <luis@lhf.pt>
 # URL:    https://github.com/luishfonseca/dotfiles
 #
-# Wireguard system configuration.
+# RNL (my workplace) related configuration.
 
 { pkgs, config, ... }:
 let
@@ -12,6 +12,7 @@ let
     sirius.address = [ "192.168.20.46/24" "fd92:3315:9e43:c490::46/64" ];
   };
 in {
+  # Setup wireguard interface
   networking.wg-quick.interfaces = {
     rnl = let fwmark = "765";
     in {
@@ -43,4 +44,12 @@ in {
       }];
     };
   };
+
+  # Use RNL's CA certificate
+  security.pki.certificateFiles = let
+    cert = pkgs.fetchurl {
+      url = "https://rnl.tecnico.ulisboa.pt/ca/cacert/cacert.pem";
+      hash = "sha256-Qg7e7LIdFXvyh8dbEKLKdyRTwFaKSG0qoNN4KveyGwg=";
+    };
+  in [ "${cert}" ];
 }
