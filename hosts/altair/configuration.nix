@@ -26,6 +26,7 @@
     ../../modules/system/kbd_layout
     ../../modules/system/audio
     ../../modules/system/network
+    ../../modules/system/touchpad
 
     ../../modules/system/autologin
     ../../modules/system/hm-session
