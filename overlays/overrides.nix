@@ -7,4 +7,5 @@
 
 self: super: {
   inherit (self.latest) discord; # Will soft lock trying to get latest version
+  inherit (self.latest) steam;
 }
