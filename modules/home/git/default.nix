@@ -19,6 +19,7 @@
     extraConfig = {
       init.defaultBranch = "main";
       url."ssh://git@github.com/".pushinsteadOf = "https://github.com/";
+      pull.rebase = true;
     };
   };
 }
