@@ -26,6 +26,7 @@
     ../../modules/system/kbd_layout
     ../../modules/system/audio
     ../../modules/system/network
+    ../../modules/system/containers
 
     ../../modules/system/autologin
     ../../modules/system/hm-session
