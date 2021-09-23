@@ -235,7 +235,7 @@ packer.startup(function(use)
                         config = {
                             workspaces = {notes = "~/documents/notes"},
                             autodetect = true,
-                            autochdir = true
+                            autochdir = false
                         }
                     },
                     ["core.integrations.telescope"] = {}
