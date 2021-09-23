@@ -27,9 +27,5 @@
     fsType = "ext4";
   };
 
-  swapDevices =
-    [{ device = "/dev/disk/by-label/swap"; }];
-
-  # high-resolution display
-  hardware.video.hidpi.enable = lib.mkDefault true;
+  swapDevices = [{ device = "/dev/disk/by-label/swap"; }];
 }
