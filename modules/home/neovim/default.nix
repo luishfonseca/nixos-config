@@ -19,10 +19,13 @@
     nodePackages.pyright
     sumneko-lua-language-server
     rnix-lsp
+    nodePackages.typescript-language-server
 
     # Formatters
     luaformatter
     nixfmt
+    nodePackages.prettier
+    nodePackages.eslint
   ];
 
   home.sessionVariables = { EDITOR = "nvim"; };

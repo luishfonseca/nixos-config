@@ -108,7 +108,7 @@ packer.startup(function(use)
 
             -- Use a loop to conveniently call 'setup' on multiple servers and
             -- map buffer local keybindings when the language server attaches
-            local servers = {'pyright', 'rust_analyzer', 'rnix'}
+            local servers = {'pyright', 'rust_analyzer', 'rnix', 'tsserver'}
             for _, lsp in ipairs(servers) do
                 nvim_lsp[lsp].setup {
                     on_attach = on_attach,
@@ -212,7 +212,9 @@ packer.startup(function(use)
                     {cmd = {"sed -i 's/[ \t]*$//'"}} -- Remove trailing whitespace
                 },
                 lua = {{cmd = {"lua-format -i"}}},
-                nix = {{cmd = {"nixfmt"}}}
+                nix = {{cmd = {"nixfmt"}}},
+                typescript = {{cmd = {"prettier -w", "eslint --fix"}}},
+                javascript = {{cmd = {"prettier -w", "eslint --fix"}}}
             }
         end,
         cmd = {"Format", "FormatWrite"}
