@@ -33,8 +33,6 @@
     ../../modules/system/steam
 
     ../../modules/system/latest_kernel
-    ../../modules/system/hardware/generic_amdgpu
-    ../../modules/system/hardware/generic_amdcpu
   ];
 
   config.nix.trustedUsers = [ "root" "@wheel" ];
