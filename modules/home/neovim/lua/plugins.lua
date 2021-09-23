@@ -265,4 +265,9 @@ packer.startup(function(use)
             }
         end
     }
+
+    use {
+        "andweeb/presence.nvim",
+        config = function() require("presence"):setup{buttons = false} end
+    }
 end)
