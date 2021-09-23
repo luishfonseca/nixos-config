@@ -31,9 +31,8 @@
   home.sessionVariables = { EDITOR = "nvim"; };
 
   # Bootstrap Packer
-  xdg.dataFile."nvim/site/pack/packer/opt/packer.nvim" = {
+  xdg.dataFile."nvim/site/pack/packer/start/packer.nvim" = {
     source = "${pkgs.vimPlugins.packer-nvim}/share/vim-plugins/packer.nvim";
-    recursive = true;
   };
 
   xdg.configFile."nvim/init.lua".source = ./init.lua;
