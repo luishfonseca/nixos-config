@@ -3,7 +3,6 @@
 { self, ... } @ inputs:
 let
   inherit (builtins) abort mapAttrs listToAttrs attrValues concatLists readDir;
-  inherit (inputs.flake-utils.lib) eachDefaultSystem;
   inherit (inputs) nixpkgs nixpkgs-unstable nixpkgs-latest; 
   inherit (nixpkgs.lib) nixosSystem hasSuffix hasPrefix warnIf;
 
@@ -36,14 +35,19 @@ let
     else []
   ) (readDir dir)));
 
-  mkSystem = system: hostName: let pkgs = mkPkgs system; in nixosSystem {
-    inherit system pkgs;
+  mkSystem = cfg: let
+    system = warnIf (!(cfg ? system))
+      "You should define ${cfg.hostName}.system in ./hosts.nix, assuming \"x86_64-linux\""
+      (cfg.system or "x86_64-linux");
+    pkgs = mkPkgs system;
+  in nixosSystem {
+    inherit pkgs system;
 
-    modules = let extraArgs = { inherit inputs pkgs user; }; in [
-      "${./hosts}/${hostName}/configuration.nix"
+    modules = let extraArgs = { inherit inputs pkgs cfg; }; in [
+      "${./hosts}/${cfg.hostName}/configuration.nix"
 
       # Set hostname
-      { networking.hostName = hostName; }
+      { networking.hostName = cfg.hostName; }
 
       # Enable flakes, should be able to remove this soon...
       ({ pkgs, ... }: { nix = {
@@ -52,10 +56,8 @@ let
       };})
     ] ++ mkModules ./modules extraArgs;
   };
-in eachDefaultSystem (system: { packages = {
-  nixosConfigurations = mapAttrs (hostName: t:
-    if t == "directory" then
-      mkSystem system hostName
-    else abort "./hosts/${hostName} should be a directory"
-  ) (readDir ./hosts);
-};})
+in {
+  nixosConfigurations = mapAttrs (hostName: cfg:
+    mkSystem (cfg // { inherit hostName user; })
+  ) (import ./hosts.nix);
+}
