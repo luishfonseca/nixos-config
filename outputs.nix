@@ -58,6 +58,6 @@ let
   };
 in {
   nixosConfigurations = mapAttrs (hostName: cfg:
-    mkSystem (cfg // { inherit hostName user; })
+    mkSystem (cfg // { inherit hostName user; root = ./.; })
   ) (import ./hosts.nix);
 }

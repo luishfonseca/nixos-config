@@ -17,6 +17,7 @@ with lib;
     dotfiles = {
       dir = mkOption { type = path; default = cfg.root; };
       configDir = mkOption { type = path; default = "${config.dotfiles.dir}/config"; };
+      binDir = mkOption { type = path; default = "${config.dotfiles.dir}/bin"; };
     };
 
     home = {
@@ -48,6 +49,19 @@ with lib;
         };
       };
     };
+
+    # Makes sure these are set before environment.variables
+    environment.sessionVariables = {
+      XDG_CONFIG_HOME = "$HOME/.config";
+      XDG_CACHE_HOME  = "$HOME/.cache";
+      XDG_DATA_HOME   = "$HOME/.local/share";
+      XDG_STATE_HOME  = "$HOME/.local/state";
+    };
+
+    environment.variables = {
+      DOTFILES = "${config.dotfiles.dir}";
+      DOTFILES_BIN = "${config.dotfiles.binDir}";
+      PATH = "$DOTFILES_BIN:$HOME/.local/bin:$PATH";
+    };
   };
-    
 }
