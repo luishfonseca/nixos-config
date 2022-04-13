@@ -1,4 +1,4 @@
-{ config, options, lib, inputs, cfg, ... }:
+{ config, options, lib, inputs, extraArgs, ... }:
 
 with lib;
 {
@@ -8,14 +8,14 @@ with lib;
     user = mkOption {
       type = attrs;
       default = {
-        name = cfg.user;
+        name = extraArgs.user;
         extraGroups = [ "wheel" ];
         isNormalUser = true;
       };
     };
 
     dotfiles = {
-      dir = mkOption { type = path; default = cfg.root; };
+      dir = mkOption { type = path; default = extraArgs.root; };
       configDir = mkOption { type = path; default = "${config.dotfiles.dir}/config"; };
       binDir = mkOption { type = path; default = "${config.dotfiles.dir}/bin"; };
     };
