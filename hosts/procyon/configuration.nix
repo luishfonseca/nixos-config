@@ -37,9 +37,7 @@
     xkbOptions = "ralt:compose";
   };
 
-  services.xserver.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  environment.gnome.excludePackages = with pkgs.gnome; [ pkgs.evince pkgs.gnome-tour pkgs.epiphany cheese gnome-photos gnome-music gnome-terminal gedit gnome-characters totem tali iagno hitori atomix geary ];
+  lhf.programs.bspwm.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
