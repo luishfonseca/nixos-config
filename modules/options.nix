@@ -61,7 +61,8 @@ with lib;
     environment.variables = {
       DOTFILES = "${config.dotfiles.dir}";
       DOTFILES_BIN = "${config.dotfiles.binDir}";
-      PATH = "$DOTFILES_BIN:$HOME/.local/bin:$PATH";
+      PATH = "$HOME/.local/bin:$DOTFILES_BIN:$PATH";
     };
+
   };
 }
