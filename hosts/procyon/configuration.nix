@@ -98,11 +98,7 @@
   };
 
   lhf.programs.gpg.enable = true;
-  lhf.programs.gpg.pinentryFlavor = "gtk2";
-  lhf.programs.gpg.sshSupport = {
-    enable = true;
-    keys = extraArgs.gpg.sshKeygrip;
-  };
+  lhf.programs.gpg.sshKeys = [ extraArgs.gpg.sshKeygrip ];
 
 
   environment.systemPackages = with pkgs; [ vim git ];
