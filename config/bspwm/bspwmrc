@@ -1,6 +1,6 @@
-#! /bin/sh
+#!/usr/bin/env sh
 
-pgrep -x sxhkd > /dev/null || sxhkd &
+$DOTFILES/config/polybar/launch.sh
 
 bspc monitor -d I II III IV V VI VII VIII IX X
 

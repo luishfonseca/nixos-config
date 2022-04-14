@@ -13,6 +13,9 @@ let cfg = config.lhf.programs.bspwm; in {
     home.configFile = {
       "bspwm/bspwmrc".source = "${config.dotfiles.configDir}/bspwm/bspwmrc";
       "sxhkd/sxhkdrc".source = "${config.dotfiles.configDir}/sxhkd/sxhkdrc";
+      "polybar/config.ini".source = "${config.dotfiles.configDir}/polybar/config.ini";
     };
+
+    environment.systemPackages = [ pkgs.polybar ];
   };
 }
