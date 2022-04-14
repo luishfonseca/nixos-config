@@ -5,6 +5,7 @@ let cfg = config.lhf.rnl.networking; in {
   options.lhf.rnl.networking = with types; {
     enable = mkEnableOption "RNL Network Config";
     enableOnBoot = mkEnableOption "Network during Boot";
+    enableManagementVlan = mkEnableOption "Management VLAN";
     interface = mkOption { type = str; };
     lastOctet = mkOption {
       type = addCheck int (n: n >= 0 && n <= 255);
@@ -49,6 +50,15 @@ let cfg = config.lhf.rnl.networking; in {
     boot.initrd = {
       network.enable = true;
       kernelModules = [ "r8169" ];
+    };
+  })
+  (mkIf cfg.enableManagementVlan {
+    networking = {
+      vlans.management = { id=1; inherit (cfg) interface; };
+      interfaces.management.ipv4.addresses = [{
+        address = "192.168.102.${toString cfg.lastOctet}";
+        prefixLength = 22;
+      }];
     };
   })]);
 }

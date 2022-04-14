@@ -23,6 +23,7 @@
 
   lhf.rnl.networking = {
     enable = true;
+    enableManagementVlan = true;
     enableOnBoot = false;
     interface = "enp4s0";
     lastOctet = 196;
