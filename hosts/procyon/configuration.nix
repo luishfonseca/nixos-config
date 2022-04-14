@@ -19,9 +19,14 @@
 
   networking.useDHCP = false;
   networking.hostId = "6f1a976e";
-  networking.interfaces.enp4s0.ipv4.addresses = [ { address = "193.136.164.196"; prefixLength = 27; } ];
-  networking.defaultGateway = { address = "193.136.164.222"; interface = "enp4s0"; };
   networking.nameservers = [ "1.0.0.1" "1.1.1.1" ];
+
+  lhf.rnl.networking = {
+    enable = true;
+    enableOnBoot = false;
+    interface = "enp4s0";
+    lastOctet = 196;
+  };
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
