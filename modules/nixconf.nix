@@ -9,6 +9,11 @@
     ];
     autoOptimiseStore = true;
     useSandbox = true;
+    gc = {
+      dates = "weekly";
+      automatic = true;
+      persistent = true;
+    };
   };
   programs.command-not-found.enable = false;
 }
