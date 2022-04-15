@@ -6,7 +6,8 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
@@ -49,6 +50,7 @@
   };
 
   lhf.programs.neovim.enable = true;
+  lhf.programs.htop.enable = true;
   lhf.programs.git.enable = true;
   lhf.programs.bspwm.enable = true;
   lhf.programs.kitty.enable = true;
