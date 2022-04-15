@@ -23,6 +23,9 @@ let cfg = config.lhf.programs.neovim; in
       "nvim" = {
         source = inputs.lunarVim;
         recursive = true;
+        onChange = ''
+          nvim --headless +LvimCacheReset +qa
+        '';
       };
       "nvim/config.lua" = {
         source = "${config.dotfiles.configDir}/nvim/config.lua";
