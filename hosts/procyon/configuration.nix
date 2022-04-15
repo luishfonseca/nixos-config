@@ -21,6 +21,11 @@
   networking.hostId = "6f1a976e";
   networking.nameservers = [ "1.0.0.1" "1.1.1.1" ];
 
+  lhf.rnl.ssh = {
+    enable = true;
+    rnladmin = "luis.fonseca";
+  };
+
   lhf.rnl.networking = {
     enable = true;
     enableManagementVlan = true;
