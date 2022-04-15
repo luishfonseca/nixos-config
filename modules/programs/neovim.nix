@@ -11,6 +11,8 @@ let cfg = config.lhf.programs.neovim; in
       package = pkgs.neovim-nightly;
       defaultEditor = true;
       configure.customRC = ''
+        let $PINENTRY_USER_DATA="USE_TTY=0"
+
         lua <<EOF
         dofile(os.getenv("XDG_CONFIG_HOME") .. "/nvim/init.lua")
         EOF
