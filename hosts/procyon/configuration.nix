@@ -48,6 +48,7 @@
     xkbOptions = "ralt:compose";
   };
 
+  lhf.programs.neovim.enable = true;
   lhf.programs.git.enable = true;
   lhf.programs.bspwm.enable = true;
   lhf.programs.kitty.enable = true;
@@ -111,9 +112,6 @@
 
   lhf.programs.gpg.enable = true;
   lhf.programs.gpg.sshKeys = [ extraArgs.gpg.sshKeygrip ];
-
-
-  environment.systemPackages = with pkgs; [ vim ];
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;

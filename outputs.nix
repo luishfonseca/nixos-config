@@ -20,7 +20,7 @@ let
 
   mkPkgs = system: import nixpkgs {
     inherit system;
-    overlays = [ pkg-sets ];
+    overlays = [ pkg-sets inputs.neovim-nightly.overlay ];
     config.allowUnfree = true;
   };
 

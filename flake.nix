@@ -6,6 +6,9 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-latest.url =   "github:NixOS/nixpkgs/master";
 
+    lunarVim = { url = "github:LunarVim/LunarVim"; flake = false; };
+    neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
