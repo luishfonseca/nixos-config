@@ -55,7 +55,12 @@
   lhf.programs.git.enable = true;
   lhf.programs.bspwm.enable = true;
   lhf.programs.kitty.enable = true;
-  lhf.shell.fish.enable = true;
+  lhf.shell.fish = {
+    enable = true;
+    starship.enable = true;
+    anyNixShell.enable = true;
+    direnv.enable = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
