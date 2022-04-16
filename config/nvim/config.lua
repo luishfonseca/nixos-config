@@ -7,6 +7,7 @@ lvim.builtin.lualine.options.theme = "rose-pine"
 vim.opt.background = "light";
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
+-- TODO: remap caps to ctrl and change this
 lvim.leader = "space"
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 
@@ -134,8 +135,18 @@ require("lspconfig")["rnix"].setup({})
 
 -- Additional Plugins
 lvim.plugins = {
-    {"rose-pine/neovim"},
+  {"rose-pine/neovim"},
+  {
+    "folke/todo-comments.nvim",
+    event = "BufRead",
+    config = function()
+      require("todo-comments").setup()
+    end,
+  },
 }
+
+-- Additional Mappings
+lvim.builtin.which_key.mappings["s"]["T"] = { "<cmd>TodoTelescope<cr>", "Todo Comments" }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
 -- lvim.autocommands.custom_groups = {
