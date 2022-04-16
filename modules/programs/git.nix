@@ -1,7 +1,8 @@
 { config, options, lib, pkgs, ... }:
 
 with lib;
-let cfg = config.lhf.programs.git; in {
+let cfg = config.lhf.programs.git; in
+{
   options.lhf.programs.git.enable = mkEnableOption "Git";
 
   config = mkIf cfg.enable {

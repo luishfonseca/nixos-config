@@ -1,7 +1,8 @@
 { config, options, lib, pkgs, ... }:
 
 with lib;
-let cfg = config.lhf.programs.kitty; in {
+let cfg = config.lhf.programs.kitty; in
+{
   options.lhf.programs.kitty.enable = mkEnableOption "Alacritty";
 
   config = mkIf cfg.enable {

@@ -1,7 +1,8 @@
 { config, options, lib, pkgs, ... }:
 
 with lib;
-let cfg = config.lhf.rnl.networking; in {
+let cfg = config.lhf.rnl.networking; in
+{
   options.lhf.rnl.networking = with types; {
     enable = mkEnableOption "RNL Network Config";
     enableOnBoot = mkEnableOption "Network during Boot";
@@ -43,22 +44,22 @@ let cfg = config.lhf.rnl.networking; in {
       ];
     };
   }
-  (mkIf cfg.enableOnBoot {
-    boot.kernelParams = [
-      "ip=193.136.164.${toString cfg.lastOctet}::193.136.164.222:255.255.255.224:${config.networking.hostName}:${cfg.interface}:off"
-    ];
-    boot.initrd = {
-      network.enable = true;
-      kernelModules = [ "r8169" ];
-    };
-  })
-  (mkIf cfg.enableManagementVlan {
-    networking = {
-      vlans.management = { id=1; inherit (cfg) interface; };
-      interfaces.management.ipv4.addresses = [{
-        address = "192.168.102.${toString cfg.lastOctet}";
-        prefixLength = 22;
-      }];
-    };
-  })]);
+    (mkIf cfg.enableOnBoot {
+      boot.kernelParams = [
+        "ip=193.136.164.${toString cfg.lastOctet}::193.136.164.222:255.255.255.224:${config.networking.hostName}:${cfg.interface}:off"
+      ];
+      boot.initrd = {
+        network.enable = true;
+        kernelModules = [ "r8169" ];
+      };
+    })
+    (mkIf cfg.enableManagementVlan {
+      networking = {
+        vlans.management = { id = 1; inherit (cfg) interface; };
+        interfaces.management.ipv4.addresses = [{
+          address = "192.168.102.${toString cfg.lastOctet}";
+          prefixLength = 22;
+        }];
+      };
+    })]);
 }

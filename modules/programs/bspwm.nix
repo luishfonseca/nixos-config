@@ -1,7 +1,8 @@
 { config, options, lib, pkgs, ... }:
 
 with lib;
-let cfg = config.lhf.programs.bspwm; in {
+let cfg = config.lhf.programs.bspwm; in
+{
   options.lhf.programs.bspwm.enable = mkEnableOption "BSPWM";
 
   config = mkIf cfg.enable {

@@ -2,9 +2,9 @@
   description = "LHF's NixOS config";
 
   inputs = {
-    nixpkgs.url =          "github:NixOS/nixpkgs/nixos-21.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-latest.url =   "github:NixOS/nixpkgs/master";
+    nixpkgs-latest.url = "github:NixOS/nixpkgs/master";
 
     lunarVim = { url = "github:LunarVim/LunarVim"; flake = false; };
     neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
