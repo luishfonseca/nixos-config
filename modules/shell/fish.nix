@@ -13,7 +13,12 @@ let cfg = config.lhf.shell.fish; in
 
   config = mkIf cfg.enable (mkMerge [
     {
-      programs.fish.enable = true;
+      programs.fish = {
+        enable = true;
+        promptInit = ''
+          set fish_greeting
+        '';
+      };
     }
     (mkIf cfg.isDefault {
       users.defaultUserShell = pkgs.fish;
