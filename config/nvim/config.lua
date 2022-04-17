@@ -9,7 +9,6 @@ vim.opt.background = "dark";
 -- keymappings [view all the defaults by pressing <leader>Lk]
 -- TODO: remap caps to ctrl and change this
 lvim.leader = "space"
-lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
