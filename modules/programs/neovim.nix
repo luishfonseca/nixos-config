@@ -28,12 +28,12 @@ let cfg = config.lhf.programs.neovim; in
         '';
       };
       "nvim/config.lua" = {
-        source = "${config.dotfiles.configDir}/nvim/config.lua";
+        source = "${config.dotfiles.configDir}/neovim/config.lua";
         onChange = ''
           nvim --headless +PackerInstall +PackerCompile +qa
         '';
       };
-      "lazygit/config.yml".source = "${config.dotfiles.configDir}/nvim/lazygit.yml";
+      "lazygit/config.yml".source = "${config.dotfiles.configDir}/neovim/lazygit.yml";
     };
 
     home.file.".local/bin/nvr" = {
