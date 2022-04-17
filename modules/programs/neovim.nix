@@ -35,6 +35,19 @@ let cfg = config.lhf.programs.neovim; in
       };
     };
 
+    home.file.".local/bin/nvr" = {
+      executable = true;
+      text = ''
+        #!/bin/sh
+
+        if [ $# -gt 0 ]; then
+          exec nvim --server $NVIM_LISTEN_ADDRESS --remote $@
+        else
+          exec nvim
+        fi
+      '';
+    };
+
     environment.systemPackages = with pkgs; [
       gcc
       python3Packages.pynvim
