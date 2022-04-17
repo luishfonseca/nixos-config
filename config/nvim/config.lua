@@ -4,20 +4,27 @@ lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = "rose-pine"
 lvim.builtin.lualine.options.theme = "rose-pine"
-vim.opt.background = "light";
+vim.opt.background = "dark";
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 -- TODO: remap caps to ctrl and change this
 lvim.leader = "space"
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 
--- TODO: User Config for predefined plugins
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.show_icons.git = 1
+
+lvim.builtin.terminal.on_open = function (_)
+  vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=1\"")
+end
+
+lvim.builtin.terminal.on_close = function (_)
+  vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=0\"")
+end
 
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
@@ -84,6 +91,7 @@ lvim.plugins = {
       require("todo-comments").setup()
     end,
   },
+  {"stevearc/stickybuf.nvim"},
 }
 
 -- Additional Mappings
