@@ -33,6 +33,7 @@ let cfg = config.lhf.programs.neovim; in
           nvim --headless +PackerInstall +PackerCompile +qa
         '';
       };
+      "lazygit/config.yml".source = "${config.dotfiles.configDir}/nvim/lazygit.yml";
     };
 
     home.file.".local/bin/nvr" = {

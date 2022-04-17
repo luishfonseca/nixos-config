@@ -19,23 +19,23 @@ lvim.builtin.nvimtree.show_icons.git = 1
 
 lvim.builtin.terminal.shade_terminals = false
 
-local function _on_open (_)
+lvim.builtin.terminal.on_open = function (_)
   vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=1\"")
 end
 
-local function _on_close (_)
+lvim.builtin.terminal.on_close = function (_)
   vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=0\"")
 end
 
-lvim.builtin.terminal.on_open = _on_open
-lvim.builtin.terminal.on_close = _on_close
-
 local lazygit = require("toggleterm.terminal").Terminal:new({
-  cmd = "lazygit",
+  cmd = [[
+    export PINENTRY_USER_DATA=USE_TTY=1
+    export GPG_TTY=$(tty)
+    gpg-connect-agent --quiet updatestartuptty /bye > /dev/null
+    lazygit
+  ]],
   direction = "float",
   hidden = true,
-  on_open = _on_open,
-  on_close = _on_close,
 })
 
 function LazyGitToggle()
