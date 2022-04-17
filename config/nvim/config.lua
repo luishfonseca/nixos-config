@@ -91,6 +91,8 @@ lvim.plugins = {
       require("todo-comments").setup()
     end,
   },
+  {"jghauser/mkdir.nvim"},
+  {"tpope/vim-eunuch"},
   {"stevearc/stickybuf.nvim"},
 }
 
