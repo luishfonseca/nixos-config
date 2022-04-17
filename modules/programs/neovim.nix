@@ -52,6 +52,7 @@ let cfg = config.lhf.programs.neovim; in
       gcc
       python3Packages.pynvim
       ripgrep
+      lazygit
 
       sumneko-lua-language-server
       rnix-lsp

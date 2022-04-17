@@ -18,13 +18,33 @@ lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.show_icons.git = 1
 
-lvim.builtin.terminal.on_open = function (_)
+lvim.builtin.terminal.shade_terminals = false
+
+local function _on_open (_)
   vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=1\"")
 end
 
-lvim.builtin.terminal.on_close = function (_)
+local function _on_close (_)
   vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=0\"")
 end
+
+lvim.builtin.terminal.on_open = _on_open
+lvim.builtin.terminal.on_close = _on_close
+
+local lazygit = require("toggleterm.terminal").Terminal:new({
+  cmd = "lazygit",
+  direction = "float",
+  hidden = true,
+  on_open = _on_open,
+  on_close = _on_close,
+})
+
+function LazyGitToggle()
+  lazygit:toggle()
+end
+
+lvim.builtin.which_key.mappings["g"]["g"] = { "<cmd>lua LazyGitToggle()<cr>", "LazyGit" }
+
 
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
