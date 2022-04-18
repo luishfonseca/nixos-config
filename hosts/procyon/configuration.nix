@@ -55,6 +55,18 @@
   lhf.programs.git.enable = true;
   lhf.programs.bspwm.enable = true;
   lhf.programs.kitty.enable = true;
+  lhf.programs.virtManager = {
+    enable = true;
+    autoconnectAll = true;
+    connections = [
+      "qemu:///system"
+      "qemu+ssh://root@dredd/system"
+      "qemu+ssh://root@zion/system"
+      "qemu+ssh://root@atlas/system"
+      "qemu+ssh://root@chapek/system"
+      "qemu+ssh://root@hive/system"
+    ];
+  };
   lhf.shell.fish = {
     enable = true;
     starship.enable = true;
