@@ -13,8 +13,13 @@ let cfg = config.lhf.programs.bspwm; in
 
     home.configFile = {
       "bspwm/bspwmrc".source = "${config.dotfiles.configDir}/bspwm/bspwmrc";
-      "sxhkd/sxhkdrc".source = "${config.dotfiles.configDir}/sxhkd/sxhkdrc";
       "polybar/config.ini".source = "${config.dotfiles.configDir}/polybar/config.ini";
+      "sxhkd/sxhkdrc" = {
+        source = "${config.dotfiles.configDir}/sxhkd/sxhkdrc";
+        onChange = ''
+          pkill -USR1 sxhkd
+        '';
+      };
     };
 
     environment.systemPackages = [ pkgs.polybar ];
