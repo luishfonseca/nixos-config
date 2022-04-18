@@ -22,7 +22,7 @@ let cfg = config.lhf.rnl.ssh; in
 
     Match canonical host="*.rnl.tecnico.ulisboa.pt"
       User root
-      SetEnv RNLADMIN=luis.fonseca
+      SetEnv RNLADMIN=${cfg.rnladmin}
       ServerAliveInterval 60
 
     Host *.rnl.tecnico.ulisboa.pt *.rnl.ist.utl.pt
