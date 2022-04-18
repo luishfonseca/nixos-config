@@ -36,24 +36,35 @@ let cfg = config.lhf.programs.neovim; in
       "lazygit/config.yml".source = "${config.dotfiles.configDir}/neovim/lazygit.yml";
     };
 
-    home.file.".local/bin/nvr" = {
-      executable = true;
-      text = ''
-        #!/bin/sh
+    home.file = {
+      ".local/bin/nvr" = {
+        executable = true;
+        text = ''
+          #!/bin/sh
 
-        if [ $# -gt 0 ]; then
-          exec nvim --server $NVIM_LISTEN_ADDRESS --remote $@
-        else
-          exec nvim
-        fi
-      '';
+          if [ $# -gt 0 ]; then
+            exec nvim --server $NVIM_LISTEN_ADDRESS --remote $@
+          else
+            exec nvim
+          fi
+        '';
+      };
+      ".local/bin/lazygit" = {
+        executable = true;
+        text = ''
+          #!/bin/sh
+          export PINENTRY_USER_DATA=USE_TTY=1
+          export GPG_TTY=$(tty)
+          gpg-connect-agent --quiet updatestartuptty /bye > /dev/null
+          ${pkgs.lazygit}/bin/lazygit
+        '';
+      };
     };
 
     environment.systemPackages = with pkgs; [
       gcc
       python3Packages.pynvim
       ripgrep
-      lazygit
 
       sumneko-lua-language-server
       rnix-lsp

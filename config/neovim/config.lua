@@ -27,24 +27,6 @@ lvim.builtin.terminal.on_close = function (_)
   vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=0\"")
 end
 
-local lazygit = require("toggleterm.terminal").Terminal:new({
-  cmd = [[
-    export PINENTRY_USER_DATA=USE_TTY=1
-    export GPG_TTY=$(tty)
-    gpg-connect-agent --quiet updatestartuptty /bye > /dev/null
-    lazygit
-  ]],
-  direction = "float",
-  hidden = true,
-})
-
-function LazyGitToggle()
-  lazygit:toggle()
-end
-
-lvim.builtin.which_key.mappings["g"]["g"] = { "<cmd>lua LazyGitToggle()<cr>", "LazyGit" }
-
-
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
   "c",
