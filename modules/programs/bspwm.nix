@@ -12,14 +12,19 @@ let cfg = config.lhf.programs.bspwm; in
     };
 
     home.configFile = {
-      "bspwm/bspwmrc".source = "${config.dotfiles.configDir}/bspwm/bspwmrc";
-      "polybar/config.ini".source = "${config.dotfiles.configDir}/polybar/config.ini";
+      polybar = {
+        source = "${config.dotfiles.configDir}/polybar/";
+        onChange = ''
+          $XDG_CONFIG_HOME/polybar/launch.sh
+        '';
+      };
       "sxhkd/sxhkdrc" = {
         source = "${config.dotfiles.configDir}/sxhkd/sxhkdrc";
         onChange = ''
           pkill -USR1 sxhkd
         '';
       };
+      "bspwm/bspwmrc".source = "${config.dotfiles.configDir}/bspwm/bspwmrc";
     };
 
     environment.systemPackages = [ pkgs.polybar ];

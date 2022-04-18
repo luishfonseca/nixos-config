@@ -8,6 +8,6 @@ let cfg = config.lhf.programs.kitty; in
   config = mkIf cfg.enable {
     environment.systemPackages = [ pkgs.kitty ];
 
-    home.configFile."kitty/kitty.conf".source = "${config.dotfiles.configDir}/kitty/kitty.conf";
+    home.configFile.kitty.source = "${config.dotfiles.configDir}/kitty";
   };
 }

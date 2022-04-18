@@ -8,6 +8,6 @@ let cfg = config.lhf.programs.rofi; in
   config = mkIf cfg.enable {
     environment.systemPackages = [ pkgs.rofi ];
 
-    home.configFile."rofi/config.rasi".source = "${config.dotfiles.configDir}/rofi/config.rasi";
+    home.configFile.rofi.source = "${config.dotfiles.configDir}/rofi";
   };
 }
