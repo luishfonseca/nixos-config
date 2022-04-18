@@ -55,6 +55,8 @@
   lhf.programs.git.enable = true;
   lhf.programs.bspwm.enable = true;
   lhf.programs.kitty.enable = true;
+
+  virtualisation.libvirtd.enable = true;
   lhf.programs.virtManager = {
     enable = true;
     autoconnectAll = true;
@@ -67,6 +69,7 @@
       "qemu+ssh://root@hive/system"
     ];
   };
+
   lhf.shell.fish = {
     enable = true;
     starship.enable = true;
