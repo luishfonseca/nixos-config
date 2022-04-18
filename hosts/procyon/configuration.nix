@@ -57,6 +57,8 @@
   lhf.programs.kitty.enable = true;
   lhf.programs.rofi.enable = true;
 
+  lhf.services.picom.enable = true;
+
   virtualisation.libvirtd.enable = true;
   lhf.programs.virtManager = {
     enable = true;
