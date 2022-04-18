@@ -20,7 +20,9 @@ lvim.builtin.nvimtree.show_icons.git = 1
 lvim.builtin.terminal.shade_terminals = false
 
 lvim.builtin.terminal.on_open = function (_)
-  vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=1\"")
+  if not os.getenv("DISPLAY") then
+    vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=1\"")
+  end
 end
 
 lvim.builtin.terminal.on_close = function (_)
