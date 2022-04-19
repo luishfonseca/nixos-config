@@ -6,6 +6,8 @@ configuration {
     drun-display-format:    "{name}";
     disable-history:        false;
 	  sidebar-mode: 					false;
+    matching:               "fuzzy";
+    sorting-method:         "fzf";
     timeout {
         action: "kb-cancel";
         delay: 5;
