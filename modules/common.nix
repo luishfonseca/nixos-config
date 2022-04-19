@@ -2,6 +2,8 @@
 
 with lib;
 {
+  programs.slock.enable = true;
+
   fonts = {
     fonts = with pkgs;
       [
