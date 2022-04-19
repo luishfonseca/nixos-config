@@ -29,5 +29,10 @@ let cfg = config.lhf.rnl.ssh; in
       User root
       SetEnv RNLADMIN=${cfg.rnladmin}
       ServerAliveInterval 60
+
+    Host sw-*
+      User manager
+      HostKeyAlgorithms +ssh-dss
+      MACs hmac-md5
   '';
 }
