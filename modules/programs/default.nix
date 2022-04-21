@@ -5,6 +5,7 @@
   environment.systemPackages = with pkgs; [
     neofetch
     chromium
+    discord
     spotify
   ];
 }
