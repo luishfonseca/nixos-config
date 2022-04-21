@@ -5,5 +5,6 @@
   environment.systemPackages = with pkgs; [
     neofetch
     chromium
+    spotify
   ];
 }

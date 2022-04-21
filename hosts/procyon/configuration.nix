@@ -31,6 +31,7 @@
     enable = true;
     enableManagementVlan = true;
     enableOnBoot = false;
+    enableAvahi = true;
     interface = "enp4s0";
     lastOctet = 196;
   };

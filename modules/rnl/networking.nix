@@ -7,6 +7,7 @@ let cfg = config.lhf.rnl.networking; in
     enable = mkEnableOption "RNL Network Config";
     enableOnBoot = mkEnableOption "Network during Boot";
     enableManagementVlan = mkEnableOption "Management VLAN";
+    enableAvahi = mkEnableOption "Avahi";
     interface = mkOption { type = str; };
     lastOctet = mkOption {
       type = addCheck int (n: n >= 0 && n <= 255);
@@ -43,6 +44,8 @@ let cfg = config.lhf.rnl.networking; in
         "tecnico.ulisboa.pt"
       ];
     };
+
+    services.avahi.enable = cfg.enableAvahi;
   }
     (mkIf cfg.enableOnBoot {
       boot.kernelParams = [
