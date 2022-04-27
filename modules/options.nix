@@ -7,11 +7,6 @@ with lib;
   options = with types; {
     user = mkOption {
       type = attrs;
-      default = {
-        name = extraArgs.user;
-        extraGroups = [ "wheel" ];
-        isNormalUser = true;
-      };
     };
 
     dotfiles = {
@@ -29,6 +24,12 @@ with lib;
 
   config = {
     users.users.${config.user.name} = mkAliasDefinitions options.user;
+
+    user = {
+      extraGroups = [ "wheel" ];
+      name = extraArgs.user;
+      isNormalUser = true;
+    };
 
     nix = let users = [ "root" config.user.name ]; in
       {
