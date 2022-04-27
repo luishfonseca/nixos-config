@@ -68,6 +68,8 @@ let cfg = config.lhf.programs.neovim; in
 
       sumneko-lua-language-server
       rnix-lsp
+      gopls
+      terraform-ls
     ];
   };
 }

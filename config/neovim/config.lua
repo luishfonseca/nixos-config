@@ -43,6 +43,8 @@ lvim.builtin.treesitter.ensure_installed = {
   "java",
   "yaml",
   "nix",
+  "go",
+  "hcl"
 }
 
 lvim.builtin.treesitter.highlight.enabled = true
@@ -83,6 +85,14 @@ require("lspconfig")["sumneko_lua"].setup(opts)
 -- Nix LSP
 
 require("lspconfig")["rnix"].setup({})
+
+-- Go LSP
+
+require("lspconfig").gopls.setup({})
+
+-- HCL LSP
+
+require("lspconfig").terraformls.setup({})
 
 -- Additional Plugins
 lvim.plugins = {
