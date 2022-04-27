@@ -62,6 +62,7 @@
   lhf.programs.rofi.enable = true;
 
   lhf.services.picom.enable = true;
+  lhf.services.syncthing.enable = true;
 
   virtualisation.libvirtd.enable = true;
   lhf.programs.virtManager = {
