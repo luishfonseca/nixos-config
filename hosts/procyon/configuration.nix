@@ -48,7 +48,10 @@
     layout = "us";
     xkbVariant = "colemak_dh";
     xkbOptions = "ralt:compose";
+    videoDrivers = [ "nvidia" ];
   };
+
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_470;
 
   lhf.programs.neovim.enable = true;
   lhf.programs.htop.enable = true;
