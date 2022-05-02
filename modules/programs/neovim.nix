@@ -68,7 +68,7 @@ let cfg = config.lhf.programs.neovim; in
 
       sumneko-lua-language-server
       rnix-lsp
-      gopls
+      (gopls.override { buildGoModule = pkgs.unstable.buildGo118Module; })
       terraform-ls
     ];
   };
