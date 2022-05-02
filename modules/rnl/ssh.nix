@@ -35,4 +35,8 @@ let cfg = config.lhf.rnl.ssh; in
       HostKeyAlgorithms +ssh-dss
       MACs hmac-md5
   '';
+
+  config.environment.shellAliases = {
+    ssh = "TERM=xterm-256color /usr/bin/env ssh";
+  };
 }
