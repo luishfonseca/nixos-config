@@ -110,4 +110,5 @@ lvim.plugins = {
 }
 
 -- Additional Mappings
+lvim.builtin.which_key.mappings["l"]["l"] = { "<cmd>:lua vim.diagnostic.open_float()<cr>", "Open Diagonostic Popup" }
 lvim.builtin.which_key.mappings["s"]["T"] = { "<cmd>TodoTelescope<cr>", "Todo Comments" }
