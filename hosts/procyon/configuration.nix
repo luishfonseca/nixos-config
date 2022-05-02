@@ -36,6 +36,8 @@
     lastOctet = 196;
   };
 
+  lhf.rnl.certificate.enable = true;
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   console = {
