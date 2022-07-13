@@ -66,6 +66,23 @@
   lhf.services.picom.enable = true;
   lhf.services.syncthing.enable = true;
 
+  services.vaultwarden = {
+    enable = true;
+    config = {
+      domain = "https://vault.lhf.pt";
+      signupsAllowed = false;
+      rocketPort = 8200;
+    };
+  };
+
+  services.caddy = {
+    enable = true;
+    email = "luis@lhf.pt";
+    virtualHosts = {
+      "vault.lhf.pt".extraConfig = "reverse_proxy localhost:8200";
+    };
+  };
+
   virtualisation.libvirtd.enable = true;
   lhf.programs.virtManager = {
     enable = true;
