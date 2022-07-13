@@ -50,7 +50,7 @@ let cfg = config.lhf.shell.fish; in
         "/share/nix-direnv"
       ];
 
-      home.file.".direnvrc".text = ''
+      hm.home.file.".direnvrc".text = ''
         source /run/current-system/sw/share/nix-direnv/direnvrc
       '';
 

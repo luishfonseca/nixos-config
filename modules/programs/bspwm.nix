@@ -11,7 +11,7 @@ let cfg = config.lhf.programs.bspwm; in
       windowManager.bspwm.enable = true;
     };
 
-    home.configFile = {
+    hm.xdg.configFile = {
       polybar = {
         source = "${config.dotfiles.configDir}/polybar/";
         onChange = ''

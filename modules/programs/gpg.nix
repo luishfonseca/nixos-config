@@ -23,7 +23,7 @@ let cfg = config.lhf.programs.gpg; in
 
     environment.variables.GNUPGHOME = "$XDG_DATA_HOME/gnupg";
 
-    home.dataFile = {
+    hm.xdg.dataFile = {
       "gnupg/gpg-agent.conf".text =
         let
           pinentry-wrapper = pkgs.writeScript "pinentry-wrapper" ''

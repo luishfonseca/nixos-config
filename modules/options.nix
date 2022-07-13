@@ -5,9 +5,9 @@ with lib;
   imports = [ inputs.home-manager.nixosModules.home-manager ];
 
   options = with types; {
-    user = mkOption {
-      type = attrs;
-    };
+
+    user = mkOption { type = attrs; };
+    hm = mkOption { type = attrs; };
 
     dotfiles = {
       dir = mkOption { type = path; default = extraArgs.root; };
@@ -15,11 +15,6 @@ with lib;
       binDir = mkOption { type = path; default = "${config.dotfiles.dir}/bin"; };
     };
 
-    home = {
-      file = mkOption { type = attrs; default = { }; }; # Place in $HOME
-      configFile = mkOption { type = attrs; default = { }; }; # Place in $XDG_CONFIG_HOME
-      dataFile = mkOption { type = attrs; default = { }; }; # Place in $XDG_DATA_HOME
-    };
   };
 
   config = {
@@ -39,18 +34,11 @@ with lib;
 
     home-manager = {
       useUserPackages = true;
-      users.${config.user.name} = {
-        home = {
-          file = mkAliasDefinitions options.home.file;
-          stateVersion = config.system.stateVersion;
-        };
-        xdg = {
-          enable = true;
-          configFile = mkAliasDefinitions options.home.configFile;
-          dataFile = mkAliasDefinitions options.home.dataFile;
-        };
-      };
+      users.${config.user.name} = mkAliasDefinitions options.hm;
     };
+
+    hm.xdg.enable = true;
+    hm.home.stateVersion = config.system.stateVersion;
 
     # Makes sure these are set before environment.variables
     environment.sessionVariables = {
