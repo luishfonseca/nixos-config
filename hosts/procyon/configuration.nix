@@ -84,6 +84,8 @@
   };
 
   virtualisation.libvirtd.enable = true;
+  user.extraGroups = [ "libvirtd" ];
+
   lhf.programs.virtManager = {
     enable = true;
     autoconnectAll = true;
