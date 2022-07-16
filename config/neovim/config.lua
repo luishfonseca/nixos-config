@@ -43,7 +43,8 @@ lvim.builtin.treesitter.ensure_installed = {
   "yaml",
   "nix",
   "go",
-  "hcl"
+  "hcl",
+  "vue",
 }
 
 lvim.builtin.treesitter.highlight.enabled = true
@@ -92,6 +93,29 @@ require("lspconfig").gopls.setup({})
 -- HCL LSP
 
 require("lspconfig").terraformls.setup({})
+
+-- Volar LSP
+
+require("lspconfig").volar.setup({
+  cmd = { "yarn", "vue-language-server", "--stdio" },
+  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json' },
+})
+
+-- Tailwind CSS LSP
+
+require("lspconfig").tailwindcss.setup({
+  cmd = { "yarn", "tailwindcss-language-server", "--stdio" },
+})
+
+-- CSS LSP
+
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+require("lspconfig").cssls.setup({
+  capabilities = capabilities,
+  cmd = { "css-languageserver", "--stdio" },
+})
 
 -- Additional Plugins
 lvim.plugins = {

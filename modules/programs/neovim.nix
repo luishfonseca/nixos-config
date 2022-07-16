@@ -70,6 +70,7 @@ let cfg = config.lhf.programs.neovim; in
       rnix-lsp
       (gopls.override { buildGoModule = pkgs.unstable.buildGo118Module; })
       terraform-ls
+      nodePackages.vscode-css-languageserver-bin
     ];
   };
 }
