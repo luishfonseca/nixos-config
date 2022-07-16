@@ -18,13 +18,13 @@ lvim.builtin.nvimtree.setup.view.side = "left"
 
 lvim.builtin.terminal.shade_terminals = false
 
-lvim.builtin.terminal.on_open = function (_)
+lvim.builtin.terminal.on_open = function(_)
   if not os.getenv("DISPLAY") then
     vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=1\"")
   end
 end
 
-lvim.builtin.terminal.on_close = function (_)
+lvim.builtin.terminal.on_close = function(_)
   vim.cmd("let $PINENTRY_USER_DATA=\"USE_TTY=0\"")
 end
 
@@ -68,7 +68,7 @@ local opts = {
         path = runtime_path,
       },
       diagonostics = {
-        globals = {'vim'},
+        globals = { 'vim' },
       },
       workspace = {
         library = vim.api.nvim_get_runtime_file("", true),
@@ -80,11 +80,11 @@ local opts = {
   },
 }
 
-require("lspconfig")["sumneko_lua"].setup(opts)
+require("lspconfig").sumneko_lua.setup(opts)
 
 -- Nix LSP
 
-require("lspconfig")["rnix"].setup({})
+require("lspconfig").rnix.setup({})
 
 -- Go LSP
 
@@ -119,7 +119,7 @@ require("lspconfig").cssls.setup({
 
 -- Additional Plugins
 lvim.plugins = {
-  {"rose-pine/neovim"},
+  { "rose-pine/neovim" },
   {
     "folke/todo-comments.nvim",
     event = "BufRead",
@@ -127,9 +127,9 @@ lvim.plugins = {
       require("todo-comments").setup()
     end,
   },
-  {"jghauser/mkdir.nvim"},
-  {"tpope/vim-eunuch"},
-  {"stevearc/stickybuf.nvim"},
+  { "jghauser/mkdir.nvim" },
+  { "tpope/vim-eunuch" },
+  { "stevearc/stickybuf.nvim" },
 }
 
 -- Additional Mappings
