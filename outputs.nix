@@ -18,6 +18,7 @@ let
     {
       unstable = import nixpkgs-unstable args;
       latest = import nixpkgs-latest args;
+      my = mapAttrs (name: _: prev.callPackage "${./packages}/${name}" { }) (readDir ./packages);
     };
 
   mkPkgs = system: import nixpkgs {
