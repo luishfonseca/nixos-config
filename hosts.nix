@@ -1,8 +1,8 @@
 {
-  # altair = {
-  #   system = "x86_64-linux";
-  #   gpg.sshKeys = "DB4E50598EBC42BC801BBEC6C39A9A399FD27081";
-  # };
+  altair = {
+    system = "x86_64-linux";
+    gpg.sshKeygrip = "DB4E50598EBC42BC801BBEC6C39A9A399FD27081";
+  };
 
   # sirius = {
   #   system = "x86_64-linux";

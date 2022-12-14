@@ -7,8 +7,10 @@
     nixPath = [
       "nixpkgs=${inputs.nixpkgs-unstable}"
     ];
-    autoOptimiseStore = true;
-    useSandbox = true;
+    settings = {
+      auto-optimise-store = true;
+      sandbox = true;
+    };
     gc = {
       dates = "weekly";
       automatic = true;

@@ -1,0 +1,24 @@
+{ config, options, lib, inputs, ... }:
+with lib;
+let cfg = config.lhf.tmpfsRoot;
+in {
+  imports = [ inputs.impermanence.nixosModules.impermanence ];
+
+  options.lhf.tmpfsRoot.enable = mkEnableOption "Tmpfs Root";
+
+  config = mkIf cfg.enable {
+    fileSystems."/" = {
+      device = "none";
+      fsType = "tmpfs";
+      options = [ "defaults" "size=2G" "mode=755" ];
+    };
+
+    environment.persistence."/nix/persist" = {
+      directories =
+        [ "/var/lib" "/var/log" "/var/db/sudo/lectured" "/etc/nixos" "/etc/NetworkManager/system-connections" ];
+      files = [ "/etc/machine-id" ];
+    };
+
+    fileSystems."/nix".neededForBoot = true;
+  };
+}

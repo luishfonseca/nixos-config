@@ -30,10 +30,10 @@ with lib;
   config = {
     users.users.${config.user.name} = mkAliasDefinitions options.user;
 
-    nix = let users = [ "root" config.user.name ]; in
+    nix.settings = let users = [ "root" config.user.name ]; in
       {
-        trustedUsers = users;
-        allowedUsers = users;
+        trusted-users = users;
+        allowed-users = users;
       };
 
     home-manager = {

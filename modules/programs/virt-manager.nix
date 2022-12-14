@@ -19,13 +19,14 @@ let cfg = config.lhf.programs.virtManager; in
         programs.dconf.enable = true;
         system.userActivationScripts.virtManager.text =
           let
+            connections = if cfg.connections != [] then cfg.connection else [ "qemu:///system" ];
             formatConnections = conns: "[${strings.concatMapStringsSep ", " (s: "'${s}'") conns}]";
           in
           ''
             ${pkgs.dconf}/bin/dconf load / << EOF
             [org/virt-manager/virt-manager/connections]
-            uris=${formatConnections cfg.connections}
-            ${if cfg.autoconnectAll then "autoconnect=${formatConnections cfg.connections}" else ""}
+            uris=${formatConnections connections}
+            ${if cfg.autoconnectAll then "autoconnect=${formatConnections connections}" else ""}
             EOF
           '';
       })

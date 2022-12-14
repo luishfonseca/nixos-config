@@ -3,7 +3,7 @@
 with lib;
 let cfg = config.lhf.programs.kitty; in
 {
-  options.lhf.programs.kitty.enable = mkEnableOption "Alacritty";
+  options.lhf.programs.kitty.enable = mkEnableOption "Kitty";
 
   config = mkIf cfg.enable {
     environment.systemPackages = [ pkgs.kitty ];
