@@ -1,9 +1,8 @@
 { config, options, lib, inputs, ... }:
 with lib;
 let cfg = config.lhf.tmpfsRoot;
-in {
-  imports = [ inputs.impermanence.nixosModules.impermanence ];
-
+in
+{
   options.lhf.tmpfsRoot.enable = mkEnableOption "Tmpfs Root";
 
   config = mkIf cfg.enable {

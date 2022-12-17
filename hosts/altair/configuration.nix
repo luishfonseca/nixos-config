@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, extraArgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -150,7 +150,7 @@
   ];
 
   lhf.programs.gpg.enable = true;
-  lhf.programs.gpg.sshKeys = [ extraArgs.gpg.sshKeygrip ];
+  lhf.programs.gpg.sshKeys = [ "DB4E50598EBC42BC801BBEC6C39A9A399FD27081" ];
 
   users.users.luis.hashedPassword =
     "$6$SJ8UawnwW$LoL1DmZ4J8ade7b/n8h8O9Q44w6JyB5JKMXk2cBLz2D9SQJRZkfsd4XhAQ2.J8Gl2coYGAM1ls/Un5kOXSoT/0";

@@ -19,7 +19,7 @@ let cfg = config.lhf.programs.neovim; in
       '';
     };
 
-    home.configFile = {
+    hm.xdg.configFile = {
       "nvim" = {
         source = inputs.lunarVim;
         recursive = true;
@@ -36,7 +36,7 @@ let cfg = config.lhf.programs.neovim; in
       "lazygit/config.yml".source = "${config.dotfiles.configDir}/neovim/lazygit.yml";
     };
 
-    home.file = {
+    hm.home.file = {
       ".local/bin/nvr" = {
         executable = true;
         text = ''

@@ -1,13 +1,13 @@
 { config, options, lib, pkgs, inputs, ... }:
 
 {
-  nixpkgs.pkgs = pkgs;
   environment.variables.NIXPKGS_ALLOW_UNFREE = "1";
   nix = {
     nixPath = [
       "nixpkgs=${inputs.nixpkgs-unstable}"
     ];
     settings = {
+      experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
       sandbox = true;
     };

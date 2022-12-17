@@ -1,34 +1,27 @@
-{ config, options, lib, inputs, extraArgs, ... }:
+{ config, options, lib, inputs, user, root, ... }:
 
 with lib;
 {
-  imports = [ inputs.home-manager.nixosModules.home-manager ];
-
   options = with types; {
-    user = mkOption {
-      type = attrs;
-      default = {
-        name = extraArgs.user;
-        extraGroups = [ "wheel" ];
-        isNormalUser = true;
-      };
-    };
+
+    user = mkOption { type = attrs; };
+    hm = mkOption { type = attrs; };
 
     dotfiles = {
-      dir = mkOption { type = path; default = extraArgs.root; };
+      dir = mkOption { type = path; default = root; };
       configDir = mkOption { type = path; default = "${config.dotfiles.dir}/config"; };
       binDir = mkOption { type = path; default = "${config.dotfiles.dir}/bin"; };
-    };
-
-    home = {
-      file = mkOption { type = attrs; default = { }; }; # Place in $HOME
-      configFile = mkOption { type = attrs; default = { }; }; # Place in $XDG_CONFIG_HOME
-      dataFile = mkOption { type = attrs; default = { }; }; # Place in $XDG_DATA_HOME
     };
   };
 
   config = {
     users.users.${config.user.name} = mkAliasDefinitions options.user;
+
+    user = lib.mkDefault {
+      extraGroups = [ "wheel" ];
+      name = user;
+      isNormalUser = true;
+    };
 
     nix.settings = let users = [ "root" config.user.name ]; in
       {
@@ -38,18 +31,11 @@ with lib;
 
     home-manager = {
       useUserPackages = true;
-      users.${config.user.name} = {
-        home = {
-          file = mkAliasDefinitions options.home.file;
-          stateVersion = config.system.stateVersion;
-        };
-        xdg = {
-          enable = true;
-          configFile = mkAliasDefinitions options.home.configFile;
-          dataFile = mkAliasDefinitions options.home.dataFile;
-        };
-      };
+      users.${config.user.name} = mkAliasDefinitions options.hm;
     };
+
+    hm.xdg.enable = true;
+    hm.home.stateVersion = config.system.stateVersion;
 
     # Makes sure these are set before environment.variables
     environment.sessionVariables = {
@@ -64,6 +50,5 @@ with lib;
       DOTFILES_BIN = "${config.dotfiles.binDir}";
       PATH = "$HOME/.local/bin:$DOTFILES_BIN:$PATH";
     };
-
   };
 }

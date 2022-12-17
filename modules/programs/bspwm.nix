@@ -98,31 +98,33 @@ let cfg = config.lhf.programs.bspwm; in
         '') cfg.sxhkd.binds)}
       '';
 
-      polybarConfig = let common = {
-            widht = "100%";
-            height = cfg.polybar.height;
+      polybarConfig =
+        let common = {
+          widht = "100%";
+          height = cfg.polybar.height;
 
-            background = cfg.colors.background;
-            foreground = cfg.colors.foreground;
+          background = cfg.colors.background;
+          foreground = cfg.colors.foreground;
 
-            separator = "|";
-            separator-foreground = cfg.colors.disabled;
+          separator = "|";
+          separator-foreground = cfg.colors.disabled;
 
-            font-0 = "monospace:size=${toString (cfg.polybar.height - 10)};2";
+          font-0 = "monospace:size=${toString (cfg.polybar.height - 10)};2";
 
-            enable-ipc = true;
+          enable-ipc = true;
 
-            cursor-click = "pointer";
-            cursor-scroll = "ns-resize";
+          cursor-click = "pointer";
+          cursor-scroll = "ns-resize";
 
-            border-size = 2;
-            border-color = cfg.colors.background;
-            padding = 1;
-            module-margin = 1;
+          border-size = 2;
+          border-color = cfg.colors.background;
+          padding = 1;
+          module-margin = 1;
 
-            wm-restack = "bspwm";
-        }; 
-        in lib.generators.toINI { } {
+          wm-restack = "bspwm";
+        };
+        in
+        lib.generators.toINI { } {
           "bar/top" = common // {
             bottom = false;
 
@@ -250,12 +252,12 @@ let cfg = config.lhf.programs.bspwm; in
           windowManager.bspwm.enable = true;
         };
 
-        home.configFile."bspwm/bspwmrc" = {
+        hm.xdg.configFile."bspwm/bspwmrc" = {
           text = bspwmConfig;
           executable = true;
         };
 
-        home.configFile."sxhkd/sxhkdrc" = {
+        hm.xdg.configFile."sxhkd/sxhkdrc" = {
           text = sxhkdConfig;
           onChange = "pkill -USR1 sxhkd";
         };
@@ -264,7 +266,7 @@ let cfg = config.lhf.programs.bspwm; in
       (mkIf cfg.polybar.enable {
         environment.systemPackages = [ pkgs.polybar ];
 
-        home.configFile."polybar/config.ini" = {
+        hm.xdg.configFile."polybar/config.ini" = {
           text = polybarConfig;
           onChange = "pkill -USR1 polybar";
         };

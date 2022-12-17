@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, extraArgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -91,20 +91,23 @@
   ];
 
   boot.supportedFilesystems = [ "zfs" ];
-  boot.kernelParams = let
-    cidr2mask = cidr:
-      let
-        pow = n: p: if p == 0 then 1 else n * pow n (p - 1);
-        oct = n: builtins.bitXor 255 ((pow 2 (8 - n)) - 1);
-        mask = n: o:
-          if n > 8 then
-            "255." + mask (n - 8) (o + 1)
-          else
-            toString (oct n) + (if o < 3 then "." + mask 0 (o + 1) else "");
-      in mask cidr 0;
-  in [
-    "ip=193.136.164.196::193.136.164.222:${cidr2mask 27}:procyon:enp4s0:off"
-  ];
+  boot.kernelParams =
+    let
+      cidr2mask = cidr:
+        let
+          pow = n: p: if p == 0 then 1 else n * pow n (p - 1);
+          oct = n: builtins.bitXor 255 ((pow 2 (8 - n)) - 1);
+          mask = n: o:
+            if n > 8 then
+              "255." + mask (n - 8) (o + 1)
+            else
+              toString (oct n) + (if o < 3 then "." + mask 0 (o + 1) else "");
+        in
+        mask cidr 0;
+    in
+    [
+      "ip=193.136.164.196::193.136.164.222:${cidr2mask 27}:procyon:enp4s0:off"
+    ];
 
   boot.initrd = {
     supportedFilesystems = [ "zfs" ];
@@ -140,7 +143,7 @@
   };
 
   lhf.programs.gpg.enable = true;
-  lhf.programs.gpg.sshKeys = [ extraArgs.gpg.sshKeygrip ];
+  lhf.programs.gpg.sshKeys = [ "A8329FD9836E2DF1DB5820200DC3CFF29680124E" ];
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;

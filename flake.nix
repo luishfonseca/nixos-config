@@ -6,6 +6,8 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-latest.url = "github:NixOS/nixpkgs/master";
 
+    utils.url = "github:numtide/flake-utils";
+
     lunarVim = {
       url = "github:LunarVim/LunarVim";
       flake = false;
