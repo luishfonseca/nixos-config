@@ -83,12 +83,23 @@
       ms-vscode.cpptools
 
       jnoortheen.nix-ide
-    ];
-    extraPackages = with pkgs; [
-      gcc
-      rnix-lsp
+
+      (pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+        mktplcRef = {
+          name = "glassit";
+          publisher = "s-nlf-fh";
+          version = "0.2.4";
+          sha256 = "sha256-YmohKiypAl9sbnmg3JKtvcGnyNnmHvLKK1ifl4SmyQY=";
+        };
+        buildInputs = [ pkgs.xorg.xprop ];
+      })
     ];
   };
+
+  environment.systemPackages = with pkgs; [
+    rnix-lsp
+    gcc
+  ];
 
   lhf.programs.neovim.enable = false;
   lhf.programs.htop.enable = true;
