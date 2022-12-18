@@ -156,7 +156,11 @@
     anyNixShell.enable = true;
     direnv.enable = true;
   };
-  lhf.shell.dash.enable = true;
+
+  lhf.shell.dash = {
+    enable = true;
+    isSystemDefault = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
