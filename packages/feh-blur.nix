@@ -24,7 +24,8 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/bin
     cp feh-blur $out/bin/feh-blur
-    sed -i "s/trap finish EXIT//" $out/bin/feh-blur
+    sed -i "s/source \"\$HOME\/.fehbg\"//" $out/bin/feh-blur
+    sed -i "s/exit 1/exit/g" $out/bin/feh-blur
     sed -i "s/sleep \"\$POLL_INTERVAL\"/exit/g" $out/bin/feh-blur
     sed -i "s/blank=\"\$(is_blank && echo 1 || echo 0)\"/blank=0/" $out/bin/feh-blur
     wrapProgram $out/bin/feh-blur \
