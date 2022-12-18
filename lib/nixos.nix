@@ -8,9 +8,7 @@
           unstable = import inputs.nixpkgs-unstable args;
           latest = import inputs.nixpkgs-latest args;
         })
-      ] ++ (map
-        (m: import m { inherit inputs lib; })
-        (lib.my.listModulesRecursive overlaysDir));
+      ] ++ (map (m: import m) (lib.my.listModulesRecursive overlaysDir));
     });
 
   mkHost = name: { modulesDir, config, extraArgs, extraModules, ... }: lib.nixosSystem {

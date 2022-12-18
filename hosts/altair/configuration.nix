@@ -12,6 +12,30 @@
 
   services.physlock.enable = true;
 
+  lhf.services.wallpaper = {
+    enable = true;
+    images = (lib.mapAttrsToList
+      (name: hash: pkgs.fetchurl {
+        url = "https://github.com/rose-pine/wallpapers/raw/main/${name}";
+        sha256 = hash;
+      })
+      {
+        "beachhouses.jpg" = "sha256-rFJFEBg3RbJQ9LFG0/ZNuqts2H4bMw7bY7Rf64XO+Gg=";
+        "bench.JPG" = "sha256-Vw6HIfZF6e9CPNZR8m5Iy1YeeVHH/upb12oMN8r5ics=";
+        "field.jpg" = "sha256-OLLqugzrFxFj9KnQr3X15zLO1Xt4J0ndIoFQtFjCY3k=";
+        "flower.jpg" = "sha256-A83dUw3QT7GpWGSV+JY7F+kU38CNk5uQrzFwyL5yFdE=";
+        "oceandrone1.JPG" = "sha256-P0fDOjNYphPgKPI3HG9BUn3Sw89HQFBH/EltCjOHB20=";
+        "oceandrone2.JPG" = "sha256-uPeMZPKaL0C2htuxJ0B+0nO0dsPiYtfWhFxsvnvY3J4=";
+        "pointoverhead.jpg" = "sha256-Sk1DVNxM3t0WhBrPQT76LgP6j3mZ6frrF5rJQakOHL4=";
+        "rocks.jpg" = "sha256-8QA6Cn5r0nvLYjF4AzfgWkdsWV7Ci3ve4ta94VAu1I4=";
+        "roses.jpg" = "sha256-/5mtqvnbLZ7/sLM+EduPJHHia3w0iTmbp8q3/V5idEM=";
+        "seals.jpg" = "sha256-WVzSfRZRqcHM58Gxh5SThaIfl7fLLwokcWIXQh/buPA=";
+        "seaslug.jpg" = "sha256-uxQkOABlP34ajEreoWI32iN8pgt2faYJumEBQYSDk3s=";
+      });
+    effects.enable = true;
+  };
+
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
