@@ -6,6 +6,7 @@ let cfg = config.lhf.programs.bspwm; in
   options.lhf.programs.bspwm = {
     enable = mkEnableOption "BSPWM";
     swallow = mkEnableOption "BSPWM swallow";
+    transparency = mkEnableOption "support for transparent windows";
     colors = let mkColor = name: mkOption {
       description = "Color ${name}";
       default = "#000000";
@@ -98,13 +99,16 @@ let cfg = config.lhf.programs.bspwm; in
         export PIDSWALLOW_PREGLUE_HOOK='bspc query -N -n $pwid.floating >/dev/null && bspc node $cwid --state floating'
         export TERMINAL=.kitty-wrapped #TODO: make it configurable
         ${pkgs.procps}/bin/pgrep -lf 'pidswallow' || ${pkgs.my.pidswallow}/bin/pidswallow -gl &
+      '' else "") + (if cfg.transparency then ''
+        ${pkgs.procps}/bin/pgrep -lf 'bspwm-hidebar' || ${pkgs.my.bspwm-hidebar}/bin/bspwm-hidebar &
       '' else "");
 
       sxhkdConfig = ''
         #!/usr/bin/env sh
+
         ${concatStringsSep "\n" (mapAttrsToList (k: v: ''
-          super + ${k}
-            ${v}
+        super + ${k}
+          ${v}
         '') cfg.sxhkd.binds)}
       '';
 
@@ -283,4 +287,5 @@ let cfg = config.lhf.programs.bspwm; in
       })
     ];
 }
+
 

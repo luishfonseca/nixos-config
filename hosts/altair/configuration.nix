@@ -112,6 +112,7 @@
   lhf.programs.bspwm = {
     enable = true;
     swallow = true;
+    transparency = true;
     colors = {
       background = "#1f1d2e";
       background-alt = "#403d52";
@@ -135,8 +136,8 @@
     };
     sxhkd.binds = {
       "Return" = "kitty"; # terminal emulator
-      "@space" = "rofi -show drun"; # program launcher
-      "shift + @space" = "rofi -show run"; # command launcher
+      "space" = "rofi -show drun"; # program launcher
+      "shift + space" = "rofi -show run"; # command launcher
       "alt + {q,r}" = "bspc {quit,wm -r}"; # quit/restart bspwm
       "{_,shift + }w" = "bspc node -{c,k}"; # close and kill
       "m" = "bspc desktop -l next"; # alternate between the tiled and monocle layout
