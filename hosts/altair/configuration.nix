@@ -101,11 +101,11 @@
   lhf.programs.bspwm = {
     enable = true;
     colors = {
-      background = "#282A2E";
-      background-alt = "#373B41";
-      foreground = "#C5C8C6";
-      accent = "#F0C674";
-      disabled = "#707880";
+      background = "#1f1d2e";
+      background-alt = "#403d52";
+      foreground = "#e0def4";
+      accent = "#9ccfd8";
+      disabled = "#6e6a86";
     };
     polybar = {
       enable = true;

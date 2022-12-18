@@ -87,6 +87,9 @@ let cfg = config.lhf.programs.bspwm; in
 
         bspc config borderless_monocle   true
 
+        bspc config focused_border_color ${cfg.colors.accent}
+        bspc config normal_border_color  ${cfg.colors.disabled}
+
         ${edge-switcher}/bin/edge-switcher &
       '';
 
