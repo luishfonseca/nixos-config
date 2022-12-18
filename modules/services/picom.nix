@@ -10,6 +10,6 @@ let cfg = config.lhf.services.picom; in
     backend = "glx";
     vSync = true;
     fade = true;
-    fadeDelta = 2;
+    fadeDelta = 5;
   };
 }
