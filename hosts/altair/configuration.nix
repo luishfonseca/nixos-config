@@ -100,6 +100,7 @@
 
   lhf.programs.bspwm = {
     enable = true;
+    swallow = true;
     colors = {
       background = "#1f1d2e";
       background-alt = "#403d52";

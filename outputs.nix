@@ -10,17 +10,18 @@
     user = "luis";
   in
   {
-    packages.nixosConfigurations = lib.my.mkHosts {
-      modulesDir = ./modules;
-      hostsDir = ./hosts;
-      extraArgs = {
-        inherit user inputs;
-        root = ./.;
+    packages = pkgs // {
+      nixosConfigurations = lib.my.mkHosts {
+        modulesDir = ./modules;
+        hostsDir = ./hosts;
+        extraArgs = {
+          inherit user inputs;
+          root = ./.;
+        };
+        extraModules = [
+          inputs.impermanence.nixosModules.impermanence
+          inputs.home-manager.nixosModules.home-manager
+        ];
       };
-      extraModules = [
-        inputs.impermanence.nixosModules.impermanence
-        inputs.home-manager.nixosModules.home-manager
-      ];
     };
-  }
-)
+  })

@@ -5,6 +5,7 @@ let cfg = config.lhf.programs.bspwm; in
 {
   options.lhf.programs.bspwm = {
     enable = mkEnableOption "BSPWM";
+    swallow = mkEnableOption "BSPWM swallow";
     colors = let mkColor = name: mkOption {
       description = "Color ${name}";
       default = "#000000";
@@ -69,8 +70,8 @@ let cfg = config.lhf.programs.bspwm; in
 
         trap on_exit EXIT SIGHUP SIGINT SIGTERM
 
-        xdotool behave_screen_edge left exec bspc desktop -f prev & 
-        xdotool behave_screen_edge right exec bspc desktop -f next &
+        ${pkgs.xdotool}/bin/xdotool behave_screen_edge left exec bspc desktop -f prev & 
+        ${pkgs.xdotool}/bin/xdotool behave_screen_edge right exec bspc desktop -f next &
       '';
 
       bspwmConfig = ''
@@ -91,7 +92,13 @@ let cfg = config.lhf.programs.bspwm; in
         bspc config normal_border_color  ${cfg.colors.disabled}
 
         ${edge-switcher}/bin/edge-switcher &
-      '';
+      '' + (if cfg.swallow then ''
+        export PIDSWALLOW_SWALLOW_COMMAND='bspc node $pwid --flag hidden=on'
+        export PIDSWALLOW_VOMIT_COMMAND='bspc node $pwid --flag hidden=off'
+        export PIDSWALLOW_PREGLUE_HOOK='bspc query -N -n $pwid.floating >/dev/null && bspc node $cwid --state floating'
+        export TERMINAL=.kitty-wrapped #TODO: make it configurable
+        ${pkgs.procps}/bin/pgrep -lf 'pidswallow' || ${pkgs.my.pidswallow}/bin/pidswallow -gl &
+      '' else "");
 
       sxhkdConfig = ''
         #!/usr/bin/env sh
