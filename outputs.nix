@@ -8,20 +8,20 @@
 
     # Primary user account
     user = "luis";
+
+    nixosConfigurations = lib.my.mkHosts {
+      modulesDir = ./modules;
+      hostsDir = ./hosts;
+      extraArgs = {
+        inherit user inputs nixosConfigurations;
+        root = ./.;
+      };
+      extraModules = [
+        inputs.impermanence.nixosModules.impermanence
+        inputs.home-manager.nixosModules.home-manager
+      ];
+    };
   in
   {
-    packages = pkgs // {
-      nixosConfigurations = lib.my.mkHosts {
-        modulesDir = ./modules;
-        hostsDir = ./hosts;
-        extraArgs = {
-          inherit user inputs;
-          root = ./.;
-        };
-        extraModules = [
-          inputs.impermanence.nixosModules.impermanence
-          inputs.home-manager.nixosModules.home-manager
-        ];
-      };
-    };
+    packages = pkgs // { inherit lib nixosConfigurations; };
   })
