@@ -21,6 +21,21 @@
 
   networking.firewall.enable = false;
 
+  lhf.powerSaving.enable = true;
+
+  lhf.shell.fish = {
+    enable = true;
+    starship.enable = true;
+    anyNixShell.enable = true;
+    direnv.enable = true;
+  };
+
+  lhf.shell.dash = {
+    enable = true;
+    isSystemDefault = true;
+  };
+
+
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHgnSKa8CXwWeqAxnkWBASF2tTJ33VylGWI68DAftIsQ"
   ];
