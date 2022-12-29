@@ -41,7 +41,7 @@ in
 
   checks = lib.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
 
-  legacyPackages.${system} = pkgs;
+  legacyPackages.${system} = pkgs // { inherit lib; };
 
   devShells.${system}.default = pkgs.mkShell {
     buildInputs = [ inputs.deploy-rs.packages.x86_64-linux.deploy-rs ];
