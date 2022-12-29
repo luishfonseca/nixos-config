@@ -6,8 +6,6 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-latest.url = "github:NixOS/nixpkgs/master";
 
-    utils.url = "github:numtide/flake-utils";
-
     lunarVim = {
       url = "github:LunarVim/LunarVim";
       flake = false;
@@ -16,6 +14,8 @@
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    deploy-rs.url = "github:serokell/deploy-rs";
 
     impermanence.url = "github:nix-community/impermanence/master";
 

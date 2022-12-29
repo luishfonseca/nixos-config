@@ -1,5 +1,5 @@
 { inputs, pkgs, lib, system, ... }: {
-  mkPkgs = overlaysDir:
+  mkPkgs = overlays:
     let args = { inherit system; config.allowUnfree = true; };
     in
     import inputs.nixpkgs (args // {
@@ -8,8 +8,15 @@
           unstable = import inputs.nixpkgs-unstable args;
           latest = import inputs.nixpkgs-latest args;
         })
-      ] ++ (map (m: import m) (lib.my.listModulesRecursive overlaysDir));
+      ] ++ lib.attrValues overlays;
     });
+
+  mkOverlays = overlaysDir: builtins.listToAttrs (map
+    (m: {
+      name = lib.removeSuffix ".nix" (builtins.baseNameOf m);
+      value = import m;
+    })
+    (lib.my.listModulesRecursive overlaysDir));
 
   mkHost = name: { modulesDir, config, extraArgs, extraModules, ... }: lib.nixosSystem {
     inherit system pkgs lib;

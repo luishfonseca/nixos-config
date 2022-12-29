@@ -48,7 +48,7 @@
     xkbOptions = "ralt:compose";
   };
 
-  lhf.programs.neovim.enable = true;
+  #lhf.programs.neovim.enable = true;
   lhf.programs.htop.enable = true;
   lhf.programs.tmux.enable = true;
   lhf.programs.git.enable = true;

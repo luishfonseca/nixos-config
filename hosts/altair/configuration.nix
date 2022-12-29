@@ -103,7 +103,6 @@
     gcc
   ];
 
-  lhf.programs.neovim.enable = false;
   lhf.programs.htop.enable = true;
   lhf.programs.tmux.enable = true;
   lhf.programs.git.enable = true;
