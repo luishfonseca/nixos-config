@@ -44,6 +44,9 @@ in
   legacyPackages.${system} = pkgs // { inherit lib; };
 
   devShells.${system}.default = pkgs.mkShell {
-    buildInputs = [ inputs.deploy-rs.packages.x86_64-linux.deploy-rs ];
+    buildInputs = [
+      inputs.deploy-rs.defaultPackage.${system}
+      inputs.agenix.defaultPackage.${system}
+    ];
   };
 }

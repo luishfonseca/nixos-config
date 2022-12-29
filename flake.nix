@@ -6,16 +6,20 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-latest.url = "github:NixOS/nixpkgs/master";
 
-    lunarVim = {
-      url = "github:LunarVim/LunarVim";
-      flake = false;
-    };
-    neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
+    # lunarVim = {
+    #   url = "github:LunarVim/LunarVim";
+    #   flake = false;
+    # };
+    # neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+
+    agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
 
     impermanence.url = "github:nix-community/impermanence/master";
 
