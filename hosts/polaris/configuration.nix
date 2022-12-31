@@ -24,6 +24,9 @@
     enable = true;
     host.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTBIsgb2YNXL3EouuaJSXS1p9YFGng+VkunpcWmu9Ke";
     user.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILNztXCOFqjBvL3swizvbfvLtynt6XEHT4uLo4D2Z6vU";
+    manageKnownHosts = true;
+    manageSSHLogin = true;
+    allowSSHAgentAuth = true;
   };
 
   networking.firewall.enable = false;
@@ -44,9 +47,5 @@
 
   services.tailscale.enable = true;
 
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHgnSKa8CXwWeqAxnkWBASF2tTJ33VylGWI68DAftIsQ"
-  ];
-
-  system.stateVersion = "22.11"; # Did you read the comment?
+  system.stateVersion = "22.11";
 }

@@ -16,6 +16,9 @@
     enable = true;
     host.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIACIg+b3uakGCFSOL8XR35jGjZEdX6RYDGuWvdZ3hm4";
     user.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE98aQ0VshDOnylLmZcfEdbuxZllCDtfBYH2786f4nph";
+    manageKnownHosts = true;
+    manageSSHLogin = true;
+    allowSSHAgentAuth = true;
   };
 
   lhf.services.wallpaper = {
@@ -190,8 +193,8 @@
     pulse.enable = true;
   };
 
-  lhf.programs.gpg.enable = true;
-  lhf.programs.gpg.sshKeys = [ "DB4E50598EBC42BC801BBEC6C39A9A399FD27081" ];
+  # lhf.programs.gpg.enable = true;
+  # lhf.programs.gpg.sshKeys = [ "DB4E50598EBC42BC801BBEC6C39A9A399FD27081" ];
 
   user.hashedPassword = "$6$SJ8UawnwW$LoL1DmZ4J8ade7b/n8h8O9Q44w6JyB5JKMXk2cBLz2D9SQJRZkfsd4XhAQ2.J8Gl2coYGAM1ls/Un5kOXSoT/0";
   users.mutableUsers = false;

@@ -40,9 +40,11 @@ let cfg = config.lhf.services.ssh; in
       type = types.attrsOf (types.nullOr types.str);
     };
 
-    manageKnownHosts = mkEnableOption "known_hosts management" // { default = true; };
+    allowSSHAgentAuth = mkEnableOption "SSH agent authentication";
 
-    manageSSHLogin = mkEnableOption "SSH login management" // { default = true; };
+    manageKnownHosts = mkEnableOption "known_hosts management";
+
+    manageSSHLogin = mkEnableOption "SSH login management";
   };
 
   config = mkIf cfg.enable (mkMerge [
@@ -51,6 +53,7 @@ let cfg = config.lhf.services.ssh; in
       services.openssh = {
         enable = true;
         passwordAuthentication = false;
+        permitRootLogin = "no";
         hostKeys = [{
           path = "/etc/ssh/ssh_host_ed25519_key";
           type = "ed25519";
@@ -67,6 +70,31 @@ let cfg = config.lhf.services.ssh; in
     })
     (mkIf cfg.manageSSHLogin {
       user.openssh.authorizedKeys.keys = mapAttrsToList (n: v: "${v} ${n}") cfg.allUsers;
+    })
+    (mkIf cfg.allowSSHAgentAuth {
+      programs.ssh = {
+        startAgent = true;
+        agentTimeout = "1h";
+        extraConfig = ''
+          AddKeysToAgent yes
+        '';
+      };
+      systemd.user.services.ssh-agent.serviceConfig.Restart = lib.mkForce "always";
+      systemd.services.lock-ssh-agent = {
+        enable = true;
+        description = "Lock SSH Agent";
+        wantedBy = [ "suspend.target" "hibernate.target" ];
+        before = [ "systemd-suspend.service" "systemd-hibernate.service" "systemd-suspend-then-hibernate.service" ];
+        serviceConfig = {
+          ExecStart = "${pkgs.killall}/bin/killall ssh-agent";
+          Type = "forking";
+        };
+      };
+      security = {
+        sudo.enable = true;
+        pam.enableSSHAgentAuth = true;
+        pam.services.sudo.sshAgentAuth = true;
+      };
     })
   ]);
 }
