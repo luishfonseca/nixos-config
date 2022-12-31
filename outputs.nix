@@ -31,9 +31,9 @@ in
     (host: config: {
       hostname = host;
       fastConnection = true;
+      sshOpts = [ "-A" ];
       profiles.system = {
         user = "root";
-        sshUser = "root";
         path = inputs.deploy-rs.lib.${system}.activate.nixos config;
       };
     })
