@@ -50,6 +50,7 @@ let cfg = config.lhf.services.ssh; in
   config = mkIf cfg.enable (mkMerge [
     {
       environment.systemPackages = [ pkgs.openssh ];
+
       services.openssh = {
         enable = true;
         passwordAuthentication = false;
@@ -59,6 +60,27 @@ let cfg = config.lhf.services.ssh; in
           type = "ed25519";
         }];
       };
+
+      programs.ssh = {
+        startAgent = true;
+        agentTimeout = "1h";
+        extraConfig = ''
+          AddKeysToAgent yes
+        '';
+      };
+
+      systemd.user.services.ssh-agent.serviceConfig.Restart = lib.mkForce "always";
+      systemd.services.lock-ssh-agent = {
+        enable = true;
+        description = "Lock SSH Agent";
+        wantedBy = [ "suspend.target" "hibernate.target" ];
+        before = [ "systemd-suspend.service" "systemd-hibernate.service" "systemd-suspend-then-hibernate.service" ];
+        serviceConfig = {
+          ExecStart = "${pkgs.killall}/bin/killall ssh-agent";
+          Type = "forking";
+        };
+      };
+
       lhf.services.ssh = let all = filterAttrs (_: v: v.config.lhf.services.ssh.enable) nixosConfigurations; in
         {
           allHosts = filterAttrs (_: v: v != null) (mapAttrs' (_: v: nameValuePair v.config.lhf.services.ssh.host.name v.config.lhf.services.ssh.host.key) all);
@@ -72,24 +94,6 @@ let cfg = config.lhf.services.ssh; in
       user.openssh.authorizedKeys.keys = mapAttrsToList (n: v: "${v} ${n}") cfg.allUsers;
     })
     (mkIf cfg.allowSSHAgentAuth {
-      programs.ssh = {
-        startAgent = true;
-        agentTimeout = "1h";
-        extraConfig = ''
-          AddKeysToAgent yes
-        '';
-      };
-      systemd.user.services.ssh-agent.serviceConfig.Restart = lib.mkForce "always";
-      systemd.services.lock-ssh-agent = {
-        enable = true;
-        description = "Lock SSH Agent";
-        wantedBy = [ "suspend.target" "hibernate.target" ];
-        before = [ "systemd-suspend.service" "systemd-hibernate.service" "systemd-suspend-then-hibernate.service" ];
-        serviceConfig = {
-          ExecStart = "${pkgs.killall}/bin/killall ssh-agent";
-          Type = "forking";
-        };
-      };
       security = {
         sudo.enable = true;
         pam.enableSSHAgentAuth = true;
