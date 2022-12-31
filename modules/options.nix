@@ -17,7 +17,7 @@ with lib;
   config = {
     users.users.${config.user.name} = mkAliasDefinitions options.user;
 
-    user = lib.mkDefault {
+    user = {
       extraGroups = [ "wheel" ];
       name = user;
       isNormalUser = true;

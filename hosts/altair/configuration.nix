@@ -12,6 +12,12 @@
 
   services.physlock.enable = true;
 
+  lhf.services.ssh = {
+    enable = true;
+    host.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIACIg+b3uakGCFSOL8XR35jGjZEdX6RYDGuWvdZ3hm4";
+    user.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE98aQ0VshDOnylLmZcfEdbuxZllCDtfBYH2786f4nph";
+  };
+
   lhf.services.wallpaper = {
     enable = true;
     images = (lib.mapAttrsToList
@@ -183,13 +189,6 @@
     enable = true;
     pulse.enable = true;
   };
-
-  users.users.luis.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII9M6O9ZBXm95eIkqdDk6RWEmHwA0oZXN4TEtfY2dtIR"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHgnSKa8CXwWeqAxnkWBASF2tTJ33VylGWI68DAftIsQ"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFlJJH6flIuAxeF68lXgfaXRJkcsGD0IChY5P/0Wajr"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKYZF9DXj0XZ7be9Rc0yC3WKhr30Xbn1kqjbzWBLcC6K"
-  ];
 
   lhf.programs.gpg.enable = true;
   lhf.programs.gpg.sshKeys = [ "DB4E50598EBC42BC801BBEC6C39A9A399FD27081" ];
