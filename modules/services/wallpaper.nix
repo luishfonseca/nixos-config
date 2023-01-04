@@ -1,4 +1,5 @@
 { config, options, lib, pkgs, ... }:
+# TODO: should blur and darken when building the system
 
 with lib;
 let cfg = config.lhf.services.wallpaper; in
