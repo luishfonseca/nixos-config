@@ -42,9 +42,23 @@ let cfg = config.lhf.services.ssh; in
 
     allowSSHAgentAuth = mkEnableOption "SSH agent authentication";
 
-    manageKnownHosts = mkEnableOption "known_hosts management";
+    manageKnownHosts = {
+      enable = mkEnableOption "SSH known_hosts management";
+      extraHosts = mkOption {
+        type = types.attrsOf types.str;
+        default = { };
+        description = "Extra known_hosts";
+      };
+    };
 
-    manageSSHLogin = mkEnableOption "SSH login management";
+    manageSSHAuthKeys = {
+      enable = mkEnableOption "SSH authorized_keys management";
+      extraKeys = mkOption {
+        type = types.attrsOf types.str;
+        default = { };
+        description = "Extra authorized_keys";
+      };
+    };
   };
 
   config = mkIf cfg.enable (mkMerge [
@@ -87,11 +101,11 @@ let cfg = config.lhf.services.ssh; in
           allUsers = filterAttrs (_: v: v != null) (mapAttrs' (_: v: nameValuePair v.config.lhf.services.ssh.user.name v.config.lhf.services.ssh.user.key) all);
         };
     }
-    (mkIf cfg.manageKnownHosts {
-      programs.ssh.knownHosts = mapAttrs (_: v: { publicKey = v; }) cfg.allHosts;
+    (mkIf cfg.manageKnownHosts.enable {
+      programs.ssh.knownHosts = mapAttrs (_: v: { publicKey = v; }) (cfg.allHosts // cfg.manageKnownHosts.extraHosts);
     })
-    (mkIf cfg.manageSSHLogin {
-      user.openssh.authorizedKeys.keys = mapAttrsToList (n: v: "${v} ${n}") cfg.allUsers;
+    (mkIf cfg.manageSSHAuthKeys.enable {
+      user.openssh.authorizedKeys.keys = mapAttrsToList (n: v: "${v} ${n}") (cfg.allUsers // cfg.manageSSHAuthKeys.extraKeys);
     })
     (mkIf cfg.allowSSHAgentAuth {
       security = {

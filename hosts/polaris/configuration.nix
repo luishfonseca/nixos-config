@@ -24,9 +24,12 @@
     enable = true;
     host.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTBIsgb2YNXL3EouuaJSXS1p9YFGng+VkunpcWmu9Ke";
     user.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILNztXCOFqjBvL3swizvbfvLtynt6XEHT4uLo4D2Z6vU";
-    manageKnownHosts = true;
-    manageSSHLogin = true;
     allowSSHAgentAuth = true;
+    manageKnownHosts.enable = true;
+    manageSSHAuthKeys = {
+      enable = true;
+      extraKeys."luis@vega" = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI51YbPjEZ/NGZ+ibWmyencNqZ1YYX111SIuPUzidGEMaT0oUYRPdLmRczgW3HPCoNpgV9Png0OFivDCJbPYhXo=";
+    };
   };
 
   networking.firewall.enable = false;
