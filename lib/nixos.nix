@@ -33,5 +33,7 @@
       (name: _: {
         config = "${args.hostsDir}/${name}/configuration.nix";
       } // args)
-      (builtins.readDir args.hostsDir));
+      (lib.filterAttrs
+        (p: _: !(lib.hasPrefix "_" p))
+        (builtins.readDir args.hostsDir)));
 }
