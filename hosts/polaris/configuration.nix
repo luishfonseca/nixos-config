@@ -48,6 +48,46 @@
     isSystemDefault = true;
   };
 
+  users.groups.media.members = [
+    config.user.name
+    config.services.transmission.user
+  ];
+
+  services.transmission = {
+    enable = true;
+    group = "media";
+
+    performanceNetParameters = true;
+    downloadDirPermissions = "770";
+
+    settings = {
+      watch-dir-enabled = true;
+      trash-original-torrent-files = true;
+      download-dir = "/media/downloads";
+      incomplete-dir = "/media/downloads/.incomplete";
+
+      rpc-bind-address = "::1";
+      rpc-host-whitelist = "::1";
+      rpc-host-whitelist-enabled = true;
+
+      peer-limit-global = 500;
+      peer-limit-per-torrent = 50;
+
+      encryption = 2;
+
+      start-added-torrents = true;
+    };
+  };
+
+  lhf.services.flood = {
+    enable = true;
+    bind = "0.0.0.0";
+    transmission = {
+      enable = true;
+      url = "http://[::1]:9091/transmission/rpc";
+    };
+  };
+
   services.tailscale.enable = true;
 
   system.stateVersion = "22.11";
