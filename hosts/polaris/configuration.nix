@@ -32,6 +32,9 @@
     };
   };
 
+  networking.domain = "in.lhf.pt";
+  networking.nameservers = [ "146.59.158.114" ];
+
   networking.firewall.enable = false;
 
   lhf.powerSaving.enable = true;

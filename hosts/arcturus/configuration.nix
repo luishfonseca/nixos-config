@@ -48,6 +48,7 @@
     openFirewall = true;
     fqdn = "mail.lhf.pt";
     domains = [ "lhf.pt" ];
+    localDnsResolver = false;
 
     loginAccounts = {
       "luis@lhf.pt" = {
@@ -72,7 +73,32 @@
     };
   };
 
+  services.adguardhome = {
+    enable = true;
+    mutableSettings = false;
+    settings.dns = {
+      bind_host = "127.0.0.1";
+      port = 15353;
+      upstream_dns = [ "tls://one.one.one.one" ];
+      bootstrap_dns = [ "1.1.1.1" ];
+      enable_dnssec = true;
+    };
+  };
+
+  lhf.services.dns = {
+    enable = true;
+    forward = [ "127.0.0.1:15353" ];
+    magicDNS = {
+      enable = true;
+      tailnet = "tail9db2a.ts.net";
+      domain = config.networking.domain;
+    };
+  };
+
   services.tailscale.enable = true;
+
+  networking.domain = "in.lhf.pt";
+  networking.nameservers = [ "127.0.0.1" ];
 
   services.vaultwarden = {
     enable = true;

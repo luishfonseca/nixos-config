@@ -53,7 +53,9 @@
 
   time.timeZone = "Europe/Lisbon";
 
-  networking.nameservers = [ "1.0.0.1" "1.1.1.1" ];
+  networking.domain = "in.lhf.pt";
+  networking.nameservers = [ "146.59.158.114" ];
+
   networking.networkmanager.enable = true;
   networking.networkmanager.dns = "none";
 
