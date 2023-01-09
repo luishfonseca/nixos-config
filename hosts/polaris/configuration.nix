@@ -33,7 +33,12 @@
   };
 
   networking.domain = "in.lhf.pt";
-  networking.nameservers = [ "146.59.158.114" ];
+
+  lhf.services.dnsovertlsProxy = {
+    enable = true;
+    name = "ns.lhf.pt";
+    ip = "146.59.158.114";
+  };
 
   networking.firewall.enable = false;
 
