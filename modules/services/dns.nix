@@ -5,6 +5,15 @@ let cfg = config.lhf.services.dns; in
 {
   options.lhf.services.dns = {
     enable = mkEnableOption "DNS server";
+    tls = {
+      enable = mkEnableOption "DNS-over-TLS";
+      enableACME = mkEnableOption "Whether an ACME certificate should be used";
+      domain = mkOption {
+        type = types.str;
+        example = "ns.example.com";
+        description = "Domain name to use for DNS-over-TLS";
+      };
+    };
     forward = mkOption {
       type = types.listOf types.str;
       description = "List of upstream DNS servers";
@@ -32,7 +41,13 @@ let cfg = config.lhf.services.dns; in
   config =
     let
       escape = replaceStrings [ "." ] [ "\." ];
-      corednsConfig = optionalString cfg.magicDNS.enable ''
+      acmePath = config.security.acme.certs.${cfg.tls.domain}.directory;
+      corednsConfig = optionalString cfg.tls.enable ''
+        tls://.:853 {
+          tls ${acmePath}/fullchain.pem ${acmePath}/key.pem
+          forward . 127.0.0.1
+        }
+      '' + optionalString cfg.magicDNS.enable ''
         ${cfg.magicDNS.domain} {
           rewrite name suffix ${cfg.magicDNS.domain} ${cfg.magicDNS.tailnet} answer auto
           forward . 100.100.100.100
@@ -61,6 +76,14 @@ let cfg = config.lhf.services.dns; in
         networking.firewall.allowedTCPPorts = [ 53 ];
         networking.firewall.allowedUDPPorts = [ 53 ];
       }
+      (mkIf cfg.tls.enable {
+        networking.firewall.allowedTCPPorts = [ 853 ];
+      })
+      (mkIf (cfg.tls.enable && cfg.tls.enableACME) {
+        security.acme.certs.${cfg.tls.domain}.webroot = "/var/lib/acme/acme-challenge";
+        systemd.services.coredns.serviceConfig.Group = config.security.acme.certs.${cfg.tls.domain}.group;
+      })
     ]);
 }
+
 

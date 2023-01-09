@@ -89,6 +89,11 @@
     enable = true;
     forward = [ "127.0.0.1:15353" ];
     cache = 3600;
+    tls = {
+      enable = true;
+      domain = "ns.lhf.pt";
+      enableACME = true;
+    };
     magicDNS = {
       enable = true;
       tailnet = "tail9db2a.ts.net";
