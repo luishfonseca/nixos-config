@@ -9,6 +9,11 @@ let cfg = config.lhf.services.dns; in
       type = types.listOf types.str;
       description = "List of upstream DNS servers";
     };
+    cache = mkOption {
+      type = types.int;
+      default = 0;
+      description = "Cache TTL in seconds";
+    };
     magicDNS = {
       enable = mkEnableOption "Magic DNS";
       domain = mkOption {
@@ -32,6 +37,7 @@ let cfg = config.lhf.services.dns; in
   '' + ''
     . {
       forward . ${concatStringsSep " " cfg.forward}
+      ${optionalString (cfg.cache != 0) "cache ${toString cfg.cache}"}
     }
   ''; in
     mkIf cfg.enable (mkMerge [
