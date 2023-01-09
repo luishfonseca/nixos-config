@@ -29,17 +29,29 @@ let cfg = config.lhf.services.dns; in
     };
   };
 
-  config = let corednsConfig = optionalString cfg.magicDNS.enable ''
-    ${cfg.magicDNS.domain} {
-      rewrite name suffix ${cfg.magicDNS.domain} ${cfg.magicDNS.tailnet} answer auto
-      forward . 100.100.100.100
-    }
-  '' + ''
-    . {
-      forward . ${concatStringsSep " " cfg.forward}
-      ${optionalString (cfg.cache != 0) "cache ${toString cfg.cache}"}
-    }
-  ''; in
+  config =
+    let
+      escape = replaceStrings [ "." ] [ "\." ];
+      corednsConfig = optionalString cfg.magicDNS.enable ''
+        ${cfg.magicDNS.domain} {
+          rewrite name suffix ${cfg.magicDNS.domain} ${cfg.magicDNS.tailnet} answer auto
+          forward . 100.100.100.100
+        }
+        100.in-addr.arpa {
+          rewrite stop {
+            name suffix arpa arpa
+            answer name auto
+            answer value (.*)\.${escape cfg.magicDNS.tailnet} {1}.${escape cfg.magicDNS.domain}
+          }
+          forward . 100.100.100.100
+        }
+      '' + ''
+        . {
+          forward . ${concatStringsSep " " cfg.forward}
+          ${optionalString (cfg.cache != 0) "cache ${toString cfg.cache}"}
+        }
+      '';
+    in
     mkIf cfg.enable (mkMerge [
       {
         services.coredns = {
