@@ -104,6 +104,8 @@
   services.tailscale.enable = true;
 
   networking.domain = "in.lhf.pt";
+
+  networking.dhcpcd.extraConfig = "nohook resolv.conf";
   networking.nameservers = [ "127.0.0.1" ];
 
   services.vaultwarden = {
