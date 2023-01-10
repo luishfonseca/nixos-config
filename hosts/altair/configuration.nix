@@ -79,10 +79,6 @@
     enable = true;
     package = inputs.kmonad.packages.${system}.kmonad;
     kbdDir = ./kbds;
-    defcfg = {
-      enable = true;
-      compose.key = "ralt";
-    };
   };
 
   lhf.powerSaving.enable = true;

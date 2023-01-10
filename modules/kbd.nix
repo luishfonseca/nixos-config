@@ -18,37 +18,22 @@ let cfg = config.lhf.kbd; in
       example = "./kbds";
       description = ''
         Directory containing kmonad configuration files.
-        Configuration files should be named according to the device file:
+
+        Configuration files should not contain the defcfg section and should be named according to the device file:
         /dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-kbd -> ./kbds/id:usb-Logitech_USB_Receiver-if02-event-kbd.kbd
         /dev/input/by-path/platform-i8042-serio-0-event-kbd -> ./kbds/path:platform-i8042-serio-0-event-kbd.kbd
       '';
     };
 
-    defcfg = {
-      enable = mkEnableOption ''
-        Automatically generate the defcfg block.
-        When this is option is set to true the configuration files
-        should not include a defcfg block.
-      '';
-
-      compose = {
-        key = mkOption {
-          type = types.nullOr types.str;
-          default = "null";
-          description = "The (optional) compose key to use.";
-        };
-
-        delay = mkOption {
-          type = types.int;
-          default = 5;
-          description = "The delay (in milliseconds) between compose key sequences.";
-        };
-      };
-
-      fallthrough = mkEnableOption "Reemit unhandled key events." // { default = true; };
-
-      allowCommands = mkEnableOption "Allow keys to run shell commands.";
+    composeDelay = mkOption {
+      type = types.int;
+      default = 5;
+      description = "The delay (in milliseconds) between compose key sequences.";
     };
+
+    fallthrough = mkEnableOption "Reemit unhandled key events." // { default = true; };
+
+    allowCommands = mkEnableOption "Allow keys to run shell commands.";
   };
 
   config =
@@ -65,26 +50,26 @@ let cfg = config.lhf.kbd; in
             path:platform-i8042-serio-0-event-kbd.kbd
           '';
     in
-    mkIf cfg.enable (mkMerge [
-      {
-        services.kmonad = {
-          enable = true;
-          package = cfg.package;
-          keyboards = mapAttrs
-            (path: _: {
-              device = expandPath path;
-              name = cleanPath path;
-              defcfg = cfg.defcfg;
-              config = builtins.readFile "${cfg.kbdDir}/${path}";
-            })
-            (builtins.readDir cfg.kbdDir);
-        };
-      }
-      (mkIf (cfg.defcfg.enable && cfg.defcfg.compose.key != null) {
-        services.xserver = {
-          xkbOptions = "compose:${cfg.defcfg.compose.key}";
-          layout = "us";
-        };
-      })
-    ]);
+    mkIf cfg.enable {
+      services.kmonad = {
+        enable = true;
+        package = cfg.package;
+        keyboards = mapAttrs
+          (path: _: {
+            device = expandPath path;
+            name = cleanPath path;
+            defcfg = {
+              enable = true;
+              compose.key = "compose";
+              compose.delay = cfg.composeDelay;
+              fallthrough = cfg.fallthrough;
+              allowCommands = cfg.allowCommands;
+            };
+            config = builtins.readFile "${cfg.kbdDir}/${path}";
+          })
+          (builtins.readDir cfg.kbdDir);
+      };
+
+      services.xserver.xkbOptions = "compose:menu";
+    };
 }
