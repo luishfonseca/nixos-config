@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, system, ... }:
 
 {
   imports = [
@@ -68,18 +68,21 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    earlySetup = true;
-    useXkbConfig = true;
-  };
 
-  # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "colemak_dh";
-    xkbOptions = "ralt:compose";
     libinput.touchpad.naturalScrolling = true;
     libinput.touchpad.disableWhileTyping = true;
+  };
+
+  user.extraGroups = [ "input" "uinput" ];
+  lhf.kbd = {
+    enable = true;
+    package = inputs.kmonad.packages.${system}.kmonad;
+    kbdDir = ./kbds;
+    defcfg = {
+      enable = true;
+      compose.key = "ralt";
+    };
   };
 
   lhf.powerSaving.enable = true;
@@ -113,6 +116,15 @@
           sha256 = "sha256-YmohKiypAl9sbnmg3JKtvcGnyNnmHvLKK1ifl4SmyQY=";
         };
         buildInputs = [ pkgs.xorg.xprop ];
+      })
+
+      (pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+        mktplcRef = {
+          name = "vscode-kmonad";
+          publisher = "canadaduane";
+          version = "0.2.0";
+          sha256 = "sha256-dAf8SQ/JkipsnZsSxD4Sipd0hwUGVJrN7+rnnw8+JpA=";
+        };
       })
     ];
   };

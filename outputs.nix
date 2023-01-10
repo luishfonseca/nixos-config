@@ -15,12 +15,13 @@ let
     modulesDir = ./modules;
     hostsDir = ./hosts;
     extraArgs = {
-      inherit user inputs nixosConfigurations;
+      inherit user system inputs nixosConfigurations;
       root = ./.;
     };
     extraModules = [
       inputs.impermanence.nixosModules.impermanence
       inputs.home-manager.nixosModules.home-manager
+      inputs.kmonad.nixosModules.default
       inputs.nixos-mailserver.nixosModule
     ];
   };
