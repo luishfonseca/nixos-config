@@ -42,6 +42,8 @@ let cfg = config.lhf.services.ssh; in
 
     allowSSHAgentAuth = mkEnableOption "SSH agent authentication";
 
+    preferAskPassword = mkEnableOption "Prefer ASKPASS";
+
     manageKnownHosts = {
       enable = mkEnableOption "SSH known_hosts management";
       extraHosts = mkOption {
@@ -113,6 +115,10 @@ let cfg = config.lhf.services.ssh; in
         pam.enableSSHAgentAuth = true;
         pam.services.sudo.sshAgentAuth = true;
       };
+    })
+    (mkIf cfg.preferAskPassword {
+      environment.variables.SSH_ASKPASS_REQUIRE = "prefer";
+      systemd.user.services.ssh-agent.environment.SSH_ASKPASS_REQUIRE = "prefer";
     })
   ]);
 }

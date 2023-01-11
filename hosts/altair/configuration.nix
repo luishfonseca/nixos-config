@@ -17,6 +17,7 @@
     host.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIACIg+b3uakGCFSOL8XR35jGjZEdX6RYDGuWvdZ3hm4";
     user.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE98aQ0VshDOnylLmZcfEdbuxZllCDtfBYH2786f4nph";
     allowSSHAgentAuth = true;
+    preferAskPassword = true;
     manageKnownHosts.enable = true;
     manageSSHAuthKeys = {
       enable = true;
