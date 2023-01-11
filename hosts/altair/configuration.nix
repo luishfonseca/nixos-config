@@ -91,6 +91,7 @@
     extensions = with pkgs.latest.vscode-extensions; [
       mkhl.direnv
       github.copilot
+      ms-vscode-remote.remote-ssh
       mvllow.rose-pine
       file-icons.file-icons
 
