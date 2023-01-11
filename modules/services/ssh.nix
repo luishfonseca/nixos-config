@@ -45,7 +45,7 @@ let cfg = config.lhf.services.ssh; in
     preferAskPassword = mkEnableOption "Prefer ASKPASS";
 
     manageKnownHosts = {
-      enable = mkEnableOption "SSH known_hosts management";
+      enable = mkEnableOption "SSH hosts management";
       extraHosts = mkOption {
         type = types.attrsOf types.str;
         default = { };
@@ -105,6 +105,14 @@ let cfg = config.lhf.services.ssh; in
     }
     (mkIf cfg.manageKnownHosts.enable {
       programs.ssh.knownHosts = mapAttrs (_: v: { publicKey = v; }) (cfg.allHosts // cfg.manageKnownHosts.extraHosts);
+      programs.ssh.extraConfig = concatMapStringsSep "\n"
+        (host: ''
+          Host ${host}
+            User ${config.user.name}
+            ${optionalString (config.networking.domain != null) "HostName ${host}.${config.networking.domain}"}
+            ${optionalString cfg.allowSSHAgentAuth "ForwardAgent yes"}
+        '')
+        (attrNames cfg.allHosts);
     })
     (mkIf cfg.manageSSHAuthKeys.enable {
       user.openssh.authorizedKeys.keys = mapAttrsToList (n: v: "${v} ${n}") (cfg.allUsers // cfg.manageSSHAuthKeys.extraKeys);
