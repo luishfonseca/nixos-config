@@ -9,8 +9,10 @@
 )
 
 (defalias
-    ex1 (layer-toggle extend1)  ;; Bind 'ex1' to the Extend1 Layer
-    ex2 (layer-toggle extend2)  ;; Bind 'ex2' to the Extend2 Layer
+    ext (layer-toggle extend)   ;; Bind 'ext' to the Extend Layer
+    num (layer-toggle numpad)   ;; Bind 'num' to the Numpad Layer
+    fun (layer-toggle function) ;; Bind 'fun' to the Function Layer
+    win (layer-toggle windows)  ;; Bind 'win' to the Windows Layer
     sy1 (layer-toggle symbols1) ;; Bind 'sy1' to the Symbols1 Layer
     sy2 (layer-toggle symbols2) ;; Bind 'sy2' to the Symbols2 Layer
 )
@@ -65,31 +67,55 @@
     nbs #(cmp spc spc) ;; no breaking space
 )
 
+(defalias
+    ot  M-ret ;; open terminal
+)
+
 (deflayer colemak-dh
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    q    w    f    p    b    j    l    u    y    ;    _    _
-    @ex1 a    r    s    t    g    m    n    e    i    o    _    _    _
+    @ext a    r    s    t    g    m    n    e    i    o    _    _    _
     _    z    x    c    d    v    lsgt k    h    _    _    _              _
     _    _    _    _              _              @sy1 _    _    _    _    _
                                                                 _    _    _
 )
 
-(deflayer extend1
+(deflayer extend
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    _    _    _    _    _    _    home up   end  _    _    _
     _    _    _    _    _    _    _    left down rght _    _    _    _
     _    _    _    _    _    _    _    _    _    _    _    _              _ 
-    _    _    _    @ex2           _              _    _    _    _    _    _
+    _    _    @win @num           _              @fun _    _    _    _    _
                                                                 _    _    _
 )
 
-(deflayer extend2
+(deflayer function
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    _    _    _    _    _    _    _    _    _    _    _    _    _
-    _    home up   end  _    _    _    _    _    _    _    _    _
-    _    left down rght _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    f12  f7   f8   f9   C-+  _    _
+    _    _    _    _    _    _    f11  f4   f5   f6   C--  _    _    _
+    _    _    _    _    _    _    _    f10  f1   f2   f3   C-0              _ 
+    _    _    _    _              _              _    _    _    _    _    _
+                                                                _    _    _
+)
+
+(deflayer numpad
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    home up   end  del  =    7    8    9    +    _    _
+    _    _    left down rght bspc *    4    5    6    -    _    _    _
+    _    _    _    _    _    _    _    0    1    2    3    /              _ 
+    _    _    _    _              _              _    _    _    _    _    _
+                                                                _    _    _
+)
+
+(deflayer windows
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    M-w  _    _    _    _    _    M-k  _    _    _    _
+    _    _    _    _    _    _    _    M-h  M-j  M-l  _    _    _    @ot
     _    _    _    _    _    _    _    _    _    _    _    _              _ 
     _    _    _    _              _              _    _    _    _    _    _
                                                                 _    _    _
