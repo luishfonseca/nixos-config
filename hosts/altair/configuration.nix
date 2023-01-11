@@ -12,6 +12,7 @@
 
   services.physlock.enable = true;
 
+  programs.ssh.askPassword = "${pkgs.my.gnome-ssh-askpass}/bin/gnome-ssh-askpass2";
   lhf.services.ssh = {
     enable = true;
     host.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIACIg+b3uakGCFSOL8XR35jGjZEdX6RYDGuWvdZ3hm4";
@@ -140,7 +141,7 @@
 
   lhf.programs.bspwm = {
     enable = true;
-    swallow = true;
+    swallow = false;
     transparency = true;
     colors = {
       background = "#1f1d2e";
