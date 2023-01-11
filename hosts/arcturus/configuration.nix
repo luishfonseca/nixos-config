@@ -117,12 +117,11 @@
     };
   };
 
-  services.nginx = {
+  lhf.services.reverseProxy = {
     enable = true;
-    virtualHosts."vault.lhf.pt" = {
-      forceSSL = true;
-      enableACME = true;
-      locations."/".proxyPass = "http://localhost:8200";
+    sites = {
+      "lhf.pt" = "http://polaris:8100";
+      "vault.lhf.pt" = "http://localhost:8200";
     };
   };
 
