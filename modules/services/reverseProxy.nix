@@ -14,6 +14,10 @@ let cfg = config.lhf.services.reverseProxy; in
 
   config.services.nginx = mkIf cfg.enable {
     enable = true;
+    recommendedOptimisation = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+    recommendedGzipSettings = true;
     virtualHosts = mapAttrs
       (_: backend: {
         forceSSL = true;
