@@ -107,6 +107,8 @@
 
       jnoortheen.nix-ide
 
+      svelte.svelte-vscode
+
       (pkgs.vscode-utils.buildVscodeMarketplaceExtension {
         mktplcRef = {
           name = "glassit";
