@@ -120,8 +120,8 @@
   lhf.services.reverseProxy = {
     enable = true;
     sites = {
-      "lhf.pt" = "http://polaris:8100";
-      "vault.lhf.pt" = "http://localhost:8200";
+      "lhf.pt"."/" = "http://polaris:8100";
+      "vault.lhf.pt"."/" = "http://localhost:8200";
     };
   };
 

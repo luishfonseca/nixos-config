@@ -6,8 +6,11 @@ let cfg = config.lhf.services.reverseProxy; in
   options.lhf.services.reverseProxy = {
     enable = mkEnableOption "Reverse Proxy";
     sites = mkOption {
-      type = types.attrsOf types.str;
+      type = types.attrsOf (types.attrsOf types.str);
       default = { };
+      example = {
+        "example.com"."/" = "http://localhost:8000";
+      };
       description = "Sites to proxy";
     };
   };
@@ -19,10 +22,12 @@ let cfg = config.lhf.services.reverseProxy; in
     recommendedTlsSettings = true;
     recommendedGzipSettings = true;
     virtualHosts = mapAttrs
-      (_: backend: {
+      (_: locations: {
         forceSSL = true;
         enableACME = true;
-        locations."/".proxyPass = backend;
+        locations = mapAttrs
+          (_: backend: { proxyPass = backend; })
+          locations;
       })
       cfg.sites;
   };
