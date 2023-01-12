@@ -40,8 +40,6 @@
     ip = "146.59.158.114";
   };
 
-  networking.firewall.enable = false;
-
   lhf.powerSaving.enable = true;
 
   lhf.shell.fish = {
@@ -97,6 +95,13 @@
   };
 
   services.tailscale.enable = true;
+
+  networking.firewall = {
+    enable = true;
+    trustedInterfaces = [ "tailscale0" ];
+    allowedUDPPorts = [ config.services.tailscale.port ];
+    checkReversePath = "loose";
+  };
 
   system.stateVersion = "22.11";
 }
