@@ -10,6 +10,18 @@
     ./hardware-configuration.nix
   ];
 
+  environment.systemPackages = with pkgs; [
+    (chromium.override {
+      commandLineArgs = [
+        "--force-dark-mode"
+        "--enable-features=WebUIDarkMode"
+      ];
+    })
+
+    rnix-lsp
+    gcc
+  ];
+
   services.physlock.enable = true;
 
   programs.ssh.askPassword = "${pkgs.my.gnome-ssh-askpass}/bin/gnome-ssh-askpass2";
@@ -85,6 +97,7 @@
 
   lhf.powerSaving.enable = true;
   lhf.tmpfsRoot.enable = true;
+  lhf.theme.enable = true;
 
   lhf.programs.vscode = {
     enable = true;
@@ -129,11 +142,6 @@
       })
     ];
   };
-
-  environment.systemPackages = with pkgs; [
-    rnix-lsp
-    gcc
-  ];
 
   lhf.programs.htop.enable = true;
   lhf.programs.tmux.enable = true;
