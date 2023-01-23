@@ -13,6 +13,11 @@ let cfg = config.lhf.services.dnsovertlsProxy; in
       type = types.str;
       description = "DNS server IP";
     };
+    cache = mkOption {
+      type = types.int;
+      default = 0;
+      description = "Cache TTL in seconds";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -26,6 +31,7 @@ let cfg = config.lhf.services.dnsovertlsProxy; in
       config = ''
         . {
             bind 127.0.0.53
+            ${optionalString (cfg.cache != 0) "cache ${toString cfg.cache}"}
             forward . tls://${cfg.ip} {
                 tls_servername ${cfg.name}
             }

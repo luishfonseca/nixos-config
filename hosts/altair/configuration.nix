@@ -73,6 +73,7 @@
     enable = true;
     name = "ns.lhf.pt";
     ip = "146.59.158.114";
+    cache = 3600;
   };
 
   networking.networkmanager.enable = true;
