@@ -11,6 +11,9 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    thunderbird
+    spotify
+
     (chromium.override {
       commandLineArgs = [
         "--force-dark-mode"
@@ -21,6 +24,8 @@
     rnix-lsp
     gcc
   ];
+
+  programs.steam.enable = true;
 
   services.physlock.enable = true;
 
