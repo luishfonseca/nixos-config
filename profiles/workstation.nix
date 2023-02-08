@@ -19,6 +19,7 @@
       bierner.markdown-checkbox
 
       ms-vscode.cpptools
+      ms-vscode.cmake-tools
 
       jnoortheen.nix-ide
 
