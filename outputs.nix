@@ -13,6 +13,7 @@ let
 
   nixosConfigurations = lib.my.mkHosts {
     modulesDir = ./modules;
+    profilesDir = ./profiles;
     hostsDir = ./hosts;
     extraArgs = {
       inherit user system inputs nixosConfigurations;

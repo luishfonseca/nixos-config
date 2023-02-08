@@ -18,13 +18,30 @@
     })
     (lib.my.listModulesRecursive overlaysDir));
 
-  mkHost = name: { modulesDir, config, extraArgs, extraModules, ... }: lib.nixosSystem {
+  mkProfiles = profilesDir:
+    (map
+      (p: ({ config, pkgs, lib, inputs, ... } @ args: {
+        config = lib.mkIf
+          (builtins.elem (lib.removeSuffix ".nix" (builtins.baseNameOf p)) config.profiles)
+          (import p args);
+      }))
+      (lib.my.listModulesRecursive profilesDir)
+    ) ++ [
+      ({ options, lib, ... }: {
+        options.profiles = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [ ];
+        };
+      })
+    ];
+
+  mkHost = name: { modulesDir, profilesDir, config, extraArgs, extraModules, ... }: lib.nixosSystem {
     inherit system pkgs lib;
     modules = [
       config
       { networking.hostName = lib.mkForce name; }
       { _module.args = extraArgs; }
-    ] ++ lib.my.listModulesRecursive modulesDir ++ extraModules;
+    ] ++ lib.my.mkProfiles profilesDir ++ lib.my.listModulesRecursive modulesDir ++ extraModules;
   };
 
   mkHosts = args: lib.mapAttrs
