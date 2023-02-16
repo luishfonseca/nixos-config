@@ -49,7 +49,7 @@ in
   devShells.${system}.default = pkgs.mkShell {
     buildInputs = [
       inputs.deploy-rs.defaultPackage.${system}
-      inputs.agenix.defaultPackage.${system}
+      inputs.agenix.packages.${system}.agenix
     ];
   };
 }
