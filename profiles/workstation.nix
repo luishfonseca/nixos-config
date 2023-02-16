@@ -12,7 +12,7 @@
 
       tomoki1207.pdf
 
-      eamodio.gitlens
+      pkgs.vscode-extensions.eamodio.gitlens
 
       bierner.markdown-mermaid
       bierner.markdown-emoji
