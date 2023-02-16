@@ -85,6 +85,8 @@
     cache = 3600;
   };
 
+  hardware.opengl.enable = true;
+
   networking.networkmanager.enable = true;
   networking.networkmanager.dns = "none";
 
