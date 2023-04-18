@@ -83,6 +83,7 @@
   hardware.opengl.enable = true;
 
   networking.networkmanager.enable = true;
+  hm.services.network-manager-applet.enable = true;
   networking.networkmanager.dns = "none";
 
   services.tailscale.enable = true;
