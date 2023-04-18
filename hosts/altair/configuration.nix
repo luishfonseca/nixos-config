@@ -192,6 +192,9 @@
     pulse.enable = true;
   };
 
+  services.blueman.enable = true;
+  hm.services.blueman-applet.enable = true;
+
   # lhf.programs.gpg.enable = true;
   # lhf.programs.gpg.sshKeys = [ "DB4E50598EBC42BC801BBEC6C39A9A399FD27081" ];
 
