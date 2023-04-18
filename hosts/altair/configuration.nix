@@ -11,22 +11,17 @@
   ];
 
   profiles = [
-    "workstation"
+    "work"
     "entertainment"
   ];
 
   environment.systemPackages = with pkgs; [
-    thunderbird
-
     (chromium.override {
       commandLineArgs = [
         "--force-dark-mode"
         "--enable-features=WebUIDarkMode"
       ];
     })
-
-    rnix-lsp
-    gcc
   ];
 
   programs.steam.enable = true;

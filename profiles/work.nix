@@ -1,6 +1,12 @@
 { config, pkgs, ... }:
 
 {
+  environment.systemPackages = with pkgs; [
+    thunderbird
+    rnix-lsp
+    gcc
+  ];
+
   lhf.programs.vscode = {
     enable = true;
     extensions = with pkgs.latest.vscode-extensions; [
