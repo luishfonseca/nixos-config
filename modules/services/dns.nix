@@ -80,7 +80,18 @@ let cfg = config.lhf.services.dns; in
         networking.firewall.allowedTCPPorts = [ 853 ];
       })
       (mkIf (cfg.tls.enable && cfg.tls.enableACME) {
-        security.acme.certs.${cfg.tls.domain}.webroot = "/var/lib/acme/acme-challenge";
+        security.acme.certs.${cfg.tls.domain}.webroot = "/var/lib/acme/.challenges/${cfg.tls.domain}";
+        services.nginx = {
+          enable = true;
+          virtualHosts.${cfg.tls.domain} = {
+            locations."/.well-known/acme-challenge" = {
+              root = config.security.acme.certs.${cfg.tls.domain}.webroot;
+              extraConfig = ''
+                try_files $uri =404;
+              '';
+            };
+          };
+        };
         systemd.services.coredns.serviceConfig.Group = config.security.acme.certs.${cfg.tls.domain}.group;
       })
     ]);
