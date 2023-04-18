@@ -27,6 +27,8 @@
     pavucontrol
   ];
 
+  hm.services.flameshot.enable = true;
+
   programs.steam.enable = true;
 
   services.physlock.enable = true;
