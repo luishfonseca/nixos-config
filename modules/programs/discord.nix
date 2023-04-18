@@ -7,7 +7,5 @@ let cfg = config.lhf.programs.discord; in
 
   config = mkIf cfg.enable {
     environment.systemPackages = [ (pkgs.latest.discord.override { withOpenASAR = true; }) ];
-
-    hm.xdg.configFile."discord/settings.json".text = "{\"SKIP_HOST_UPDATE\": true}";
   };
 }
