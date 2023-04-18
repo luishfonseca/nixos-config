@@ -12,11 +12,11 @@
 
   profiles = [
     "workstation"
+    "entertainment"
   ];
 
   environment.systemPackages = with pkgs; [
     thunderbird
-    spotify
 
     (chromium.override {
       commandLineArgs = [
