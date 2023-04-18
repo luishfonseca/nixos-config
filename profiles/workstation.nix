@@ -26,6 +26,7 @@
       vscjava.vscode-maven
       vscjava.vscode-java-dependency
       vscjava.vscode-java-test
+      sonarsource.sonarlint-vscode
 
       jnoortheen.nix-ide
 
