@@ -20,10 +20,6 @@
   user.hashedPassword = "$6$fVkVAZBekeB.32U2$Pv6rLCSpeS/CPqXbkRXVolbzeRLlxDUEZ4IsGE.Q1jQ526J5nKT9fVReDu3dyg/An4Qn7zE83vJoKvQIn0EWV/";
   users.mutableUsers = false;
 
-  profiles = [
-    "website"
-  ];
-
   lhf.services.ssh = {
     enable = true;
     host.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTBIsgb2YNXL3EouuaJSXS1p9YFGng+VkunpcWmu9Ke";
