@@ -7,6 +7,22 @@
     gcc
   ];
 
+  programs.ssh.extraConfig = ''
+    Host inesc-nuc
+      HostName 146.193.41.141
+      User luisfonseca
+  '';
+
+  networking.wg-quick.interfaces.gsd = {
+    address = [ "10.42.0.11/16" ];
+    privateKeyFile = "/etc/wireguard/gsd.key";
+    peers = [{
+      publicKey = "O/sWbT+agyhq0nywcUny//gQPudTJ8BmKWSy7RUzd1o=";
+      allowedIPs = [ "146.193.41.141" ];
+      endpoint = "146.193.41.29:51820";
+    }];
+  };
+
   lhf.programs.vscode = {
     enable = true;
     extensions = with pkgs.latest.vscode-extensions; [
