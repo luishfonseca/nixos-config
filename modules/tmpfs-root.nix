@@ -15,7 +15,7 @@ in
     environment.persistence."/nix/persist" = {
       directories =
         [ "/var/lib" "/var/log" "/var/db/sudo/lectured" "/etc/nixos" "/etc/NetworkManager/system-connections" ];
-      files = [ "/etc/machine-id" "/etc/ssh/ssh_host_ed25519_key" ];
+      files = [ "/etc/machine-id" "/etc/ssh/ssh_host_ed25519_key" "/etc/wireguard/gsd.key" ];
     };
 
     fileSystems."/nix".neededForBoot = true;
