@@ -23,55 +23,71 @@
     }];
   };
 
-  lhf.programs.vscode = {
-    enable = true;
-    extensions = with pkgs.latest.vscode-extensions; [
-      mkhl.direnv
-      github.copilot
-      ms-vscode-remote.remote-ssh
-      mvllow.rose-pine
-      file-icons.file-icons
-
-      tomoki1207.pdf
-
-      pkgs.vscode-extensions.eamodio.gitlens
-
-      bierner.markdown-mermaid
-      bierner.markdown-emoji
-      bierner.markdown-checkbox
-
-      ms-vscode.cpptools
-      ms-vscode.cmake-tools
-
-      redhat.java
-      vscjava.vscode-java-debug
-      vscjava.vscode-maven
-      vscjava.vscode-java-dependency
-      vscjava.vscode-java-test
-      sonarsource.sonarlint-vscode
-
-      jnoortheen.nix-ide
-
-      svelte.svelte-vscode
-
-      (pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+  lhf.programs.vscode =
+    let buildExtension = ({ name, publisher, version, sha256, buildInputs ? [ ] }:
+      pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+        inherit buildInputs;
         mktplcRef = {
+          inherit name publisher version sha256;
+        };
+      }); in
+    {
+      enable = true;
+      extensions = with pkgs.latest.vscode-extensions; [
+        mkhl.direnv
+        github.copilot
+        ms-vscode-remote.remote-ssh
+        mvllow.rose-pine
+        file-icons.file-icons
+
+        tomoki1207.pdf
+
+        pkgs.vscode-extensions.eamodio.gitlens
+
+        yzhang.markdown-all-in-one
+        bierner.markdown-mermaid
+        bierner.markdown-emoji
+        (buildExtension {
+          name = "markdown-footnotes";
+          publisher = "bierner";
+          version = "0.1.1";
+          sha256 = "sha256-h/Iyk8CKFr0M5ULXbEbjFsqplnlN7F+ZvnUTy1An5t4=";
+        })
+        (buildExtension {
+          name = "markdown-sup";
+          publisher = "DevHawk";
+          version = "1.0.6";
+          sha256 = "sha256-I54bDqowSCX8meSAPHsL9lprq86YVewPHUikkXLmuRs=";
+        })
+
+        ms-vscode.cpptools
+        ms-vscode.cmake-tools
+
+        redhat.java
+        vscjava.vscode-java-debug
+        vscjava.vscode-maven
+        vscjava.vscode-java-dependency
+        vscjava.vscode-java-test
+        sonarsource.sonarlint-vscode
+
+        jnoortheen.nix-ide
+
+        svelte.svelte-vscode
+
+        (buildExtension {
           name = "glassit";
           publisher = "s-nlf-fh";
           version = "0.2.4";
           sha256 = "sha256-YmohKiypAl9sbnmg3JKtvcGnyNnmHvLKK1ifl4SmyQY=";
-        };
-        buildInputs = [ pkgs.xorg.xprop ];
-      })
+          buildInputs = [ pkgs.xorg.xprop ];
+        })
 
-      (pkgs.vscode-utils.buildVscodeMarketplaceExtension {
-        mktplcRef = {
+        (buildExtension {
           name = "vscode-kmonad";
           publisher = "canadaduane";
           version = "0.2.0";
           sha256 = "sha256-dAf8SQ/JkipsnZsSxD4Sipd0hwUGVJrN7+rnnw8+JpA=";
-        };
-      })
-    ];
-  };
+        })
+      ];
+    };
 }
