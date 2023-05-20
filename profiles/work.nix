@@ -70,6 +70,8 @@
         vscjava.vscode-java-test
         sonarsource.sonarlint-vscode
 
+        daohong-emilio.yash
+
         jnoortheen.nix-ide
 
         svelte.svelte-vscode
