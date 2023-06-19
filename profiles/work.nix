@@ -63,18 +63,7 @@
         ms-vscode.cpptools
         ms-vscode.cmake-tools
 
-        redhat.java
-        vscjava.vscode-java-debug
-        vscjava.vscode-maven
-        vscjava.vscode-java-dependency
-        vscjava.vscode-java-test
-        sonarsource.sonarlint-vscode
-
-        daohong-emilio.yash
-
         jnoortheen.nix-ide
-
-        svelte.svelte-vscode
 
         (buildExtension {
           name = "glassit";
