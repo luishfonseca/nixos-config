@@ -3,8 +3,9 @@
 {
   environment.variables.NIXPKGS_ALLOW_UNFREE = "1";
   nix = {
+    registry.nixpkgs.flake = inputs.nixpkgs;
     nixPath = [
-      "nixpkgs=${inputs.nixpkgs-unstable}"
+      "nixpkgs=${inputs.nixpkgs}"
     ];
     settings = {
       experimental-features = [ "nix-command" "flakes" ];

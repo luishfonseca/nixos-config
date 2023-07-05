@@ -3,6 +3,6 @@
 
 { pkgs, ... }: {
   system.activationScripts.diff = ''
-    ${pkgs.unstable.nix}/bin/nix store diff-closures /run/current-system "$systemConfig"
+    ${pkgs.nix}/bin/nix store diff-closures /run/current-system "$systemConfig"
   '';
 }
