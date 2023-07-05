@@ -22,6 +22,7 @@ let
     extraModules = [
       inputs.impermanence.nixosModules.impermanence
       inputs.home-manager.nixosModules.home-manager
+      inputs.programs-sqlite.nixosModules.programs-sqlite
       inputs.kmonad.nixosModules.default
       inputs.nixos-mailserver.nixosModule
     ];
