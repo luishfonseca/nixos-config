@@ -6,4 +6,6 @@
     git
     wget
   ];
+
+  environment.variables.EDITOR = "nvim";
 }
