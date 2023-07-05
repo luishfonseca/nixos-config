@@ -65,6 +65,9 @@
 
         jnoortheen.nix-ide
 
+        rust-lang.rust-analyzer
+        bungcip.better-toml
+
         (buildExtension {
           name = "glassit";
           publisher = "s-nlf-fh";
