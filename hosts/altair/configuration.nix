@@ -25,6 +25,8 @@
 
     volctl
     pavucontrol
+    brightnessctl
+    unzip
   ];
 
   hm.services.flameshot.enable = true;
@@ -101,7 +103,6 @@
     libinput.touchpad.disableWhileTyping = true;
   };
 
-  user.extraGroups = [ "input" "uinput" ];
   lhf.kbd = {
     enable = true;
     package = inputs.kmonad.packages.${system}.kmonad;
@@ -202,6 +203,8 @@
 
   user.hashedPassword = "$6$SJ8UawnwW$LoL1DmZ4J8ade7b/n8h8O9Q44w6JyB5JKMXk2cBLz2D9SQJRZkfsd4XhAQ2.J8Gl2coYGAM1ls/Un5kOXSoT/0";
   users.mutableUsers = false;
+
+  user.extraGroups = [ "input" "uinput" "libvirtd" "video" ];
 
   networking.firewall = {
     enable = true;
