@@ -39,10 +39,13 @@
         ms-vscode-remote.remote-ssh
         mvllow.rose-pine
         file-icons.file-icons
+        gruntfuggly.todo-tree
 
         tomoki1207.pdf
 
         pkgs.vscode-extensions.eamodio.gitlens
+
+        foam.foam-vscode
 
         yzhang.markdown-all-in-one
         bierner.markdown-mermaid
