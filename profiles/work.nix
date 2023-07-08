@@ -5,6 +5,7 @@
     thunderbird
     rnix-lsp
     gcc
+    xclip
   ];
 
   programs.ssh.extraConfig = ''
@@ -47,6 +48,13 @@
           publisher = "streetsidesoftware";
           version = "1.0.5";
           sha256 = "sha256-Cs1YJRwDGbTs67nF12of/KWKjd6NEN6TyFi0AZKCdz4=";
+        })
+
+        (buildExtension {
+          name = "vscode-paste-image";
+          publisher = "mushan";
+          version = "1.0.4";
+          sha256 = "sha256-a6prHWZ8neNYJ+ZDE9ZvA79+5X0UlsFf8XSHYfOmd/I=";
         })
 
         tomoki1207.pdf
