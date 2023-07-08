@@ -40,7 +40,14 @@
         mvllow.rose-pine
         file-icons.file-icons
         gruntfuggly.todo-tree
+
         streetsidesoftware.code-spell-checker
+        (buildExtension {
+          name = "code-spell-checker-portuguese";
+          publisher = "streetsidesoftware";
+          version = "1.0.5";
+          sha256 = "sha256-Cs1YJRwDGbTs67nF12of/KWKjd6NEN6TyFi0AZKCdz4=";
+        })
 
         tomoki1207.pdf
 
