@@ -40,6 +40,7 @@
         mvllow.rose-pine
         file-icons.file-icons
         gruntfuggly.todo-tree
+        streetsidesoftware.code-spell-checker
 
         tomoki1207.pdf
 
