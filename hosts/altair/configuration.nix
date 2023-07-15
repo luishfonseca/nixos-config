@@ -13,6 +13,7 @@
   profiles = [
     "work"
     "entertainment"
+    "note-taking"
   ];
 
   environment.systemPackages = with pkgs; [
