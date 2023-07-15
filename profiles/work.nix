@@ -5,6 +5,7 @@
     thunderbird
     rnix-lsp
     gcc
+    python3Packages.autopep8
   ];
 
   programs.ssh.extraConfig = ''
@@ -71,6 +72,8 @@
 
         ms-vscode.cpptools
         ms-vscode.cmake-tools
+
+        ms-python.python
 
         jnoortheen.nix-ide
 
