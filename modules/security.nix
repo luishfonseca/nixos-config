@@ -1,6 +1,4 @@
-{ config, ... }:
-
-{
+{config, ...}: {
   # Prevent replacing the running kernel w/o reboot
   security.protectKernelImage = true;
 
@@ -53,7 +51,7 @@
     "net.core.default_qdisc" = "cake";
   };
 
-  boot.kernelModules = [ "tcp_bbr" ];
+  boot.kernelModules = ["tcp_bbr"];
 
   security.acme.acceptTerms = true;
 }

@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.services.picom; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.services.picom;
+in {
   options.lhf.services.picom.enable = mkEnableOption "Picom";
 
   config.services.picom = mkIf cfg.enable {
@@ -11,7 +16,7 @@ let cfg = config.lhf.services.picom; in
     vSync = true;
     settings = {
       animations = true;
-      animation-exclude = [ "class_g = 'Polybar'" ];
+      animation-exclude = ["class_g = 'Polybar'"];
       animation-stiffness = 200;
       animation-window-mass = 1.0;
       animation-dampening = 20;

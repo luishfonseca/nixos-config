@@ -1,4 +1,8 @@
-{ config, pkgs, ... }: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
   ];
@@ -40,57 +44,57 @@
 
   boot.tmp.cleanOnBoot = true;
 
-  mailserver =
-    let
-      acmePath = config.security.acme.certs."arcturus.lhf.pt".directory;
-    in
-    rec {
-      fqdn = "mail.lhf.pt";
-      enable = true;
-      openFirewall = true;
-      domains = [ "lhf.pt" ];
-      localDnsResolver = false;
+  mailserver = let
+    acmePath = config.security.acme.certs."arcturus.lhf.pt".directory;
+  in rec {
+    fqdn = "mail.lhf.pt";
+    enable = true;
+    openFirewall = true;
+    domains = ["lhf.pt"];
+    localDnsResolver = false;
 
-      loginAccounts = {
-        "luis@lhf.pt" = {
-          hashedPasswordFile = "/root/pwds/luis@lhf.pt.hash";
-          aliases = [ "signups@lhf.pt" ];
-        };
-      };
-
-      enableImap = false;
-      enableImapSsl = true;
-      enableSubmission = false;
-      enableSubmissionSsl = true;
-      enablePop3 = false;
-      enablePop3Ssl = false;
-
-      certificateScheme = "manual";
-      certificateFile = "${acmePath}/fullchain.pem";
-      keyFile = "${acmePath}/key.pem";
-
-      fullTextSearch = {
-        enable = true;
-        autoIndex = true;
-        indexAttachments = true;
-        enforced = "body";
+    loginAccounts = {
+      "luis@lhf.pt" = {
+        hashedPasswordFile = "/root/pwds/luis@lhf.pt.hash";
+        aliases = ["signups@lhf.pt"];
       };
     };
+
+    enableImap = false;
+    enableImapSsl = true;
+    enableSubmission = false;
+    enableSubmissionSsl = true;
+    enablePop3 = false;
+    enablePop3Ssl = false;
+
+    certificateScheme = "manual";
+    certificateFile = "${acmePath}/fullchain.pem";
+    keyFile = "${acmePath}/key.pem";
+
+    fullTextSearch = {
+      enable = true;
+      autoIndex = true;
+      indexAttachments = true;
+      enforced = "body";
+    };
+  };
 
   services.adguardhome = {
     enable = true;
     mutableSettings = false;
     settings = {
       bind_port = 8201;
-      users = [{
-        name = "luis";
-        password = "$2y$05$YcZ/LRq3nzw5QAT1U15v5ezPpDBk6ksukRfTgbl.JsYYA4Dlhdp6u";
-      }];
+      users = [
+        {
+          name = "luis";
+          password = "$2y$05$YcZ/LRq3nzw5QAT1U15v5ezPpDBk6ksukRfTgbl.JsYYA4Dlhdp6u";
+        }
+      ];
       dns = {
         bind_host = "127.0.0.1";
         port = 15353;
-        upstream_dns = [ "tls://one.one.one.one" ];
-        bootstrap_dns = [ "1.1.1.1" ];
+        upstream_dns = ["tls://one.one.one.one"];
+        bootstrap_dns = ["1.1.1.1"];
         enable_dnssec = true;
       };
       log = {
@@ -102,7 +106,7 @@
 
   lhf.services.dns = {
     enable = true;
-    forward = [ "127.0.0.1:15353" ];
+    forward = ["127.0.0.1:15353"];
     cache = 3600;
     tls = {
       enable = true;
@@ -120,7 +124,7 @@
   networking.domain = "in.lhf.pt";
 
   networking.dhcpcd.extraConfig = "nohook resolv.conf";
-  networking.nameservers = [ "127.0.0.1" ];
+  networking.nameservers = ["127.0.0.1"];
 
   services.vaultwarden = {
     enable = true;
@@ -143,9 +147,9 @@
 
   networking.firewall = {
     enable = true;
-    trustedInterfaces = [ "tailscale0" ];
-    allowedUDPPorts = [ config.services.tailscale.port ];
-    allowedTCPPorts = [ 80 443 ];
+    trustedInterfaces = ["tailscale0"];
+    allowedUDPPorts = [config.services.tailscale.port];
+    allowedTCPPorts = [80 443];
     checkReversePath = "loose";
   };
 

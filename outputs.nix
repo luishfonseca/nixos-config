@@ -1,12 +1,12 @@
-{ self, ... }@inputs:
-let
+{self, ...} @ inputs: let
   system = "x86_64-linux";
   overlays = lib.my.mkOverlays ./overlays;
   pkgs = lib.my.mkPkgs overlays;
-  lib = inputs.nixpkgs.lib.extend (final: prev: import ./lib {
-    inherit inputs pkgs system;
-    lib = final;
-  });
+  lib = inputs.nixpkgs.lib.extend (final: prev:
+    import ./lib {
+      inherit inputs pkgs system;
+      lib = final;
+    });
 
   # Primary user account
   user = "luis";
@@ -27,15 +27,15 @@ let
       inputs.nixos-mailserver.nixosModule
     ];
   };
-in
-{
+in {
   inherit nixosConfigurations overlays;
 
-  deploy.nodes = lib.mapAttrs
+  deploy.nodes =
+    lib.mapAttrs
     (host: config: {
       hostname = host;
       fastConnection = true;
-      sshOpts = [ "-A" ];
+      sshOpts = ["-A"];
       profiles.system = {
         user = "root";
         path = inputs.deploy-rs.lib.${system}.activate.nixos config;
@@ -45,7 +45,7 @@ in
 
   checks = lib.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
 
-  legacyPackages.${system} = pkgs // { inherit lib; };
+  legacyPackages.${system} = pkgs // {inherit lib;};
 
   devShells.${system}.default = pkgs.mkShell {
     buildInputs = [
@@ -53,4 +53,6 @@ in
       inputs.agenix.packages.${system}.agenix
     ];
   };
+
+  formatter.${system} = pkgs.alejandra;
 }

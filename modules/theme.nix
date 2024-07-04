@@ -1,6 +1,9 @@
-{ config, options, lib, ... }:
-
 {
+  config,
+  options,
+  lib,
+  ...
+}: {
   options.lhf.theme.enable = lib.mkEnableOption "theme configuration";
   config = lib.mkIf config.lhf.theme.enable {
     hm.gtk = {

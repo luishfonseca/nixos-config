@@ -1,11 +1,19 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.shell.fish; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.shell.fish;
+in {
   options.lhf.shell.fish = with types; {
     enable = mkEnableOption "Fish Shell";
-    isDefault = mkOption { type = bool; default = true; };
+    isDefault = mkOption {
+      type = bool;
+      default = true;
+    };
     starship.enable = mkEnableOption "Starship";
     anyNixShell.enable = mkEnableOption "Any nix shell";
     direnv.enable = mkEnableOption "Direnv";

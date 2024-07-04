@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.programs.git; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.programs.git;
+in {
   options.lhf.programs.git = {
     enable = mkEnableOption "Git";
     commits = {
@@ -18,7 +23,10 @@ let cfg = config.lhf.programs.git; in
       };
       signingkey = mkOption {
         type = types.nullOr types.str;
-        default = if config.lhf.services.ssh.enable then config.lhf.services.ssh.user.key else null;
+        default =
+          if config.lhf.services.ssh.enable
+          then config.lhf.services.ssh.user.key
+          else null;
         description = "SSH key to use for signing commits";
       };
     };
@@ -29,7 +37,7 @@ let cfg = config.lhf.programs.git; in
       enable = true;
       config = {
         init.defaultBranch = "main";
-        url."ssh://git@github.com/".insteadOf = [ "https://github.com/" ];
+        url."ssh://git@github.com/".insteadOf = ["https://github.com/"];
         user = {
           name = cfg.commits.name;
           email = cfg.commits.email;

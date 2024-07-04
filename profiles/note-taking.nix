@@ -1,6 +1,9 @@
-{ config, pkgs, ... }:
 {
-  environment.systemPackages = [ pkgs.obsidian ];
+  config,
+  pkgs,
+  ...
+}: {
+  environment.systemPackages = [pkgs.obsidian];
 
   services.syncthing = {
     enable = true;

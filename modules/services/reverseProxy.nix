@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.services.reverseProxy; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.services.reverseProxy;
+in {
   options.lhf.services.reverseProxy = {
     enable = mkEnableOption "Reverse Proxy";
     host = mkOption {
@@ -17,7 +22,7 @@ let cfg = config.lhf.services.reverseProxy; in
     };
     sites = mkOption {
       type = types.attrsOf (types.attrsOf types.str);
-      default = { };
+      default = {};
       example = {
         "example.com"."/" = "http://localhost:8000";
       };
@@ -38,7 +43,7 @@ let cfg = config.lhf.services.reverseProxy; in
       };
     };
 
-    users.users.nginx.extraGroups = [ "acme" ];
+    users.users.nginx.extraGroups = ["acme"];
 
     services.nginx = {
       enable = true;
@@ -46,19 +51,22 @@ let cfg = config.lhf.services.reverseProxy; in
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
       recommendedGzipSettings = true;
-      virtualHosts = {
-        "_" = {
-          forceSSL = true;
-          useACMEHost = cfg.acmeHost;
-          default = true;
-          globalRedirect = cfg.host;
-        };
-      } // mapAttrs
+      virtualHosts =
+        {
+          "_" = {
+            forceSSL = true;
+            useACMEHost = cfg.acmeHost;
+            default = true;
+            globalRedirect = cfg.host;
+          };
+        }
+        // mapAttrs
         (_: locations: {
           forceSSL = true;
           useACMEHost = cfg.acmeHost;
-          locations = mapAttrs
-            (_: backend: { proxyPass = backend; })
+          locations =
+            mapAttrs
+            (_: backend: {proxyPass = backend;})
             locations;
         })
         cfg.sites;

@@ -1,8 +1,13 @@
-{ config, options, pkgs, lib, ... }:
-
-with lib;
-let cfg = config.lhf.services.flood; in
 {
+  config,
+  options,
+  pkgs,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.services.flood;
+in {
   options.lhf.services.flood = {
     enable = mkEnableOption "Flood";
 
@@ -55,22 +60,24 @@ let cfg = config.lhf.services.flood; in
   };
 
   config = mkIf cfg.enable {
-    systemd.services.flood = let backendOpts =
-      if cfg.transmission.enable then "--auth none --trurl ${cfg.transmission.url} --truser ${cfg.transmission.user} --trpass ${cfg.transmission.pass}"
-      else ""; in
-      {
-        description = "Flood";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        serviceConfig = {
-          Type = "simple";
-          User = cfg.user;
-          Group = cfg.group;
-          ExecStart = "${pkgs.flood}/bin/flood -h ${cfg.bind} -p ${toString cfg.port} -d ${cfg.dataDir} ${backendOpts}";
-          Restart = "always";
-          RestartSec = 5;
-        };
+    systemd.services.flood = let
+      backendOpts =
+        if cfg.transmission.enable
+        then "--auth none --trurl ${cfg.transmission.url} --truser ${cfg.transmission.user} --trpass ${cfg.transmission.pass}"
+        else "";
+    in {
+      description = "Flood";
+      wantedBy = ["multi-user.target"];
+      after = ["network.target"];
+      serviceConfig = {
+        Type = "simple";
+        User = cfg.user;
+        Group = cfg.group;
+        ExecStart = "${pkgs.flood}/bin/flood -h ${cfg.bind} -p ${toString cfg.port} -d ${cfg.dataDir} ${backendOpts}";
+        Restart = "always";
+        RestartSec = 5;
       };
+    };
 
     users.users.flood = {
       isSystemUser = true;
@@ -78,7 +85,7 @@ let cfg = config.lhf.services.flood; in
       createHome = true;
       group = "flood";
     };
-    users.groups.flood = { };
+    users.groups.flood = {};
 
     systemd.tmpfiles.rules = [
       "d '${cfg.dataDir}' 0755 ${cfg.user} ${cfg.group} - -"

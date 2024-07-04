@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.services.dns; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.services.dns;
+in {
   options.lhf.services.dns = {
     enable = mkEnableOption "DNS server";
     tls = {
@@ -37,16 +42,17 @@ let cfg = config.lhf.services.dns; in
     };
   };
 
-  config =
-    let
-      escape = replaceStrings [ "." ] [ "\." ];
-      acmePath = config.security.acme.certs.${cfg.tls.acmeHost}.directory;
-      corednsConfig = optionalString cfg.tls.enable ''
+  config = let
+    escape = replaceStrings ["."] ["\."];
+    acmePath = config.security.acme.certs.${cfg.tls.acmeHost}.directory;
+    corednsConfig =
+      optionalString cfg.tls.enable ''
         tls://.:853 {
           tls ${acmePath}/fullchain.pem ${acmePath}/key.pem
           forward . 127.0.0.1
         }
-      '' + optionalString cfg.magicDNS.enable ''
+      ''
+      + optionalString cfg.magicDNS.enable ''
         ${cfg.magicDNS.domain} {
           rewrite name suffix ${cfg.magicDNS.domain} ${cfg.magicDNS.tailnet} answer auto
           forward . 100.100.100.100
@@ -59,27 +65,26 @@ let cfg = config.lhf.services.dns; in
           }
           forward . 100.100.100.100
         }
-      '' + ''
+      ''
+      + ''
         . {
           forward . ${concatStringsSep " " cfg.forward}
           ${optionalString (cfg.cache != 0) "cache ${toString cfg.cache}"}
         }
       '';
-    in
+  in
     mkIf cfg.enable (mkMerge [
       {
         services.coredns = {
           enable = true;
           config = corednsConfig;
         };
-        networking.firewall.allowedTCPPorts = [ 53 ];
-        networking.firewall.allowedUDPPorts = [ 53 ];
+        networking.firewall.allowedTCPPorts = [53];
+        networking.firewall.allowedUDPPorts = [53];
       }
       (mkIf cfg.tls.enable {
-        networking.firewall.allowedTCPPorts = [ 853 ];
+        networking.firewall.allowedTCPPorts = [853];
         systemd.services.coredns.serviceConfig.Group = config.security.acme.certs.${cfg.tls.acmeHost}.group;
       })
     ]);
 }
-
-

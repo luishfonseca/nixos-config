@@ -6,6 +6,6 @@ final: prev: {
       rev = "ad8feaad127746beaf2afe2b2ea37e7af204a2ac";
       sha256 = "sha256-3lZ41DkNi7FVyEwvMaWwOjLD2aZ6DxZhhvVQMnU6JrI=";
     };
-    buildInputs = old.buildInputs ++ [ prev.pcre2 ];
+    buildInputs = old.buildInputs ++ [prev.pcre2];
   });
 }

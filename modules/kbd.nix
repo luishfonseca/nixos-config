@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.kbd; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.kbd;
+in {
   options.lhf.kbd = {
     enable = mkEnableOption "kbd";
 
@@ -31,30 +36,32 @@ let cfg = config.lhf.kbd; in
       description = "The delay (in milliseconds) between compose key sequences.";
     };
 
-    fallthrough = mkEnableOption "Reemit unhandled key events." // { default = true; };
+    fallthrough = mkEnableOption "Reemit unhandled key events." // {default = true;};
 
     allowCommands = mkEnableOption "Allow keys to run shell commands.";
   };
 
-  config =
-    let
-      cleanPath = path: removeSuffix ".kbd" (removePrefix "id:" (removePrefix "path:" path));
+  config = let
+    cleanPath = path: removeSuffix ".kbd" (removePrefix "id:" (removePrefix "path:" path));
 
-      expandPath = path:
-        if hasPrefix "id:" path then "/dev/input/by-id/${cleanPath path}"
-        else if hasPrefix "path:" path then "/dev/input/by-path/${cleanPath path}"
-        else
-          throw ''
-            Invalid path: ${path}. Paths should be of the form:
-            id:usb-Logitech_USB_Receiver-if02-event-kbd.kbd
-            path:platform-i8042-serio-0-event-kbd.kbd
-          '';
-    in
+    expandPath = path:
+      if hasPrefix "id:" path
+      then "/dev/input/by-id/${cleanPath path}"
+      else if hasPrefix "path:" path
+      then "/dev/input/by-path/${cleanPath path}"
+      else
+        throw ''
+          Invalid path: ${path}. Paths should be of the form:
+          id:usb-Logitech_USB_Receiver-if02-event-kbd.kbd
+          path:platform-i8042-serio-0-event-kbd.kbd
+        '';
+  in
     mkIf cfg.enable {
       services.kmonad = {
         enable = true;
         package = cfg.package;
-        keyboards = mapAttrs
+        keyboards =
+          mapAttrs
           (path: _: {
             device = expandPath path;
             name = cleanPath path;

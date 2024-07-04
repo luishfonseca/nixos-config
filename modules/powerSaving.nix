@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.powerSaving; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.powerSaving;
+in {
   options.lhf.powerSaving.enable = mkEnableOption "Power Saving";
 
   config = mkIf cfg.enable {

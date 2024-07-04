@@ -1,8 +1,12 @@
-{ config, options, lib, ... }:
-
-with lib;
-let cfg = config.lhf.services.dnsovertlsProxy; in
 {
+  config,
+  options,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.services.dnsovertlsProxy;
+in {
   options.lhf.services.dnsovertlsProxy = {
     enable = mkEnableOption "DNS over TLS proxy";
     name = mkOption {
@@ -22,7 +26,7 @@ let cfg = config.lhf.services.dnsovertlsProxy; in
 
   config = mkIf cfg.enable {
     networking = {
-      nameservers = [ "127.0.0.53" ];
+      nameservers = ["127.0.0.53"];
       dhcpcd.extraConfig = "nohook resolv.conf";
     };
 

@@ -1,11 +1,12 @@
-{ stdenv
-, lib
-, writeScriptBin
-, coreutils
-, findutils
-, xdo
-, jq
-, bspwm
+{
+  stdenv,
+  lib,
+  writeScriptBin,
+  coreutils,
+  findutils,
+  xdo,
+  jq,
+  bspwm,
 }:
 writeScriptBin "bspwm-hidebar" ''
   #!/bin/sh

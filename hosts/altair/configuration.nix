@@ -1,10 +1,14 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, lib, inputs, system, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  inputs,
+  system,
+  ...
+}: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -51,11 +55,13 @@
 
   lhf.services.wallpaper = {
     enable = true;
-    images = (lib.mapAttrsToList
-      (name: hash: pkgs.fetchurl {
-        url = "https://github.com/rose-pine/wallpapers/raw/main/${name}";
-        sha256 = hash;
-      })
+    images =
+      lib.mapAttrsToList
+      (name: hash:
+        pkgs.fetchurl {
+          url = "https://github.com/rose-pine/wallpapers/raw/main/${name}";
+          sha256 = hash;
+        })
       {
         "beachhouses.jpg" = "sha256-rFJFEBg3RbJQ9LFG0/ZNuqts2H4bMw7bY7Rf64XO+Gg=";
         "bench.JPG" = "sha256-Vw6HIfZF6e9CPNZR8m5Iy1YeeVHH/upb12oMN8r5ics=";
@@ -68,10 +74,9 @@
         "roses.jpg" = "sha256-/5mtqvnbLZ7/sLM+EduPJHHia3w0iTmbp8q3/V5idEM=";
         "seals.jpg" = "sha256-WVzSfRZRqcHM58Gxh5SThaIfl7fLLwokcWIXQh/buPA=";
         "seaslug.jpg" = "sha256-uxQkOABlP34ajEreoWI32iN8pgt2faYJumEBQYSDk3s=";
-      });
+      };
     effects.enable = true;
   };
-
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -149,14 +154,14 @@
       enable = true;
       top = {
         enable = true;
-        left = [ "xwindow" ];
-        right = [ "date" "battery" ];
+        left = ["xwindow"];
+        right = ["date" "battery"];
       };
       bottom = {
         enable = true;
-        left = [ "tray" ];
-        center = [ "bspwm" ];
-        right = [ "xkeyboard" "memory" "cpu" "wlan" "eth" ];
+        left = ["tray"];
+        center = ["bspwm"];
+        right = ["xkeyboard" "memory" "cpu" "wlan" "eth"];
       };
     };
     sxhkd.binds = {
@@ -221,12 +226,12 @@
   user.hashedPassword = "$6$SJ8UawnwW$LoL1DmZ4J8ade7b/n8h8O9Q44w6JyB5JKMXk2cBLz2D9SQJRZkfsd4XhAQ2.J8Gl2coYGAM1ls/Un5kOXSoT/0";
   users.mutableUsers = false;
 
-  user.extraGroups = [ "input" "uinput" "video" ];
+  user.extraGroups = ["input" "uinput" "video"];
 
   networking.firewall = {
     enable = true;
-    trustedInterfaces = [ "tailscale0" ];
-    allowedUDPPorts = [ config.services.tailscale.port ];
+    trustedInterfaces = ["tailscale0"];
+    allowedUDPPorts = [config.services.tailscale.port];
     checkReversePath = "loose";
   };
 
@@ -238,4 +243,3 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "21.11"; # Did you read the comment?
 }
-

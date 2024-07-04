@@ -1,4 +1,11 @@
-{ lib, stdenv, pkg-config, openssh, gtk2, gtk3 }:
+{
+  lib,
+  stdenv,
+  pkg-config,
+  openssh,
+  gtk2,
+  gtk3,
+}:
 stdenv.mkDerivation rec {
   inherit (openssh) src version;
   pname = "gnome-ssh-askpass";

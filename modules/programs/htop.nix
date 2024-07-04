@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.programs.htop; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.programs.htop;
+in {
   options.lhf.programs.htop.enable = mkEnableOption "htop";
 
   config.programs.htop = mkIf cfg.enable {

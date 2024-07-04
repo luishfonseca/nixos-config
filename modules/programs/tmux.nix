@@ -1,8 +1,13 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.programs.tmux; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.programs.tmux;
+in {
   options.lhf.programs.tmux.enable = mkEnableOption "tmux";
 
   config.programs.tmux = mkIf cfg.enable {

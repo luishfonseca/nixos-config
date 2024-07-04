@@ -1,8 +1,14 @@
-{ config, options, lib, pkgs, inputs, ... }:
-
-with lib;
-let cfg = config.lhf.programs.neovim; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.programs.neovim;
+in {
   options.lhf.programs.neovim.enable = mkEnableOption "Neovim";
 
   config = mkIf cfg.enable {

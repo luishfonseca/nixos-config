@@ -1,11 +1,16 @@
-{ config, options, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.lhf.rnl.ssh; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.rnl.ssh;
+in {
   options.lhf.rnl.ssh = with types; {
     enable = mkEnableOption "RNL SSH Config";
-    rnladmin = mkOption { type = str; };
+    rnladmin = mkOption {type = str;};
   };
 
   config.programs.ssh.extraConfig = mkIf cfg.enable ''

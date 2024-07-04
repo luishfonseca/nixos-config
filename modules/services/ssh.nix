@@ -1,8 +1,14 @@
-{ config, options, lib, pkgs, nixosConfigurations, ... }:
-
-with lib;
-let cfg = config.lhf.services.ssh; in
 {
+  config,
+  options,
+  lib,
+  pkgs,
+  nixosConfigurations,
+  ...
+}:
+with lib; let
+  cfg = config.lhf.services.ssh;
+in {
   options.lhf.services.ssh = {
     enable = mkEnableOption "SSH Key Management";
 
@@ -48,7 +54,7 @@ let cfg = config.lhf.services.ssh; in
       enable = mkEnableOption "SSH hosts management";
       extraHosts = mkOption {
         type = types.attrsOf types.str;
-        default = { };
+        default = {};
         description = "Extra known_hosts";
       };
     };
@@ -57,7 +63,7 @@ let cfg = config.lhf.services.ssh; in
       enable = mkEnableOption "SSH authorized_keys management";
       extraKeys = mkOption {
         type = types.attrsOf types.str;
-        default = { };
+        default = {};
         description = "Extra authorized_keys";
       };
     };
@@ -65,7 +71,7 @@ let cfg = config.lhf.services.ssh; in
 
   config = mkIf cfg.enable (mkMerge [
     {
-      environment.systemPackages = [ pkgs.openssh ];
+      environment.systemPackages = [pkgs.openssh];
 
       services.openssh = {
         enable = true;
@@ -73,10 +79,12 @@ let cfg = config.lhf.services.ssh; in
           PasswordAuthentication = false;
           PermitRootLogin = "no";
         };
-        hostKeys = [{
-          path = "/etc/ssh/ssh_host_ed25519_key";
-          type = "ed25519";
-        }];
+        hostKeys = [
+          {
+            path = "/etc/ssh/ssh_host_ed25519_key";
+            type = "ed25519";
+          }
+        ];
       };
 
       programs.ssh = {
@@ -91,23 +99,25 @@ let cfg = config.lhf.services.ssh; in
       systemd.services.lock-ssh-agent = {
         enable = true;
         description = "Lock SSH Agent";
-        wantedBy = [ "suspend.target" "hibernate.target" ];
-        before = [ "systemd-suspend.service" "systemd-hibernate.service" "systemd-suspend-then-hibernate.service" ];
+        wantedBy = ["suspend.target" "hibernate.target"];
+        before = ["systemd-suspend.service" "systemd-hibernate.service" "systemd-suspend-then-hibernate.service"];
         serviceConfig = {
           ExecStart = "${pkgs.killall}/bin/killall ssh-agent";
           Type = "forking";
         };
       };
 
-      lhf.services.ssh = let all = filterAttrs (_: v: v.config.lhf.services.ssh.enable) nixosConfigurations; in
-        {
-          allHosts = filterAttrs (_: v: v != null) (mapAttrs' (_: v: nameValuePair v.config.lhf.services.ssh.host.name v.config.lhf.services.ssh.host.key) all);
-          allUsers = filterAttrs (_: v: v != null) (mapAttrs' (_: v: nameValuePair v.config.lhf.services.ssh.user.name v.config.lhf.services.ssh.user.key) all);
-        };
+      lhf.services.ssh = let
+        all = filterAttrs (_: v: v.config.lhf.services.ssh.enable) nixosConfigurations;
+      in {
+        allHosts = filterAttrs (_: v: v != null) (mapAttrs' (_: v: nameValuePair v.config.lhf.services.ssh.host.name v.config.lhf.services.ssh.host.key) all);
+        allUsers = filterAttrs (_: v: v != null) (mapAttrs' (_: v: nameValuePair v.config.lhf.services.ssh.user.name v.config.lhf.services.ssh.user.key) all);
+      };
     }
     (mkIf cfg.manageKnownHosts.enable {
-      programs.ssh.knownHosts = mapAttrs (_: v: { publicKey = v; }) (cfg.allHosts // cfg.manageKnownHosts.extraHosts);
-      programs.ssh.extraConfig = concatMapStringsSep "\n"
+      programs.ssh.knownHosts = mapAttrs (_: v: {publicKey = v;}) (cfg.allHosts // cfg.manageKnownHosts.extraHosts);
+      programs.ssh.extraConfig =
+        concatMapStringsSep "\n"
         (host: ''
           Host ${host}
             User ${config.user.name}

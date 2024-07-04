@@ -1,16 +1,30 @@
-{ config, options, lib, inputs, user, root, ... }:
-
-with lib;
 {
+  config,
+  options,
+  lib,
+  inputs,
+  user,
+  root,
+  ...
+}:
+with lib; {
   options = with types; {
-
-    user = mkOption { type = attrs; };
-    hm = mkOption { type = attrs; };
+    user = mkOption {type = attrs;};
+    hm = mkOption {type = attrs;};
 
     dotfiles = {
-      dir = mkOption { type = path; default = root; };
-      configDir = mkOption { type = path; default = "${config.dotfiles.dir}/config"; };
-      binDir = mkOption { type = path; default = "${config.dotfiles.dir}/bin"; };
+      dir = mkOption {
+        type = path;
+        default = root;
+      };
+      configDir = mkOption {
+        type = path;
+        default = "${config.dotfiles.dir}/config";
+      };
+      binDir = mkOption {
+        type = path;
+        default = "${config.dotfiles.dir}/bin";
+      };
     };
   };
 
@@ -18,16 +32,17 @@ with lib;
     users.users.${config.user.name} = mkAliasDefinitions options.user;
 
     user = {
-      extraGroups = [ "wheel" ];
+      extraGroups = ["wheel"];
       name = user;
       isNormalUser = true;
     };
 
-    nix.settings = let users = [ "root" config.user.name ]; in
-      {
-        trusted-users = users;
-        allowed-users = users;
-      };
+    nix.settings = let
+      users = ["root" config.user.name];
+    in {
+      trusted-users = users;
+      allowed-users = users;
+    };
 
     home-manager = {
       useUserPackages = true;
