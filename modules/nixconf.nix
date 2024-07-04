@@ -22,6 +22,7 @@
     };
     gc = {
       dates = "weekly";
+      options = "--delete-older-than 30d";
       automatic = true;
       persistent = true;
     };
