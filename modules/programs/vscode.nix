@@ -10,7 +10,7 @@ let cfg = config.lhf.programs.vscode; in
 
   config = mkIf cfg.enable {
     services.gnome.gnome-keyring.enable = true;
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = with pkgs.unstable; [
       (vscode-with-extensions.override {
         vscodeExtensions = cfg.extensions;
       })

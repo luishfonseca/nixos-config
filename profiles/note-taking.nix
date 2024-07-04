@@ -12,6 +12,6 @@
 
     dataDir = "/home/${config.user.name}/.local/share/syncthing";
 
-    folders."Obsidian Vault".path = "/home/${config.user.name}/vault";
+    settings.folders."Obsidian Vault".path = "/home/${config.user.name}/vault";
   };
 }

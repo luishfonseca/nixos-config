@@ -26,7 +26,6 @@
 
     volctl
     pavucontrol
-    brightnessctl
     unzip
   ];
 
@@ -88,7 +87,16 @@
     cache = 3600;
   };
 
-  hardware.opengl.enable = true;
+  environment.variables.VDPAU_DRIVER = "va_gl";
+
+  hardware.opengl = {
+    enable = true;
+    extraPackages = with pkgs; [
+      vaapiIntel
+      libvdpau-va-gl
+      intel-media-driver
+    ];
+  };
 
   networking.networkmanager.enable = true;
   hm.services.network-manager-applet.enable = true;
@@ -99,9 +107,12 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
-  services.xserver = {
-    libinput.touchpad.naturalScrolling = true;
-    libinput.touchpad.disableWhileTyping = true;
+  services.libinput = {
+    enable = true;
+    touchpad = {
+      naturalScrolling = true;
+      disableWhileTyping = true;
+    };
   };
 
   lhf.kbd = {
@@ -113,6 +124,8 @@
   lhf.powerSaving.enable = true;
   lhf.tmpfsRoot.enable = true;
   lhf.theme.enable = true;
+
+  programs.light.enable = true;
 
   lhf.programs.htop.enable = true;
   lhf.programs.tmux.enable = true;
@@ -136,14 +149,14 @@
       enable = true;
       top = {
         enable = true;
-        left.modules = [ "xwindow" ];
-        right.modules = [ "date" "battery" ];
+        left = [ "xwindow" ];
+        right = [ "date" "battery" ];
       };
       bottom = {
         enable = true;
-        left.tray = true;
-        center.modules = [ "bspwm" ];
-        right.modules = [ "xkeyboard" "memory" "cpu" "wlan" "eth" ];
+        left = [ "tray" ];
+        center = [ "bspwm" ];
+        right = [ "xkeyboard" "memory" "cpu" "wlan" "eth" ];
       };
     };
     sxhkd.binds = {
@@ -172,8 +185,12 @@
 
   lhf.services.picom.enable = true;
 
-  virtualisation.libvirtd.enable = true;
   lhf.programs.virtManager.enable = true;
+
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
 
   lhf.shell.fish = {
     enable = true;
@@ -187,12 +204,11 @@
     isSystemDefault = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  services.xserver.libinput.enable = true;
-
   services.pipewire = {
     enable = true;
     pulse.enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
   };
 
   hardware.bluetooth.enable = true;
@@ -205,7 +221,7 @@
   user.hashedPassword = "$6$SJ8UawnwW$LoL1DmZ4J8ade7b/n8h8O9Q44w6JyB5JKMXk2cBLz2D9SQJRZkfsd4XhAQ2.J8Gl2coYGAM1ls/Un5kOXSoT/0";
   users.mutableUsers = false;
 
-  user.extraGroups = [ "input" "uinput" "libvirtd" "video" ];
+  user.extraGroups = [ "input" "uinput" "video" ];
 
   networking.firewall = {
     enable = true;

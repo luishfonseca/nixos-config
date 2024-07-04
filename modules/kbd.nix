@@ -70,6 +70,6 @@ let cfg = config.lhf.kbd; in
           (builtins.readDir cfg.kbdDir);
       };
 
-      services.xserver.xkbOptions = "compose:menu";
+      services.xserver.xkb.options = "compose:menu";
     };
 }

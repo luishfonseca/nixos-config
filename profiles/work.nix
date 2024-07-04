@@ -3,7 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     thunderbird
-    rnix-lsp
+    nil
     gcc
     python3Packages.autopep8
   ];
@@ -34,7 +34,7 @@
       }); in
     {
       enable = true;
-      extensions = with pkgs.latest.vscode-extensions; [
+      extensions = with pkgs.unstable.vscode-extensions; [
         mkhl.direnv
         github.copilot
         ms-vscode-remote.remote-ssh
@@ -75,10 +75,34 @@
 
         ms-python.python
 
+        alygin.vscode-tlaplus
+
+        ms-dotnettools.csharp
+        zxh404.vscode-proto3
+
         jnoortheen.nix-ide
 
         rust-lang.rust-analyzer
         bungcip.better-toml
+
+        redhat.java
+        vscjava.vscode-maven
+
+        golang.go
+
+        (buildExtension {
+          name = "shader-toy";
+          publisher = "stevensona";
+          version = "0.11.2";
+          sha256 = "sha256-gsjAxD40sf35Wop27crkJq4Wov5R62UTEs3n5prGVhw=";
+        })
+
+        (buildExtension {
+          name = "glsl-lsp";
+          publisher = "kuba-p";
+          version = "0.0.2";
+          sha256 = "sha256-MmA73L6fCfQ/KYBzGWDgEdktzDuRonUSppwq9GxuLGY=";
+        })
 
         (buildExtension {
           name = "glassit";

@@ -4,10 +4,7 @@
     in
     import inputs.nixpkgs (args // {
       overlays = [
-        (final: prev: {
-          unstable = import inputs.nixpkgs-unstable args;
-          latest = import inputs.nixpkgs-latest args;
-        })
+        (final: prev: { unstable = import inputs.nixpkgs-unstable args; })
       ] ++ lib.attrValues overlays;
     });
 

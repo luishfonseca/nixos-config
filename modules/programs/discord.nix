@@ -6,6 +6,6 @@ let cfg = config.lhf.programs.discord; in
   options.lhf.programs.discord.enable = mkEnableOption "Discord";
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [ (pkgs.discord.override { withOpenASAR = true; }) ];
+    environment.systemPackages = [ pkgs.discord ];
   };
 }

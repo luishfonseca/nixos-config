@@ -29,13 +29,10 @@ let cfg = config.lhf.programs.bspwm; in
       default = { };
       description = "sxhkd binds";
     };
-    polybar = let mkZone = name: {
-      tray = mkEnableOption "Polybar tray on ${name}";
-      modules = mkOption {
+    polybar = let mkZone = name: mkOption {
         type = types.listOf types.str;
         default = [ ];
         description = "Polybar ${name} modules";
-      };
     }; in
       {
         enable = mkEnableOption "Polybar" // { default = true; };
@@ -142,29 +139,22 @@ let cfg = config.lhf.programs.bspwm; in
           "bar/top" = common // {
             bottom = false;
 
-            modules-left = lib.concatStringsSep " " cfg.polybar.top.left.modules;
-            modules-center = lib.concatStringsSep " " cfg.polybar.top.center.modules;
-            modules-right = lib.concatStringsSep " " cfg.polybar.top.right.modules;
-
-            tray-position =
-              if cfg.polybar.top.right.tray then "right"
-              else if cfg.polybar.top.center.tray then "center"
-              else if cfg.polybar.top.left.tray then "left"
-              else "none";
+            modules-left = lib.concatStringsSep " " cfg.polybar.top.left;
+            modules-center = lib.concatStringsSep " " cfg.polybar.top.center;
+            modules-right = lib.concatStringsSep " " cfg.polybar.top.right;
           };
 
           "bar/bottom" = common // {
             bottom = true;
 
-            modules-left = lib.concatStringsSep " " cfg.polybar.bottom.left.modules;
-            modules-center = lib.concatStringsSep " " cfg.polybar.bottom.center.modules;
-            modules-right = lib.concatStringsSep " " cfg.polybar.bottom.right.modules;
+            modules-left = lib.concatStringsSep " " cfg.polybar.bottom.left;
+            modules-center = lib.concatStringsSep " " cfg.polybar.bottom.center;
+            modules-right = lib.concatStringsSep " " cfg.polybar.bottom.right;
+          };
 
-            tray-position =
-              if cfg.polybar.bottom.right.tray then "right"
-              else if cfg.polybar.bottom.center.tray then "center"
-              else if cfg.polybar.bottom.left.tray then "left"
-              else "none";
+          "module/tray" = {
+            type = "internal/tray";
+            tray-spacing = "16px";
           };
 
           "module/bspwm" = {
@@ -265,6 +255,8 @@ let cfg = config.lhf.programs.bspwm; in
           enable = true;
           windowManager.bspwm.enable = true;
         };
+
+        systemd.user.targets.tray.requires = [ "graphical-session-pre.target" ];
 
         hm.xdg.configFile."bspwm/bspwmrc" = {
           text = bspwmConfig;

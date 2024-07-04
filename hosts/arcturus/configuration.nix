@@ -38,50 +38,65 @@
     isSystemDefault = true;
   };
 
-  boot.cleanTmpDir = true;
+  boot.tmp.cleanOnBoot = true;
 
-  security.acme.defaults.email = "luis@lhf.pt";
-  security.acme.acceptTerms = true;
+  mailserver =
+    let
+      acmePath = config.security.acme.certs."arcturus.lhf.pt".directory;
+    in
+    rec {
+      fqdn = "mail.lhf.pt";
+      enable = true;
+      openFirewall = true;
+      domains = [ "lhf.pt" ];
+      localDnsResolver = false;
 
-  mailserver = {
-    enable = true;
-    openFirewall = true;
-    fqdn = "mail.lhf.pt";
-    domains = [ "lhf.pt" ];
-    localDnsResolver = false;
+      loginAccounts = {
+        "luis@lhf.pt" = {
+          hashedPasswordFile = "/root/pwds/luis@lhf.pt.hash";
+          aliases = [ "signups@lhf.pt" ];
+        };
+      };
 
-    loginAccounts = {
-      "luis@lhf.pt" = {
-        hashedPasswordFile = "/root/pwds/luis@lhf.pt.hash";
-        aliases = [ "signups@lhf.pt" ];
+      enableImap = false;
+      enableImapSsl = true;
+      enableSubmission = false;
+      enableSubmissionSsl = true;
+      enablePop3 = false;
+      enablePop3Ssl = false;
+
+      certificateScheme = "manual";
+      certificateFile = "${acmePath}/fullchain.pem";
+      keyFile = "${acmePath}/key.pem";
+
+      fullTextSearch = {
+        enable = true;
+        autoIndex = true;
+        indexAttachments = true;
+        enforced = "body";
       };
     };
-
-    enableImap = false;
-    enableImapSsl = true;
-    enableSubmission = false;
-    enableSubmissionSsl = true;
-    enablePop3 = false;
-    enablePop3Ssl = false;
-    certificateScheme = 3;
-
-    fullTextSearch = {
-      enable = true;
-      autoIndex = true;
-      indexAttachments = true;
-      enforced = "body";
-    };
-  };
 
   services.adguardhome = {
     enable = true;
     mutableSettings = false;
-    settings.dns = {
-      bind_host = "127.0.0.1";
-      port = 15353;
-      upstream_dns = [ "tls://one.one.one.one" ];
-      bootstrap_dns = [ "1.1.1.1" ];
-      enable_dnssec = true;
+    settings = {
+      bind_port = 8201;
+      users = [{
+        name = "luis";
+        password = "$2y$05$YcZ/LRq3nzw5QAT1U15v5ezPpDBk6ksukRfTgbl.JsYYA4Dlhdp6u";
+      }];
+      dns = {
+        bind_host = "127.0.0.1";
+        port = 15353;
+        upstream_dns = [ "tls://one.one.one.one" ];
+        bootstrap_dns = [ "1.1.1.1" ];
+        enable_dnssec = true;
+      };
+      log = {
+        max_size = 100;
+        compress = true;
+      };
     };
   };
 
@@ -91,8 +106,7 @@
     cache = 3600;
     tls = {
       enable = true;
-      domain = "ns.lhf.pt";
-      enableACME = true;
+      acmeHost = "arcturus.lhf.pt";
     };
     magicDNS = {
       enable = true;
@@ -119,9 +133,11 @@
 
   lhf.services.reverseProxy = {
     enable = true;
+    acmeHost = "arcturus.lhf.pt";
+    host = "lhf.pt";
     sites = {
-      "lhf.pt"."/" = "http://polaris:8100";
       "vault.lhf.pt"."/" = "http://localhost:8200";
+      "ads.lhf.pt"."/" = "http://localhost:8201";
     };
   };
 
@@ -132,6 +148,8 @@
     allowedTCPPorts = [ 80 443 ];
     checkReversePath = "loose";
   };
+
+  nix.gc.automatic = true;
 
   system.stateVersion = "21.05";
 }

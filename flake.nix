@@ -2,8 +2,8 @@
   description = "LHF's NixOS config";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
-    nixpkgs-latest.url = "github:NixOS/nixpkgs/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # lunarVim = {
     #   url = "github:LunarVim/LunarVim";
@@ -11,10 +11,10 @@
     # };
     # neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
 
-    home-manager.url = "github:nix-community/home-manager/release-23.05";
+    home-manager.url = "github:nix-community/home-manager/release-24.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-23.05";
+    nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-24.05";
     nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
 
     programs-sqlite.url = "github:wamserma/flake-programs-sqlite";

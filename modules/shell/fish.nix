@@ -38,7 +38,7 @@ let cfg = config.lhf.shell.fish; in
     (mkIf cfg.direnv.enable {
       environment.systemPackages = with pkgs; [
         direnv
-        (nix-direnv.override { enableFlakes = true; })
+        nix-direnv
       ];
 
       nix.extraOptions = ''

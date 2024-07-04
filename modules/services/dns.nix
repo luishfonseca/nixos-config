@@ -7,11 +7,10 @@ let cfg = config.lhf.services.dns; in
     enable = mkEnableOption "DNS server";
     tls = {
       enable = mkEnableOption "DNS-over-TLS";
-      enableACME = mkEnableOption "Whether an ACME certificate should be used";
-      domain = mkOption {
+      acmeHost = mkOption {
         type = types.str;
-        example = "ns.example.com";
-        description = "Domain name to use for DNS-over-TLS";
+        example = "example.com";
+        description = "Domain name to use for ACME challenge";
       };
     };
     forward = mkOption {
@@ -41,7 +40,7 @@ let cfg = config.lhf.services.dns; in
   config =
     let
       escape = replaceStrings [ "." ] [ "\." ];
-      acmePath = config.security.acme.certs.${cfg.tls.domain}.directory;
+      acmePath = config.security.acme.certs.${cfg.tls.acmeHost}.directory;
       corednsConfig = optionalString cfg.tls.enable ''
         tls://.:853 {
           tls ${acmePath}/fullchain.pem ${acmePath}/key.pem
@@ -78,21 +77,7 @@ let cfg = config.lhf.services.dns; in
       }
       (mkIf cfg.tls.enable {
         networking.firewall.allowedTCPPorts = [ 853 ];
-      })
-      (mkIf (cfg.tls.enable && cfg.tls.enableACME) {
-        security.acme.certs.${cfg.tls.domain}.webroot = "/var/lib/acme/.challenges/${cfg.tls.domain}";
-        services.nginx = {
-          enable = true;
-          virtualHosts.${cfg.tls.domain} = {
-            locations."/.well-known/acme-challenge" = {
-              root = config.security.acme.certs.${cfg.tls.domain}.webroot;
-              extraConfig = ''
-                try_files $uri =404;
-              '';
-            };
-          };
-        };
-        systemd.services.coredns.serviceConfig.Group = config.security.acme.certs.${cfg.tls.domain}.group;
+        systemd.services.coredns.serviceConfig.Group = config.security.acme.certs.${cfg.tls.acmeHost}.group;
       })
     ]);
 }
