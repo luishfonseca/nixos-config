@@ -85,11 +85,16 @@
 
   networking.domain = "in.lhf.pt";
 
-  lhf.services.dnsovertlsProxy = {
-    enable = true;
-    name = "ns.lhf.pt";
-    ip = "146.59.158.114";
-    cache = 3600;
+  # lhf.services.dnsovertlsProxy = {
+  #   enable = true;
+  #   name = "ns.lhf.pt";
+  #   ip = "146.59.158.114";
+  #   cache = 3600;
+  # };
+
+  networking = {
+    nameservers = ["1.1.1.1" "1.0.0.1"];
+    dhcpcd.extraConfig = "nohook resolv.conf";
   };
 
   environment.variables.VDPAU_DRIVER = "va_gl";
