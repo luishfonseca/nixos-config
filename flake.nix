@@ -4,6 +4,13 @@
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     utils.url = "github:numtide/flake-utils";
+
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-anywhere.url = "github:nix-community/nixos-anywhere";
+    nixos-anywhere.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-anywhere.inputs.disko.follows = "disko";
   };
 
   outputs = {...} @ inputs:
@@ -17,10 +24,11 @@
       overlays = lib.lhf.mkOverlays ./overlays;
       pkgs = lib.lhf.mkPkgs overlays ./pkgs;
       nixosConfigurations = lib.lhf.mkHosts ./hosts;
+      diskoConfigurations = lib.lhf.mkDisks;
       modules = lib.lhf.rakeLeaves ./modules;
       profiles = lib.lhf.rakeLeaves ./profiles;
     in {
-      inherit nixosConfigurations overlays;
+      inherit nixosConfigurations diskoConfigurations overlays;
 
       nixosModules = {
         inherit modules profiles;
@@ -31,6 +39,12 @@
         // {
           inherit lib;
         };
+
+      devShells.default = pkgs.mkShell {
+        packages = [
+          inputs.nixos-anywhere.packages.${system}.nixos-anywhere
+        ];
+      };
 
       formatter = pkgs.alejandra;
     });

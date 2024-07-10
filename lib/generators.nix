@@ -132,6 +132,23 @@
 
   /*
   *
+  Synopsis: mkDisks
+
+  Generate a set of Disko configurations for the configured hosts.
+
+  Output Format:
+  An attribute set representing Disko configurations for the configured hosts.
+  The resulting attribute set maps hostnames to their corresponding Disko configurations.
+
+  *
+  */
+  mkDisks =
+    lib.mapAttrs
+    (host: cfg: ({...}: {disko.devices = lib.attrsets.filterAttrsRecursive (k: _: !(lib.hasPrefix "_" k)) cfg.config.disko.devices;}))
+    nixosConfigurations;
+
+  /*
+  *
   Synopsis: mkSecrets secretsDir
 
   Generate a set of secrets to be used by agenix.
@@ -172,5 +189,5 @@
       })
       (builtins.filter (p: lib.hasSuffix ".age" p) (lib.filesystem.listFilesRecursive secretsDir)));
 in {
-  inherit mkHosts mkPkgs mkOverlays mkSecrets;
+  inherit mkHosts mkDisks mkPkgs mkOverlays mkSecrets;
 }
