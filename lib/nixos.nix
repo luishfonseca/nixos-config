@@ -15,7 +15,7 @@
       // {
         overlays =
           [
-            (final: prev: {unstable = import inputs.nixpkgs-unstable args;})
+            (final: prev: {latest = import inputs.nixpkgs-latest args;})
           ]
           ++ lib.attrValues overlays;
       });

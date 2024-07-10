@@ -26,7 +26,7 @@
       };
   in {
     enable = true;
-    extensions = with pkgs.unstable.vscode-extensions; [
+    extensions = with pkgs.latest.vscode-extensions; [
       mkhl.direnv
       github.copilot
       ms-vscode-remote.remote-ssh
@@ -38,8 +38,8 @@
       (buildExtension {
         name = "code-spell-checker-portuguese";
         publisher = "streetsidesoftware";
-        version = "1.0.5";
-        sha256 = "sha256-Cs1YJRwDGbTs67nF12of/KWKjd6NEN6TyFi0AZKCdz4=";
+        version = "2.0.2";
+        sha256 = "sha256-GTFrZhdd60Yl00YagIbBsRer4NPFwQbofinOfZZm9jw=";
       })
 
       tomoki1207.pdf
@@ -49,12 +49,8 @@
       yzhang.markdown-all-in-one
       bierner.markdown-mermaid
       bierner.markdown-emoji
-      (buildExtension {
-        name = "markdown-footnotes";
-        publisher = "bierner";
-        version = "0.1.1";
-        sha256 = "sha256-h/Iyk8CKFr0M5ULXbEbjFsqplnlN7F+ZvnUTy1An5t4=";
-      })
+      bierner.markdown-footnotes
+
       (buildExtension {
         name = "markdown-sup";
         publisher = "DevHawk";
@@ -64,6 +60,7 @@
 
       ms-vscode.cpptools
       ms-vscode.cmake-tools
+      twxs.cmake
 
       ms-python.python
 
@@ -83,25 +80,10 @@
       golang.go
 
       (buildExtension {
-        name = "shader-toy";
-        publisher = "stevensona";
-        version = "0.11.2";
-        sha256 = "sha256-gsjAxD40sf35Wop27crkJq4Wov5R62UTEs3n5prGVhw=";
-      })
-
-      (buildExtension {
         name = "glsl-lsp";
         publisher = "kuba-p";
         version = "0.0.2";
         sha256 = "sha256-MmA73L6fCfQ/KYBzGWDgEdktzDuRonUSppwq9GxuLGY=";
-      })
-
-      (buildExtension {
-        name = "glassit";
-        publisher = "s-nlf-fh";
-        version = "0.2.4";
-        sha256 = "sha256-YmohKiypAl9sbnmg3JKtvcGnyNnmHvLKK1ifl4SmyQY=";
-        buildInputs = [pkgs.xorg.xprop];
       })
 
       (buildExtension {

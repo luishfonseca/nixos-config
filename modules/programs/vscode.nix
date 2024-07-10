@@ -18,7 +18,7 @@ in {
 
   config = mkIf cfg.enable {
     services.gnome.gnome-keyring.enable = true;
-    environment.systemPackages = with pkgs.unstable; [
+    environment.systemPackages = with pkgs.latest; [
       (vscode-with-extensions.override {
         vscodeExtensions = cfg.extensions;
       })
