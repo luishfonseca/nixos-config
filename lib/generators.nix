@@ -1,33 +1,33 @@
 {
   lib,
-  pkgs,
-  profiles,
-  modules,
   inputs,
-  nixosConfigurations,
   ...
 }: let
   /*
   *
-  Synopsis: mkPkgs overlays
+  Synopsis: mkPkgs pkgsPath { system, overlays }
 
   Generate an attribute set representing Nix packages with custom overlays and packages.
 
   Inputs:
+  - pkgsPath: The path to the directory containing custom Nix packages.
+  - system: The target system platform (e.g., "x86_64-linux").
   - overlays: An attribute set of overlays to apply on top of the main Nixpkgs.
-  - pkgsDir: The path to the directory containing custom Nix packages.
 
   Output Format:
   An attribute set representing Nix packages with custom overlays and packages.
   The function imports the main Nixpkgs and applies additional overlays defined in the `overlays` argument.
-  The function adds a special overlay for the custom packages found in the `pkgsDir` directory.
+  The function adds a special overlay for the custom packages found in the `pkgsPath` directory.
   The function adds the `unstable` overlay with the packages from the `unstable` channel.
 
   *
   */
-  mkPkgs = overlays: pkgsDir: let
+  mkPkgs = pkgsPath: {
+    system,
+    overlays,
+  }: let
     argsPkgs = {
-      system = "x86_64-linux";
+      inherit system;
       config.allowUnfree = true;
     };
   in
@@ -41,7 +41,7 @@
               lhf =
                 prev.lib.mapAttrsRecursive
                 (_: pkg: (prev.callPackage pkg {}))
-                (lib.lhf.rakeLeaves pkgsDir);
+                (lib.lhf.rakeLeaves pkgsPath);
             })
           ]
           ++ lib.attrValues overlays;
@@ -50,34 +50,38 @@
 
   /*
   *
-  Synopsis: mkOverlays overlaysDir
+  Synopsis: mkOverlays overlaysPath
 
   Generate overlays for Nix expressions found in the specified directory.
 
   Inputs:
-  - overlaysDir: The path to the directory containing Nix expressions.
+  - overlaysPath: The path to the directory containing Nix expressions.
 
   Output Format:
   An attribute set representing Nix overlays.
-  The function recursively scans the `overlaysDir` directory for Nix expressions and imports each overlay.
+  The function recursively scans the `overlaysPath` directory for Nix expressions and imports each overlay.
 
   *
   */
-  mkOverlays = overlaysDir:
+  mkOverlays = overlaysPath:
     lib.mapAttrsRecursive
     (_: overlay: import overlay {inherit inputs;})
-    (lib.lhf.rakeLeaves overlaysDir);
+    (lib.lhf.rakeLeaves overlaysPath);
 
   /*
   *
-  Synopsis: mkHost hostname { system, hostPath }
+  Synopsis: mkHost hostPath hostname { system, pkgs, profiles, modules, nixosConfigurations }
 
   Generate a NixOS system configuration for the specified hostname.
 
   Inputs:
+  - hostPath: The path to the directory containing host-specific configurations.
   - hostname: The hostname for the target NixOS system.
   - system: The target system platform (e.g., "x86_64-linux").
-  - hostPath: The path to the directory containing host-specific Nix configurations.
+  - pkgs: The final Nixpkgs.
+  - profiles: The custom NixOS profiles.
+  - modules: The custom NixOS modules.
+  - nixosConfigurations: The NixOS system configurations.
 
   Output Format:
   A NixOS system configuration representing the specified hostname. The function generates
@@ -86,9 +90,12 @@
 
   *
   */
-  mkHost = hostname: {
+  mkHost = hostPath: hostname: {
     system,
-    hostPath,
+    pkgs,
+    profiles,
+    modules,
+    nixosConfigurations,
   }:
     lib.nixosSystem {
       inherit system pkgs lib;
@@ -97,97 +104,40 @@
         (lib.collect builtins.isPath modules)
         ++ [
           {networking.hostName = hostname;}
-          hostPath
+          "${hostPath}/${hostname}.nix"
         ];
     };
 
   /*
   *
-  Synopsis: mkHosts hostsDir
+  Synopsis: mkHosts hostsPath { system, pkgs, profiles, modules, nixosConfigurations }
 
   Generate a set of NixOS system configurations for the hosts defined in the specified directory.
 
   Inputs:
-  - hostsDir: The path to the directory containing host-specific configurations.
+  - hostsPath: The path to the directory containing host-specific configurations.
+  - system: The target system platform (e.g., "x86_64-linux").
+  - pkgs: The final Nixpkgs.
+  - profiles: The custom NixOS profiles.
+  - modules: The custom NixOS modules.
+  - nixosConfigurations: The NixOS system configurations.
 
   Output Format:
   An attribute set representing NixOS system configurations for the hosts
-  found in the `hostsDir`. The function scans the `hostsDir` directory
+  found in the `hostsPath`. The function scans the `hostsPath` directory
   for host-specific Nix configurations and generates a set of NixOS
   system configurations for each host. The resulting attribute set maps
   hostnames to their corresponding NixOS system configurations.
 
   *
   */
-  mkHosts = hostsDir: (lib.mapAttrs
-    (host: cfg: mkHost host cfg)
-    (lib.mapAttrs
-      (host: hostPath: {
-        inherit hostPath;
-        system = "x86_64-linux";
-      })
-      (lib.attrsets.mapAttrs'
-        (path: _: lib.attrsets.nameValuePair (lib.removeSuffix ".nix" path) "${hostsDir}/${path}")
-        (builtins.readDir hostsDir))));
-
-  /*
-  *
-  Synopsis: mkDisks
-
-  Generate a set of Disko configurations for the configured hosts.
-
-  Output Format:
-  An attribute set representing Disko configurations for the configured hosts.
-  The resulting attribute set maps hostnames to their corresponding Disko configurations.
-
-  *
-  */
-  mkDisks =
-    lib.mapAttrs
-    (host: cfg: ({...}: {disko.devices = lib.attrsets.filterAttrsRecursive (k: _: !(lib.hasPrefix "_" k)) cfg.config.disko.devices;}))
-    nixosConfigurations;
-
-  /*
-  *
-  Synopsis: mkSecrets secretsDir
-
-  Generate a set of secrets to be used by agenix.
-
-  Inputs:
-  - secretsDir: The path to the directory containing secrets.
-
-  Output Format:
-  An attribute set representing secrets.
-  The function scans the `secretsDir` directory recursively for secrets and
-  generates a set of secrets for each host.
-  The resulting attribute set maps paths to their corresponding secret file.
-
-  Example input:
-  ```
-  ./secrets/secrets.nix
-  ./secrets/key1.age
-  ./secrets/key2.nix
-  ./secrets/host-keys/key3.age
-  ```
-
-  Example output:
-  {
-    "key1".file = ./secrets/key1.age;
-    "key2".file = ./secrets/key2.age;
-    "host-keys/key3".file = ./secrets/host-keys/key3.age;
-  }
-
-  *
-  */
-  mkSecrets = secretsDir:
-    builtins.listToAttrs (builtins.map
-      (file: let
-        name = lib.removePrefix (toString secretsDir + "/") (toString file);
-      in {
-        inherit name;
-        value = {inherit file;};
-      })
-      (builtins.filter (p: lib.hasSuffix ".age" p) (lib.filesystem.listFilesRecursive secretsDir)));
+  mkHosts = hostsPath: {...} @ cfg:
+    builtins.listToAttrs (
+      builtins.map
+      (hostname: lib.nameValuePair hostname (mkHost hostsPath hostname cfg))
+      (builtins.map (path: lib.removeSuffix ".nix" path)
+        (builtins.attrNames (builtins.readDir hostsPath)))
+    );
 in {
-  inherit mkHosts mkDisks mkPkgs mkOverlays mkSecrets;
+  inherit mkHosts mkPkgs mkOverlays;
 }
