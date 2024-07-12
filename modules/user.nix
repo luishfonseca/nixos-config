@@ -17,12 +17,7 @@
   config = {
     users.users.${config.user.name} = lib.mkAliasDefinitions options.user;
 
-    user = {
-      extraGroups = ["wheel"];
-      isNormalUser = true;
-    };
-
-    nix.settings.allowed-users = ["root" config.user.name];
+    user.isNormalUser = true;
 
     home-manager = {
       useUserPackages = true;
