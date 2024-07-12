@@ -18,7 +18,7 @@
       "keyvol_recovery.key"
     ]
     ++ (
-      if cfg.encryption.tpm.remote.enable
+      if cfg.remoteUnlocking.enable
       then ["sshvol_recovery.key"]
       else []
     );
@@ -47,7 +47,7 @@
       ${lib.concatStringsSep "\n" (map (key: "\"  - /keyvol/${key}\" \\") keys)}
       "Make sure to BACKUP the keys!!!"
 
-    ${lib.optionalString cfg.encryption.tpm.enable ''
+    ${lib.optionalString cfg.tpmUnlocking ''
       if [ $(${sbctl}/bin/sbctl status --json | ${pkgs.jq}/bin/jq .setup_mode) = false ]; then
         printf '\e[1;31m%s\n%s\n\e[0m' \
           "WARNING: Secure Boot Setup Mode is not enabled!" \
@@ -64,7 +64,7 @@
     read -p "Press enter to continue"
 
     ${
-      if cfg.encryption.tpm.enable
+      if cfg.tpmUnlocking
       then ''
         systemd-cryptenroll /dev/zvol/zroot/keyvol --unlock-key-file=/keyvol/keyvol_recovery.key --tpm2-device=auto --tpm2-pcrs=
 
@@ -91,17 +91,17 @@
 
   fstab = ''
     ${
-      if cfg.encryption.tpm.remote.enable
+      if cfg.remoteUnlocking.enable
       # nofail so it doesn't order before local-fs.target and therefore systemd-tmpfiles-setup
       then "/dev/mapper/keyvol /keyvol ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2"
       else "/dev/mapper/keyvol /keyvol ext4 defaults 0 2"
     }
     ${
-      lib.optionalString cfg.encryption.tpm.remote.enable
+      lib.optionalString cfg.remoteUnlocking.enable
       "/dev/mapper/sshvol /sshvol ext4 defaults 0 2"
     }
     ${
-      lib.optionalString cfg.encryption.tpm.remote.enable
+      lib.optionalString cfg.remoteUnlocking.enable
       "/sshvol/var/lib/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/sshvol/var/lib/tailscale"
     }
   '';
@@ -117,30 +117,25 @@ in {
       description = "The size of the ESP partition";
       default = "512M";
     };
-    encryption = {
-      enable = mkEnableOption "encryption";
-      tpm = {
-        enable = mkEnableOption "TPM";
-        remote = {
-          enable = mkEnableOption "remote unlocking";
-          tailscale = {
-            enable = mkEnableOption "Tailscale in initrd";
-            interfaceName = mkOption {
-              type = types.str;
-              description = "The network interface to use";
-              default = "tun0";
-            };
-            port = mkOption {
-              type = types.int;
-              description = "The port to use";
-              default = 0;
-            };
-          };
-          authorizedKeys = mkOption {
-            type = types.listOf types.str;
-            description = "Authorized keys for remote unlocking";
-          };
+    tpmUnlocking = mkEnableOption "unlock with TPM";
+    remoteUnlocking = {
+      enable = mkEnableOption "remote unlocking";
+      tailscale = {
+        enable = mkEnableOption "Tailscale in initrd";
+        interfaceName = mkOption {
+          type = types.str;
+          description = "The network interface to use";
+          default = "tun0";
         };
+        port = mkOption {
+          type = types.int;
+          description = "The port to use";
+          default = 0;
+        };
+      };
+      authorizedKeys = mkOption {
+        type = types.listOf types.str;
+        description = "Authorized keys for remote unlocking";
       };
     };
   };
@@ -157,59 +152,20 @@ in {
           devNodes = "/dev/disk/by-uuid"; # For some reason, /dev/vda was not under /dev/disk/by-id
           forceImportRoot = false;
         };
-        initrd.systemd.enable = true;
+
         loader = {
           efi.canTouchEfiVariables = true;
-          systemd-boot.enable = ! cfg.encryption.enable || ! cfg.encryption.tpm.enable; # disabled when lanzaboote is enabled
+          systemd-boot.enable = ! cfg.tpmUnlocking; # disabled when lanzaboote is enabled
         };
-      };
 
-      disko.devices.disk.os = {
-        inherit (cfg) device;
-        type = "disk";
-        content = {
-          type = "gpt";
-          partitions = {
-            ESP = {
-              size = cfg.sizeESP;
-              type = "EF00";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountOptions = ["umask=0077"];
-                mountpoint = "/boot";
-              };
-            };
-            zfs = {
-              size = "100%";
-              content = {
-                type = "zfs";
-                pool = "zroot";
-              };
-            };
-          };
-        };
-      };
-    }
-    (lib.mkIf (! cfg.encryption.enable) {
-      disko.devices.zpool.zroot = {
-        mountpoint = "/";
-        rootFsOptions = {
-          compression = "zstd";
-          "com.sun:auto-snapshot" = "false";
-        };
-        postCreateHook = ''
-          zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank
-        '';
-      };
-    })
-    (lib.mkIf cfg.encryption.enable (lib.mkMerge [
-      {
-        boot.initrd = {
+        initrd = {
           availableKernelModules = ["ext4"];
 
+          luks.devices.keyvol.device = "/dev/zvol/zroot/keyvol";
+
           systemd = {
-            enableTpm2 = cfg.encryption.tpm.enable;
+            enable = true;
+            enableTpm2 = cfg.tpmUnlocking;
 
             contents."/etc/fstab".text = fstab;
 
@@ -247,13 +203,39 @@ in {
               };
             };
           };
-
-          luks.devices.keyvol.device = "/dev/zvol/zroot/keyvol";
         };
+      };
 
-        fileSystems."/keyvol".device = "/dev/mapper/keyvol";
+      fileSystems."/keyvol".device = "/dev/mapper/keyvol";
 
-        disko.devices.zpool.zroot = {
+      disko.devices = {
+        disk.os = {
+          inherit (cfg) device;
+          type = "disk";
+          content = {
+            type = "gpt";
+            partitions = {
+              ESP = {
+                size = cfg.sizeESP;
+                type = "EF00";
+                content = {
+                  type = "filesystem";
+                  format = "vfat";
+                  mountOptions = ["umask=0077"];
+                  mountpoint = "/boot";
+                };
+              };
+              zfs = {
+                size = "100%";
+                content = {
+                  type = "zfs";
+                  pool = "zroot";
+                };
+              };
+            };
+          };
+        };
+        zpool.zroot = {
           rootFsOptions = {
             mountpoint = "none";
             compression = "zstd";
@@ -276,160 +258,177 @@ in {
                 postCreateHook = enrollKeys;
               };
             };
+
             crypt = {
               type = "zfs_fs";
               options = {
-                mountpoint = "none";
                 encryption = "aes-256-gcm";
                 keyformat = "hex";
                 keylocation = "file:///tmp/zfs.key";
               };
+              mountpoint = "/";
               preCreateHook = generateKeys;
               postCreateHook = ''
                 zfs set keylocation="file:///keyvol/zfs.key" "zroot/$name"
               '';
             };
-            "crypt/root" = {
+
+            "crypt/local" = {
               type = "zfs_fs";
-              mountpoint = "/";
-              postCreateHook = ''
-                zfs list -t snapshot -H -o name | grep -E '^zroot/crypt/root@blank$' || zfs snapshot zroot/crypt/root@blank
-              '';
+              options.mountpoint = "none";
             };
+
+            "crypt/local/nix" = {
+              type = "zfs_fs";
+              mountpoint = "/nix";
+            };
+
+            "crypt/safe" = {
+              type = "zfs_fs";
+              options.mountpoint = "none";
+            };
+
+            "crypt/safe/home" = {
+              type = "zfs_fs";
+              mountpoint = "/home";
+            };
+          };
+        };
+      };
+    }
+    (lib.mkIf cfg.tpmUnlocking {
+      boot = {
+        initrd.luks.devices.keyvol.crypttabExtraOpts = ["tpm2-device=auto"];
+
+        lanzaboote = {
+          enable = true;
+          pkiBundle = "/keyvol/secureboot";
+        };
+      };
+
+      system.activationScripts.keyvol = ''
+        if [ ! -d /keyvol ]; then
+          mkdir -p /keyvol
+          mount /dev/mapper/keyvol /keyvol
+        fi
+      '';
+
+      environment.systemPackages = [sbctl pkgs.lhf.tpm-lockup];
+    })
+    (lib.mkIf (cfg.tpmUnlocking && cfg.remoteUnlocking.enable) (lib.mkMerge [
+      {
+        boot.initrd = {
+          availableKernelModules = ["igb"];
+
+          systemd = {
+            inherit (config.systemd) network;
+
+            contents."/etc/tmpfiles.d/50-ssh-host-keys.conf".text = ''
+              C /etc/ssh/ssh_host_ed25519_key 0600 - - - /sshvol/ssh_host_ed25519_key
+              C /etc/ssh/ssh_host_rsa_key 0600 - - - /sshvol/ssh_host_rsa_key
+            '';
+
+            services.systemd-tmpfiles-setup.before = ["sshd.service"];
+          };
+
+          luks.devices = {
+            sshvol = {
+              device = "/dev/zvol/zroot/sshvol";
+              crypttabExtraOpts = ["tpm2-device=auto"];
+            };
+            keyvol.crypttabExtraOpts = ["nofail"];
+          };
+
+          network.ssh = {
+            inherit (cfg.remoteUnlocking) authorizedKeys;
+            enable = true;
+            ignoreEmptyHostKeys = true;
+          };
+        };
+
+        fileSystems."/sshvol".device = "/dev/mapper/sshvol";
+        systemd.tmpfiles.rules = [
+          "C /etc/ssh/ssh_host_ed25519_key 0600 - - - /sshvol/ssh_host_ed25519_key"
+          "C /etc/ssh/ssh_host_ed25519_key.pub 0644 - - - /sshvol/ssh_host_ed25519_key.pub"
+          "C /etc/ssh/ssh_host_rsa_key 0600 - - - /sshvol/ssh_host_rsa_key"
+          "C /etc/ssh/ssh_host_rsa_key.pub 0644 - - - /sshvol/ssh_host_rsa_key.pub"
+        ];
+
+        disko.devices.zpool.zroot.datasets.sshvol = {
+          type = "zfs_volume";
+          size = "20M";
+          content = {
+            name = "sshvol";
+            type = "luks";
+            passwordFile = "/tmp/sshvol_recovery.key";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+            };
+            preCreateHook = generateKeys;
+            postCreateHook = generateHostKeys;
           };
         };
       }
-      (lib.mkIf cfg.encryption.tpm.enable {
-        boot = {
-          initrd.luks.devices.keyvol.crypttabExtraOpts = ["tpm2-device=auto"];
+      (lib.mkIf cfg.remoteUnlocking.tailscale.enable {
+        boot.initrd = {
+          availableKernelModules = ["tun" "nft_chain_nat"];
 
-          lanzaboote = {
-            enable = true;
-            pkiBundle = "/keyvol/secureboot";
+          systemd = {
+            initrdBin = with pkgs; [iptables iproute2 iputils tailscale];
+            packages = with pkgs; [tailscale];
+
+            additionalUpstreamUnits = ["systemd-resolved.service"];
+            users.systemd-resolve = {};
+            groups.systemd-resolve = {};
+            storePaths = ["${config.boot.initrd.systemd.package}/lib/systemd/systemd-resolved"];
+
+            contents = {
+              "/etc/systemd/resolved.conf" = {inherit (config.environment.etc."systemd/resolved.conf") source;};
+              "/etc/hostname" = {inherit (config.environment.etc.hostname) source;};
+              "/etc/tmpfiles.d/50-tailscale.conf".text = ''
+                L /var/run - - - - /run
+              '';
+            };
+
+            network.networks."50-tailscale" = {
+              matchConfig = {
+                Name = cfg.interfaceName;
+              };
+              linkConfig = {
+                Unmanaged = true;
+                ActivationPolicy = "manual";
+              };
+            };
+
+            services = {
+              systemd-resolved = {
+                wantedBy = ["initrd.target"];
+                serviceConfig.ExecStartPre = "-+/bin/ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf";
+              };
+              tailscaled = {
+                wantedBy = ["initrd.target"];
+                serviceConfig.Environment = [
+                  "PORT=${toString cfg.remoteUnlocking.tailscale.port}"
+                  ''"FLAGS=--tun ${lib.escapeShellArg cfg.remoteUnlocking.tailscale.interfaceName}"''
+                ];
+              };
+            };
           };
         };
 
-        system.activationScripts.keyvol = ''
-          if [ ! -d /keyvol ]; then
-            mkdir -p /keyvol
-            mount /dev/mapper/keyvol /keyvol
-          fi
-        '';
+        fileSystems."/var/lib/tailscale" = {
+          depends = ["/sshvol"];
+          device = "/sshvol/var/lib/tailscale";
+          fsType = "none";
+          options = ["bind"];
+        };
 
-        environment.systemPackages = [sbctl pkgs.lhf.tpm-lockup];
+        services.tailscale.enable = true;
       })
-      (lib.mkIf (cfg.encryption.tpm.enable && cfg.encryption.tpm.remote.enable) (lib.mkMerge [
-        {
-          boot.initrd = {
-            availableKernelModules = ["igb"];
-
-            systemd = {
-              inherit (config.systemd) network;
-
-              contents."/etc/tmpfiles.d/50-ssh-host-keys.conf".text = ''
-                C /etc/ssh/ssh_host_ed25519_key 0600 - - - /sshvol/ssh_host_ed25519_key
-                C /etc/ssh/ssh_host_rsa_key 0600 - - - /sshvol/ssh_host_rsa_key
-              '';
-
-              services.systemd-tmpfiles-setup.before = ["sshd.service"];
-            };
-
-            luks.devices = {
-              sshvol = {
-                device = "/dev/zvol/zroot/sshvol";
-                crypttabExtraOpts = ["tpm2-device=auto"];
-              };
-              keyvol.crypttabExtraOpts = ["nofail"];
-            };
-
-            network.ssh = {
-              inherit (cfg.encryption.tpm.remote) authorizedKeys;
-              enable = true;
-              ignoreEmptyHostKeys = true;
-            };
-          };
-
-          fileSystems."/sshvol".device = "/dev/mapper/sshvol";
-          systemd.tmpfiles.rules = [
-            "C /etc/ssh/ssh_host_ed25519_key 0600 - - - /sshvol/ssh_host_ed25519_key"
-            "C /etc/ssh/ssh_host_ed25519_key.pub 0644 - - - /sshvol/ssh_host_ed25519_key.pub"
-            "C /etc/ssh/ssh_host_rsa_key 0600 - - - /sshvol/ssh_host_rsa_key"
-            "C /etc/ssh/ssh_host_rsa_key.pub 0644 - - - /sshvol/ssh_host_rsa_key.pub"
-          ];
-
-          disko.devices.zpool.zroot.datasets.sshvol = {
-            type = "zfs_volume";
-            size = "20M";
-            content = {
-              name = "sshvol";
-              type = "luks";
-              passwordFile = "/tmp/sshvol_recovery.key";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-              };
-              preCreateHook = generateKeys;
-              postCreateHook = generateHostKeys;
-            };
-          };
-        }
-        (lib.mkIf cfg.encryption.tpm.remote.tailscale.enable {
-          boot.initrd = {
-            availableKernelModules = ["tun" "nft_chain_nat"];
-
-            systemd = {
-              initrdBin = with pkgs; [iptables iproute2 iputils tailscale];
-              packages = with pkgs; [tailscale];
-
-              additionalUpstreamUnits = ["systemd-resolved.service"];
-              users.systemd-resolve = {};
-              groups.systemd-resolve = {};
-              storePaths = ["${config.boot.initrd.systemd.package}/lib/systemd/systemd-resolved"];
-
-              contents = {
-                "/etc/systemd/resolved.conf" = {inherit (config.environment.etc."systemd/resolved.conf") source;};
-                "/etc/hostname" = {inherit (config.environment.etc.hostname) source;};
-                "/etc/tmpfiles.d/50-tailscale.conf".text = ''
-                  L /var/run - - - - /run
-                '';
-              };
-
-              network.networks."50-tailscale" = {
-                matchConfig = {
-                  Name = cfg.interfaceName;
-                };
-                linkConfig = {
-                  Unmanaged = true;
-                  ActivationPolicy = "manual";
-                };
-              };
-
-              services = {
-                systemd-resolved = {
-                  wantedBy = ["initrd.target"];
-                  serviceConfig.ExecStartPre = "-+/bin/ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf";
-                };
-                tailscaled = {
-                  wantedBy = ["initrd.target"];
-                  serviceConfig.Environment = [
-                    "PORT=${toString cfg.encryption.tpm.remote.tailscale.port}"
-                    ''"FLAGS=--tun ${lib.escapeShellArg cfg.encryption.tpm.remote.tailscale.interfaceName}"''
-                  ];
-                };
-              };
-            };
-          };
-
-          fileSystems."/var/lib/tailscale" = {
-            depends = ["/sshvol"];
-            device = "/sshvol/var/lib/tailscale";
-            fsType = "none";
-            options = ["bind"];
-          };
-
-          services.tailscale.enable = true;
-        })
-      ]))
     ]))
+    (lib.mkIf (cfg.remoteUnlocking.enable && ! cfg.tpmUnlocking) {
+      warnings = ["Remote unlocking requires TPM unlocking"];
+    })
   ]);
 }
