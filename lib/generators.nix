@@ -5,54 +5,47 @@
 }: let
   /*
   *
-  Synopsis: mkPkgs pkgsPath system
+  Synopsis: mkOverlay pkgsPath { pkgsConfig }
 
-  Generate an attribute set representing Nix packages with custom packages.
+  Generate an overlay with unstable and custom packages.
 
   Inputs:
   - pkgsPath: The path to the directory containing custom Nix packages.
-  - system: The target system platform (e.g., "x86_64-linux").
+  - pkgsConfig: The Nixpkgs configuration.
 
   Output Format:
-  An attribute set representing Nix packages with custom packages.
-  The function imports the main Nixpkgs and adds a special overlay for the custom packages found in the `pkgsPath` directory.
-  The function adds the `unstable` overlay with the packages from the `unstable` channel.
+  A list of overlays with unstable and custom packages.
+  The first overlay adds the `unstable` channel packages under the `unstable` attribute, configured by `pkgsConfig`.
+  The second overlay adds the custom packages found in the `pkgsPath` directory under the `lhf` attribute.
 
   *
   */
-  mkPkgs = pkgsPath: system: let
-    argsPkgs = {
-      inherit system;
-      config.allowUnfree = true;
-    };
-  in
-    import inputs.nixpkgs ({
-        overlays =
-          [
-            (final: prev: {
-              unstable = import inputs.unstable argsPkgs;
-            })
-            (final: prev: {
-              lhf =
-                prev.lib.mapAttrsRecursive
-                (_: pkg: (prev.callPackage pkg {}))
-                (lib.lhf.rakeLeaves pkgsPath);
-            })
-          ];
-      }
-      // argsPkgs);
+  mkOverlays = pkgsPath: {pkgsConfig}: [
+    (final: prev: {
+      unstable = import inputs.unstable ({
+          inherit (final) system;
+        }
+        // pkgsConfig);
+    })
+    (final: prev: {
+      lhf =
+        prev.lib.mapAttrsRecursive
+        (_: pkg: (prev.callPackage pkg {}))
+        (lib.lhf.rakeLeaves pkgsPath);
+    })
+  ];
 
   /*
   *
-  Synopsis: mkHost hostPath hostname { system, pkgs, profiles, modules, nixosConfigurations }
+  Synopsis: mkHost hostPath hostname { overlays, pkgsConfig, profiles, modules, nixosConfigurations }
 
   Generate a NixOS system configuration for the specified hostname.
 
   Inputs:
   - hostPath: The path to the directory containing host-specific configurations.
   - hostname: The hostname for the target NixOS system.
-  - system: The target system platform (e.g., "x86_64-linux").
-  - pkgs: The final Nixpkgs.
+  - overlays: The custom NixOS overlays to be applied to Nixpkgs.
+  - pkgsConfig: The Nixpkgs configuration.
   - profiles: The custom NixOS profiles.
   - modules: The custom NixOS modules.
   - nixosConfigurations: The NixOS system configurations.
@@ -60,38 +53,44 @@
   Output Format:
   A NixOS system configuration representing the specified hostname. The function generates
   a NixOS system configuration using the provided parameters and additional modules. It
-  inherits attributes from `pkgs`, `lib`, `profiles`, `inputs` and `nixosConfigurations`.
+  inherits attributes from `overlays`, `lib`, `profiles`, `inputs` and `nixosConfigurations`.
 
   *
   */
   mkHost = hostPath: hostname: {
-    system,
-    pkgs,
+    overlays,
+    pkgsConfig,
     profiles,
     modules,
     nixosConfigurations,
   }:
     lib.nixosSystem {
-      inherit system pkgs lib;
+      inherit lib;
       specialArgs = {inherit profiles inputs nixosConfigurations;};
       modules =
         (lib.collect builtins.isPath modules)
         ++ [
           {networking.hostName = hostname;}
+          {
+            nixpkgs = {
+              overlays = overlays;
+              config = pkgsConfig;
+            };
+          }
           "${hostPath}/${hostname}.nix"
         ];
     };
 
   /*
   *
-  Synopsis: mkHosts hostsPath { system, pkgs, profiles, modules, nixosConfigurations }
+  Synopsis: mkHosts hostsPath { overlays, pkgsConfig, profiles, modules, nixosConfigurations }
 
   Generate a set of NixOS system configurations for the hosts defined in the specified directory.
 
   Inputs:
   - hostsPath: The path to the directory containing host-specific configurations.
-  - system: The target system platform (e.g., "x86_64-linux").
-  - pkgs: The final Nixpkgs.
+  - overlays: The custom NixOS overlays to be applied to Nixpkgs.
+  - pkgsConfig: The Nixpkgs configuration.
   - profiles: The custom NixOS profiles.
   - modules: The custom NixOS modules.
   - nixosConfigurations: The NixOS system configurations.
@@ -113,5 +112,5 @@
         (builtins.attrNames (builtins.readDir hostsPath)))
     );
 in {
-  inherit mkHosts mkPkgs;
+  inherit mkOverlays mkHosts;
 }
