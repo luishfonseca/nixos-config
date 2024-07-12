@@ -1,6 +1,8 @@
 {profiles, ...}: {
   imports = with profiles; [
     server
+    power-saving
+
     boot.zfs
 
     hardware.common-pc
