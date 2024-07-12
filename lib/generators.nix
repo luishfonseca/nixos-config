@@ -5,27 +5,22 @@
 }: let
   /*
   *
-  Synopsis: mkPkgs pkgsPath { system, overlays }
+  Synopsis: mkPkgs pkgsPath system
 
-  Generate an attribute set representing Nix packages with custom overlays and packages.
+  Generate an attribute set representing Nix packages with custom packages.
 
   Inputs:
   - pkgsPath: The path to the directory containing custom Nix packages.
   - system: The target system platform (e.g., "x86_64-linux").
-  - overlays: An attribute set of overlays to apply on top of the main Nixpkgs.
 
   Output Format:
-  An attribute set representing Nix packages with custom overlays and packages.
-  The function imports the main Nixpkgs and applies additional overlays defined in the `overlays` argument.
-  The function adds a special overlay for the custom packages found in the `pkgsPath` directory.
+  An attribute set representing Nix packages with custom packages.
+  The function imports the main Nixpkgs and adds a special overlay for the custom packages found in the `pkgsPath` directory.
   The function adds the `unstable` overlay with the packages from the `unstable` channel.
 
   *
   */
-  mkPkgs = pkgsPath: {
-    system,
-    overlays,
-  }: let
+  mkPkgs = pkgsPath: system: let
     argsPkgs = {
       inherit system;
       config.allowUnfree = true;
@@ -43,30 +38,9 @@
                 (_: pkg: (prev.callPackage pkg {}))
                 (lib.lhf.rakeLeaves pkgsPath);
             })
-          ]
-          ++ lib.attrValues overlays;
+          ];
       }
       // argsPkgs);
-
-  /*
-  *
-  Synopsis: mkOverlays overlaysPath
-
-  Generate overlays for Nix expressions found in the specified directory.
-
-  Inputs:
-  - overlaysPath: The path to the directory containing Nix expressions.
-
-  Output Format:
-  An attribute set representing Nix overlays.
-  The function recursively scans the `overlaysPath` directory for Nix expressions and imports each overlay.
-
-  *
-  */
-  mkOverlays = overlaysPath:
-    lib.mapAttrsRecursive
-    (_: overlay: import overlay {inherit inputs;})
-    (lib.lhf.rakeLeaves overlaysPath);
 
   /*
   *
@@ -139,5 +113,5 @@
         (builtins.attrNames (builtins.readDir hostsPath)))
     );
 in {
-  inherit mkHosts mkPkgs mkOverlays;
+  inherit mkHosts mkPkgs;
 }

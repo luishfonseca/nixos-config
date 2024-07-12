@@ -23,13 +23,17 @@
         lib = self;
       });
 
-    modules = lib.lhf.rakeLeaves ./modules;
-    profiles = lib.lhf.rakeLeaves ./profiles;
-    overlays = lib.lhf.mkOverlays ./overlays;
+    nixosModules = {
+      modules = lib.lhf.rakeLeaves ./modules;
+      profiles = lib.lhf.rakeLeaves ./profiles;
+    };
   in
     inputs.utils.lib.eachDefaultSystem (system: let
-      pkgs = lib.lhf.mkPkgs ./pkgs {inherit system overlays;};
-      nixosConfigurations = lib.lhf.mkHosts ./hosts {inherit system pkgs profiles modules nixosConfigurations;};
+      pkgs = lib.lhf.mkPkgs ./pkgs system;
+      nixosConfigurations = lib.lhf.mkHosts ./hosts {
+        inherit system pkgs nixosConfigurations;
+        inherit (nixosModules) modules profiles;
+      };
     in {
       packages =
         pkgs.lhf
@@ -45,8 +49,5 @@
 
       formatter = pkgs.alejandra;
     })
-    // {
-      inherit overlays;
-      nixosModules = {inherit modules profiles;};
-    };
+    // {inherit nixosModules;};
 }
