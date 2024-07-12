@@ -14,6 +14,9 @@
     nixos-anywhere.url = "github:nix-community/nixos-anywhere";
     nixos-anywhere.inputs.nixpkgs.follows = "nixpkgs";
     nixos-anywhere.inputs.disko.follows = "disko";
+
+    lanzaboote.url = "github:nix-community/lanzaboote";
+    lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {self, ...} @ inputs: let
