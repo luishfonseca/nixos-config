@@ -17,6 +17,8 @@
 
     lanzaboote.url = "github:nix-community/lanzaboote";
     lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
+
+    hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
   outputs = {self, ...} @ inputs: let
@@ -28,7 +30,7 @@
 
     nixosModules = {
       modules = lib.lhf.rakeLeaves ./modules;
-      profiles = lib.lhf.rakeLeaves ./profiles;
+      profiles = lib.lhf.rakeLeaves ./profiles // {hardware = inputs.hardware.nixosModules;};
     };
   in
     inputs.utils.lib.eachDefaultSystem (system: let
