@@ -4,6 +4,7 @@
     power-saving
 
     boot.zfs
+    zfs
 
     hardware.common-pc
     hardware.common-cpu-amd
