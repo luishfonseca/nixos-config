@@ -499,7 +499,7 @@ in {
       boot.initrd.systemd = let
         erase = pkgs.writeScript "erase" ''
           #!${pkgs.runtimeShell}
-          ${config.boot.zfs.package}/bin/zfs destroy zroot/crypt/local/prev
+          ${config.boot.zfs.package}/bin/zfs destroy -r zroot/crypt/local/prev
           ${config.boot.zfs.package}/bin/zfs rename zroot/crypt/local/root zroot/crypt/local/prev
           ${config.boot.zfs.package}/bin/zfs clone zroot/crypt/local/prev@blank zroot/crypt/local/root
           ${config.boot.zfs.package}/bin/zfs promote zroot/crypt/local/root
