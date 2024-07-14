@@ -26,6 +26,8 @@
 
     hardware.url = "github:NixOS/nixos-hardware/master";
 
+    impermanence.url = "github:nix-community/impermanence";
+
     ### === Not used by me, but other inputs need it === ###
     flake-compat.url = "github:edolstra/flake-compat";
 

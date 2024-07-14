@@ -10,13 +10,16 @@
     hardware.common-cpu-amd
   ];
 
+  boot.blacklistedKernelModules = ["kvm_amd"];
+
   lhf.boot.zfs.device = "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNS0WB10632A";
 
-  user.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE98aQ0VshDOnylLmZcfEdbuxZllCDtfBYH2786f4nph luis@altair"
-  ];
-
-  boot.blacklistedKernelModules = ["kvm_amd"];
+  user = {
+    hashedPassword = "$y$j9T$5/l6lPOfed1cOlPXHeasr/$9IQ0SwrN5KUri5yxCV3HN3.E6mNowwdsLvFacdYuqe/";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE98aQ0VshDOnylLmZcfEdbuxZllCDtfBYH2786f4nph luis@altair"
+    ];
+  };
 
   networking.hostId = "73c61367";
 

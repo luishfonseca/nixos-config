@@ -9,13 +9,16 @@
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  options = with lib.types; {
-    user = lib.mkOption {type = attrs;};
-    hm = lib.mkOption {type = attrs;};
+  options = with lib; {
+    user = mkOption {type = types.attrs;};
+    hm = mkOption {type = types.attrs;};
   };
 
   config = {
-    users.users.${config.user.name} = lib.mkAliasDefinitions options.user;
+    users = {
+      mutableUsers = false;
+      users.${config.user.name} = lib.mkAliasDefinitions options.user;
+    };
 
     user.isNormalUser = true;
 
