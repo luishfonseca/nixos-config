@@ -67,6 +67,10 @@ in {
           initrd.systemd.enable = true;
         };
 
+        environment.extraInit = ''
+          umask 0027
+        '';
+
         disko.devices.disk.os = {
           type = "disk";
           device = cfg.device.path;
@@ -89,6 +93,7 @@ in {
                   content = {
                     type = "filesystem";
                     format = "ext4";
+                    mountOptions = ["noatime"];
                     mountpoint =
                       if cfg.tmpfs
                       then "/pst"
@@ -208,10 +213,7 @@ in {
       (lib.mkIf cfg.tmpfs {
         disko.devices.nodev."/" = {
           fsType = "tmpfs";
-          mountOptions = [
-            "defaults"
-            "mode=755"
-          ];
+          mountOptions = ["mode=755"];
         };
 
         fileSystems = {
@@ -220,9 +222,7 @@ in {
             device = "/pst/local/nix";
             neededForBoot = true;
             fsType = "none";
-            options = [
-              "bind"
-            ];
+            options = ["bind"];
           };
         };
 
