@@ -1,7 +1,7 @@
 {
   stdenv,
   makeWrapper,
-  writeScript,
+  lib,
   bash,
   toybox,
   findutils,
@@ -11,27 +11,13 @@ stdenv.mkDerivation rec {
   name = "root-diff";
   src = ./.;
 
-  buildInputs = [bash];
+  buildInputs = [bash findutils colordiff];
   nativeBuildInputs = [makeWrapper];
-  installPhase = let
-    root-diff = writeScript "root-diff" ''
-      #!${bash}/bin/bash
-
-      if [ "$EUID" -ne 0 ]; then
-          echo "Please run as root"
-          exit
-      fi
-
-      ${findutils}/bin/find '/' -mount -path '/nix' -prune -o -type f |
-        sort |
-        ${toybox}/bin/xargs ${toybox}/bin/crc32 |
-        diff -u /pst/local/root-crc.txt - |
-        ${colordiff}/bin/colordiff |
-        less -R
-    '';
-  in ''
+  installPhase = ''
     mkdir -p $out/bin
-    cp ${root-diff} $out/bin/${name}
+    cp ${toybox}/bin/crc32 $out/bin
+    cp ${name}.sh $out/bin/${name}
     chmod +x $out/bin/${name}
+    wrapProgram $out/bin/${name} --prefix PATH : ${lib.makeBinPath buildInputs}:$out/bin
   '';
 }

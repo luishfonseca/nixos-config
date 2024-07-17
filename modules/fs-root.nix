@@ -234,7 +234,7 @@ in {
               #!${pkgs.runtimeShell}
               ${pkgs.findutils}/bin/find '/' -mount -path '/nix' -prune -o -type f |
                 sort |
-                ${pkgs.toybox}/bin/xargs ${pkgs.toybox}/bin/crc32 > /pst/local/root-crc.txt
+                ${pkgs.findutils}/bin/xargs ${pkgs.toybox}/bin/crc32 > /pst/local/root-crc.txt
             '';
           in {
             Type = "oneshot";
