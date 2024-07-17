@@ -6,8 +6,9 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 find '/' -mount -path '/nix' -prune -o -type f |
+    sed '/\/nix/d' |
     sort |
-    xargs crc32 |
-    diff -u /pst/local/root-crc.txt - |
+    xargs sha256sum |
+    diff -u /pst/local/root-checksums.txt - |
     colordiff |
     less -R

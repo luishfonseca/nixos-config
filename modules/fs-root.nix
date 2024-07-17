@@ -226,19 +226,22 @@ in {
           };
         };
 
-        systemd.services."root-crc" = {
-          description = "Calculate CRC for root filesystem files";
+        systemd.services."root-checksums" = {
+          description = "Calculate SHA256 checksums for root filesystem files";
           wantedBy = ["multi-user.target"];
           serviceConfig = let
-            crc = pkgs.writeScript "crc" ''
+            root-checksums = pkgs.writeScript "root-checksums" ''
               #!${pkgs.runtimeShell}
+              touch /pst/local/root-checksums.txt
+              chmod 600 /pst/local/root-checksums.txt
               ${pkgs.findutils}/bin/find '/' -mount -path '/nix' -prune -o -type f |
+                sed '/\/nix/d' |
                 sort |
-                ${pkgs.findutils}/bin/xargs ${pkgs.toybox}/bin/crc32 > /pst/local/root-crc.txt
+                ${pkgs.findutils}/bin/xargs ${pkgs.coreutils}/bin/sha256sum > /pst/local/root-checksums.txt
             '';
           in {
             Type = "oneshot";
-            ExecStop = "${crc}";
+            ExecStop = "${root-checksums}";
             RemainAfterExit = true;
           };
         };
