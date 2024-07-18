@@ -1,15 +1,20 @@
 {
   inputs = {
+    systems.url = "github:nix-systems/x86_64-linux"; # override this to use a different systems set
+
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    systems.url = "github:nix-systems/x86_64-linux"; # override this to use a different systems set
 
     home-manager.url = "github:nix-community/home-manager/release-24.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
+    agenix.inputs.home-manager.follows = "home-manager";
+    agenix.inputs.systems.follows = "systems";
 
     nixos-anywhere.url = "github:nix-community/nixos-anywhere";
     nixos-anywhere.inputs.nixpkgs.follows = "nixpkgs";
@@ -46,10 +51,10 @@
   outputs = {self, ...} @ inputs: let
     pkgsConfig.allowUnfree = true;
 
-    lib = inputs.nixpkgs.lib.extend (self: super:
+    lib = inputs.nixpkgs.lib.extend (final: prev:
       import ./lib {
         inherit inputs;
-        lib = self;
+        lib = final;
       });
 
     nixosModules = {
@@ -58,9 +63,10 @@
     };
 
     overlays = lib.lhf.mkOverlays ./pkgs {inherit pkgsConfig;};
+    secrets = lib.lhf.mkSecrets ./secrets;
 
     nixosConfigurations = lib.lhf.mkHosts ./hosts {
-      inherit overlays pkgsConfig nixosConfigurations;
+      inherit overlays pkgsConfig nixosConfigurations secrets;
       inherit (nixosModules) modules profiles;
     };
 
@@ -74,11 +80,14 @@
     legacyPackages = lib.lhf.eachSystem (system: pkgs.${system}.lhf // {inherit lib;});
 
     devShells = lib.lhf.eachSystem (system: {
-      default = pkgs.${system}.mkShell {
-        packages = [
-          inputs.nixos-anywhere.packages.${system}.nixos-anywhere
-        ];
-      };
+      default = with pkgs.${system};
+        mkShell {
+          packages = [
+            age
+            agenix
+            lhf.deploy-anywhere
+          ];
+        };
     });
 
     formatter = lib.lhf.eachSystem (system: pkgs.${system}.alejandra);

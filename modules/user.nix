@@ -20,7 +20,10 @@
       users.${config.user.name} = lib.mkAliasDefinitions options.user;
     };
 
-    user.isNormalUser = true;
+    user = {
+      isNormalUser = true;
+      hashedPasswordFile = lib.mkDefault "/etc/hashedPassword";
+    };
 
     home-manager = {
       useUserPackages = true;

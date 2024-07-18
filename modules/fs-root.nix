@@ -226,6 +226,9 @@ in {
           };
         };
 
+        age.identityPaths = ["/pst/local/etc/ssh/ssh_host_ed25519_key"];
+        user.hashedPasswordFile = "/pst/local/etc/hashedPassword";
+
         systemd.services."root-checksums" = {
           description = "Calculate SHA256 checksums for root filesystem files";
           wantedBy = ["multi-user.target"];

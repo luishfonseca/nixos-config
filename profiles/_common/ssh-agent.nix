@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   ...
@@ -9,6 +10,13 @@
     extraConfig = ''
       AddKeysToAgent yes
     '';
+  };
+
+  age.secrets.id_ed25519 = {
+    path = "/home/${config.user.name}/.ssh/id_ed25519";
+    owner = config.user.name;
+    mode = "400";
+    symlink = false;
   };
 
   systemd.user.services.ssh-agent.serviceConfig.Restart = lib.mkForce "always";

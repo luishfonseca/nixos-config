@@ -17,6 +17,7 @@
   A list of overlays with unstable and custom packages.
   The first overlay adds the `unstable` channel packages under the `unstable` attribute, configured by `pkgsConfig`.
   The second overlay adds the custom packages found in the `pkgsPath` directory under the `lhf` attribute.
+  Additional overlays are part of the flake inputs.
 
   *
   */
@@ -33,6 +34,8 @@
         (_: pkg: (prev.callPackage pkg {}))
         (lib.lhf.rakeLeaves pkgsPath);
     })
+    inputs.agenix.overlays.default
+    (final: prev: {nixos-anywhere = inputs.nixos-anywhere.packages.${final.system}.nixos-anywhere;})
   ];
 
   /*
@@ -49,6 +52,7 @@
   - profiles: The custom NixOS profiles.
   - modules: The custom NixOS modules.
   - nixosConfigurations: The NixOS system configurations.
+  - secrets: Function that receives a hostname and returns a list of secrets.
 
   Output Format:
   A NixOS system configuration representing the specified hostname. The function generates
@@ -63,10 +67,14 @@
     profiles,
     modules,
     nixosConfigurations,
+    secrets,
   }:
     lib.nixosSystem {
       inherit lib;
-      specialArgs = {inherit profiles inputs nixosConfigurations;};
+      specialArgs = {
+        inherit profiles inputs nixosConfigurations;
+        secrets = secrets hostname;
+      };
       modules =
         (lib.collect builtins.isPath modules)
         ++ [
@@ -94,6 +102,7 @@
   - profiles: The custom NixOS profiles.
   - modules: The custom NixOS modules.
   - nixosConfigurations: The NixOS system configurations.
+  - secrets: Function that receives a hostname and returns a list of secrets.
 
   Output Format:
   An attribute set representing NixOS system configurations for the hosts
@@ -106,11 +115,55 @@
   */
   mkHosts = hostsPath: {...} @ cfg:
     builtins.listToAttrs (
-      builtins.map
-      (hostname: lib.nameValuePair hostname (mkHost hostsPath hostname cfg))
+      builtins.map (hostname:
+        lib.nameValuePair
+        hostname
+        (mkHost hostsPath hostname cfg))
       (builtins.map (path: lib.removeSuffix ".nix" path)
         (builtins.attrNames (builtins.readDir hostsPath)))
     );
+
+  /*
+  *
+  Synopsis: mkSecrets secretsPath hostname
+
+  Generate a list of secrets for the specified hostname.
+
+  Inputs:
+  - secretsPath: The path to the directory containing secrets.
+  - hostname: The hostname for the target NixOS system.
+
+  Output Format:
+  An attribute set where each common or host specific entry on secretsPath/secrets.nix is mapped to the corresponding file path.
+
+  Example secrets.nix
+  ```
+  {
+    "common.age".publicKeys = users ++ hosts;
+    "your-host/password.age".privateKeys = users ++ [ your-host ];
+    "other-host/password.age".privateKeys = users ++ [ other-host ];
+  }
+  ```
+
+  Example output for hostname `your-host`
+  ```
+  {
+    "common".file = "/path/to/secrets/common.age";
+    "password".file = "/path/to/secrets/your-host/password.age";
+  }
+  ```
+
+  *
+  */
+  mkSecrets = secretsPath: hostname:
+    builtins.listToAttrs (
+      builtins.map (path:
+        lib.nameValuePair
+        (lib.removeSuffix ".age" (lib.last (lib.splitString "/" path)))
+        {file = "${secretsPath}/${path}";})
+      (lib.filter (path: (lib.hasPrefix "${hostname}/" path) || (! lib.hasInfix "/" path))
+        (builtins.attrNames (import "${secretsPath}/secrets.nix")))
+    );
 in {
-  inherit mkOverlays mkHosts;
+  inherit mkOverlays mkHosts mkSecrets;
 }
