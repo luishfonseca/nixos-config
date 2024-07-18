@@ -15,7 +15,6 @@
   age.secrets.id_ed25519 = {
     path = "/home/${config.user.name}/.ssh/id_ed25519";
     owner = config.user.name;
-    mode = "400";
     symlink = false;
   };
 
