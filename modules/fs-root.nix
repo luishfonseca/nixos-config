@@ -67,8 +67,8 @@ in {
           initrd.systemd.enable = true;
         };
 
-        environment.extraInit = ''
-          umask 0027
+        environment.shellInit = ''
+          umask 0077
         '';
 
         disko.devices.disk.os = {
