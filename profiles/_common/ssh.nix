@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  publicKeys,
   ...
 }: {
   programs.ssh = {
@@ -10,12 +11,27 @@
     extraConfig = ''
       AddKeysToAgent yes
     '';
+
+    knownHosts =
+      builtins.foldl' (x: y: x // y) {}
+      (lib.mapAttrsToList (host: key: {${host}.publicKey = "${key} root@${host}";}) publicKeys.host);
   };
+
+  user.openssh.authorizedKeys.keys = lib.mapAttrsToList (host: key: "${key} ${config.user.name}@${host}") publicKeys.user;
 
   age.secrets.id_ed25519 = {
     path = "/home/${config.user.name}/.ssh/id_ed25519";
     owner = config.user.name;
     symlink = false;
+  };
+
+  system.activationScripts.lhfCreateDirSSH = {
+    # agenix creates the directory, owned by root. This fixes that.
+    deps = ["agenix"];
+    text = ''
+      chown ${config.user.name} /home/${config.user.name}/.ssh
+      chmod 700 /home/${config.user.name}/.ssh
+    '';
   };
 
   systemd.user.services.ssh-agent.serviceConfig.Restart = lib.mkForce "always";

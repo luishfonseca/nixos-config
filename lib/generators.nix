@@ -53,6 +53,7 @@
   - modules: The custom NixOS modules.
   - nixosConfigurations: The NixOS system configurations.
   - secrets: Function that receives a hostname and returns a list of secrets.
+  - publicKeys: List of public keys to generate the authorized_keys and known_hosts files.
 
   Output Format:
   A NixOS system configuration representing the specified hostname. The function generates
@@ -68,11 +69,12 @@
     modules,
     nixosConfigurations,
     secrets,
+    publicKeys,
   }:
     lib.nixosSystem {
       inherit lib;
       specialArgs = {
-        inherit profiles inputs nixosConfigurations;
+        inherit profiles inputs nixosConfigurations publicKeys;
         secrets = secrets hostname;
       };
       modules =
@@ -103,6 +105,7 @@
   - modules: The custom NixOS modules.
   - nixosConfigurations: The NixOS system configurations.
   - secrets: Function that receives a hostname and returns a list of secrets.
+  - publicKeys: List of public keys to generate the authorized_keys and known_hosts files.
 
   Output Format:
   An attribute set representing NixOS system configurations for the hosts

@@ -64,9 +64,10 @@
 
     overlays = lib.lhf.mkOverlays ./pkgs {inherit pkgsConfig;};
     secrets = lib.lhf.mkSecrets ./secrets;
+    publicKeys = import ./public-keys.nix;
 
     nixosConfigurations = lib.lhf.mkHosts ./hosts {
-      inherit overlays pkgsConfig nixosConfigurations secrets;
+      inherit overlays pkgsConfig nixosConfigurations secrets publicKeys;
       inherit (nixosModules) modules profiles;
     };
 
