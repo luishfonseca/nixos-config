@@ -6,8 +6,6 @@
     hardware.common-cpu-amd
   ];
 
-  powerManagement.powertop.enable = true;
-
   lhf.fsRoot = {
     device = {
       path = "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNS0WB10632A";
