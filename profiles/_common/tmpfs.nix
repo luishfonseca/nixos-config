@@ -11,7 +11,6 @@
   persist.local.files =
     [
       "/etc/machine-id"
-      "/var/lib/logrotate.status"
     ]
     ++ lib.concatMap (key: [key.path (key.path + ".pub")]) config.services.openssh.hostKeys;
 
