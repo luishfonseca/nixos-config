@@ -46,12 +46,12 @@ in {
           ''
             nameserver 127.0.0.1
             ${lib.concatStringsSep "\n" (map (ip: "nameserver ${ip}") cfg.fallbacks)}
-            options single-request edns0 trusted-ad
+            options edns0 trusted-ad
           ''
           + lib.optionalString cfg.magicDNS.enable ''
             search ${cfg.magicDNS.internalDomain}
           '';
-        mode = "0600";
+        mode = "0644";
       };
 
       services.resolved.enable = false;
