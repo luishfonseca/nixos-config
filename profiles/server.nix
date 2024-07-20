@@ -1,5 +1,3 @@
 {profiles, ...}: {
-  imports = with profiles; [
-    common
-  ];
+  imports = [profiles.common] ++ builtins.attrValues profiles._server;
 }

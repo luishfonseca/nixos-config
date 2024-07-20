@@ -33,6 +33,9 @@
 
     impermanence.url = "github:nix-community/impermanence";
 
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
+    vscode-server.inputs.flake-utils.follows = "flake-utils";
+
     ### === Not used by me, but other inputs need it === ###
     flake-compat.url = "github:edolstra/flake-compat";
 
