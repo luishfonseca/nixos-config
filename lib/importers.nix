@@ -53,7 +53,7 @@
 
       files = lib.filterAttrs sieve (builtins.readDir dirPath);
     in
-      lib.filterAttrs (n: v: v != {}) (lib.mapAttrs' collect files);
+      lib.filterAttrs (_: v: v != {}) (lib.mapAttrs' collect files);
 in {
   inherit rakeLeaves;
 }

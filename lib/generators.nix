@@ -22,7 +22,7 @@
   *
   */
   mkOverlays = pkgsPath: {pkgsConfig}: [
-    (final: prev: {
+    (final: _: {
       unstable = import inputs.unstable ({
           inherit (final) system;
         }
@@ -30,12 +30,12 @@
     })
     (final: prev: {
       lhf =
-        prev.lib.mapAttrsRecursive
+        final.lib.mapAttrsRecursive
         (_: pkg: (prev.callPackage pkg {}))
         (lib.lhf.rakeLeaves pkgsPath);
     })
     inputs.agenix.overlays.default
-    (final: prev: {nixos-anywhere = inputs.nixos-anywhere.packages.${final.system}.nixos-anywhere;})
+    (final: _: {inherit (inputs.nixos-anywhere.packages.${final.system}) nixos-anywhere;})
   ];
 
   /*
@@ -83,7 +83,7 @@
           {networking.hostName = hostname;}
           {
             nixpkgs = {
-              overlays = overlays;
+              inherit overlays;
               config = pkgsConfig;
             };
           }
@@ -116,7 +116,7 @@
 
   *
   */
-  mkHosts = hostsPath: {...} @ cfg:
+  mkHosts = hostsPath: cfg:
     builtins.listToAttrs (
       builtins.map (hostname:
         lib.nameValuePair

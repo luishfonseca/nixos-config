@@ -345,7 +345,7 @@
         ],
         "gitignore": "gitignore",
         "nixpkgs": [
-          "nixpkgs"
+          "unstable"
         ],
         "nixpkgs-stable": [
           "nixpkgs"

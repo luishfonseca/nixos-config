@@ -5,56 +5,82 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    home-manager.url = "github:nix-community/home-manager/release-24.05";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    agenix.url = "github:ryantm/agenix";
-    agenix.inputs.nixpkgs.follows = "nixpkgs";
-    agenix.inputs.home-manager.follows = "home-manager";
-    agenix.inputs.systems.follows = "systems";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+        systems.follows = "systems";
+      };
+    };
 
-    nixos-anywhere.url = "github:nix-community/nixos-anywhere";
-    nixos-anywhere.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-anywhere.inputs.nixos-stable.follows = "nixpkgs";
-    nixos-anywhere.inputs.disko.follows = "disko";
-    nixos-anywhere.inputs.flake-parts.follows = "flake-parts";
+    nixos-anywhere = {
+      url = "github:nix-community/nixos-anywhere";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixos-stable.follows = "nixpkgs";
+        disko.follows = "disko";
+        flake-parts.follows = "flake-parts";
+      };
+    };
 
-    lanzaboote.url = "github:nix-community/lanzaboote";
-    lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
-    lanzaboote.inputs.flake-compat.follows = "flake-compat";
-    lanzaboote.inputs.flake-parts.follows = "flake-parts";
-    lanzaboote.inputs.flake-utils.follows = "flake-utils";
-    lanzaboote.inputs.pre-commit-hooks-nix.follows = "pre-commit-hooks-nix";
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-compat.follows = "flake-compat";
+        flake-parts.follows = "flake-parts";
+        flake-utils.follows = "flake-utils";
+        pre-commit-hooks-nix.follows = "pre-commit-hooks-nix";
+      };
+    };
 
     hardware.url = "github:NixOS/nixos-hardware/master";
 
     impermanence.url = "github:nix-community/impermanence";
 
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
-    vscode-server.inputs.flake-utils.follows = "flake-utils";
+    vscode-server = {
+      url = "github:nix-community/nixos-vscode-server";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
+    pre-commit-hooks-nix = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs = {
+        nixpkgs.follows = "unstable";
+        nixpkgs-stable.follows = "nixpkgs";
+        flake-compat.follows = "flake-compat";
+      };
+    };
 
     ### === Not used by me, but other inputs need it === ###
     flake-compat.url = "github:edolstra/flake-compat";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
 
-    flake-utils.url = "github:numtide/flake-utils";
-    flake-utils.inputs.systems.follows = "systems";
-
-    pre-commit-hooks-nix.url = "github:cachix/pre-commit-hooks.nix";
-    pre-commit-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
-    pre-commit-hooks-nix.inputs.nixpkgs-stable.follows = "nixpkgs";
-    pre-commit-hooks-nix.inputs.flake-compat.follows = "flake-compat";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
   };
 
-  outputs = {self, ...} @ inputs: let
+  outputs = inputs: let
     pkgsConfig.allowUnfree = true;
 
-    lib = inputs.nixpkgs.lib.extend (final: prev:
+    lib = inputs.nixpkgs.lib.extend (final: _:
       import ./lib {
         inherit inputs;
         lib = final;
@@ -83,19 +109,39 @@
     packages = lib.lhf.eachSystem (system: pkgs.${system}.lhf);
     legacyPackages = lib.lhf.eachSystem (system: pkgs.${system}.lhf // {inherit lib;});
 
+    checks = lib.lhf.eachSystem (system: {
+      pre-commit-check = inputs.pre-commit-hooks-nix.lib.${system}.run {
+        src = ./.;
+        hooks = {
+          # Nix
+          alejandra.enable = true;
+          flake-checker.enable = true;
+          statix.enable = true;
+          deadnix.enable = true;
+
+          # Shell
+          shellcheck.enable = true;
+          shfmt.enable = true;
+        };
+      };
+    });
+
     devShells = lib.lhf.eachSystem (system: {
       default = with pkgs.${system};
         mkShell {
-          packages = [
-            age
-            agenix
-            lhf.deploy-anywhere
-          ];
+          inherit (checks.${system}) pre-commit-check;
+          packages =
+            [
+              age
+              agenix
+              lhf.deploy-anywhere
+            ]
+            ++ checks.${system}.pre-commit-check.enabledPackages;
         };
     });
 
     formatter = lib.lhf.eachSystem (system: pkgs.${system}.alejandra);
   in {
-    inherit lib nixosModules nixosConfigurations packages legacyPackages devShells formatter;
+    inherit lib nixosModules nixosConfigurations packages legacyPackages checks devShells formatter;
   };
 }

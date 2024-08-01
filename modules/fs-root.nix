@@ -34,10 +34,14 @@ in {
       tmpfs = mkEnableOption "root on tmpfs";
     };
 
-    persist.data = mkOption {type = types.attrs;};
-    persist.local = mkOption {type = types.attrs;};
-    persist.user.data = mkOption {type = types.attrs;};
-    persist.user.local = mkOption {type = types.attrs;};
+    persist = {
+      data = mkOption {type = types.attrs;};
+      local = mkOption {type = types.attrs;};
+      user = {
+        data = mkOption {type = types.attrs;};
+        local = mkOption {type = types.attrs;};
+      };
+    };
   };
 
   imports = [
