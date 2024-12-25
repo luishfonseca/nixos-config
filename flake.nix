@@ -40,7 +40,6 @@
         nixpkgs.follows = "nixpkgs";
         flake-compat.follows = "flake-compat";
         flake-parts.follows = "flake-parts";
-        flake-utils.follows = "flake-utils";
         pre-commit-hooks-nix.follows = "pre-commit-hooks-nix";
       };
     };
@@ -51,7 +50,10 @@
 
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
-      inputs.flake-utils.follows = "flake-utils";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
 
     pre-commit-hooks-nix = {
