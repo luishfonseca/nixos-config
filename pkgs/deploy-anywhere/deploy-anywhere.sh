@@ -44,6 +44,8 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	exit 1
 fi
 
+set -x
+
 # Create a temporary directory
 temp=$(mktemp -d)
 
@@ -63,7 +65,7 @@ chmod 600 "$temp/etc/ssh/ssh_host_ed25519_key"
 # Decrypt your private key from the password store and copy it to the temporary directory
 pushd ./secrets || exit
 HOST_KEY="host-keys/$1.age"
-agenix -d "$HOST_KEY" "$agenix_args" >"$temp/etc/ssh/ssh_host_ed25519_key"
+agenix -d "$HOST_KEY" ${agenix_args:+$agenix_args} >"$temp/etc/ssh/ssh_host_ed25519_key" || exit
 popd || exit
 
 # Set the user password
