@@ -2,11 +2,11 @@
   inputs = {
     systems.url = "github:nix-systems/x86_64-linux"; # override this to use a different systems set
 
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -18,6 +18,7 @@
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
+        darwin.follows = "";
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
         systems.follows = "systems";
@@ -31,6 +32,9 @@
         nixos-stable.follows = "nixpkgs";
         disko.follows = "disko";
         flake-parts.follows = "flake-parts";
+        nix-vm-test.follows = "nix-vm-test";
+        nixos-images.follows = "nixos-images";
+        treefmt-nix.follows = "treefmt-nix";
       };
     };
 
@@ -41,6 +45,7 @@
         flake-compat.follows = "flake-compat";
         flake-parts.follows = "flake-parts";
         pre-commit-hooks-nix.follows = "pre-commit-hooks-nix";
+        rust-overlay.follows = "rust-overlay";
       };
     };
 
@@ -59,9 +64,9 @@
     pre-commit-hooks-nix = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs = {
-        nixpkgs.follows = "unstable";
-        nixpkgs-stable.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs";
         flake-compat.follows = "flake-compat";
+        gitignore.follows = "gitignore";
       };
     };
 
@@ -76,6 +81,34 @@
     flake-utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
+    };
+
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-vm-test = {
+      url = "github:Mic92/nix-vm-test";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixos-images = {
+      url = "github:nix-community/nixos-images";
+      inputs = {
+        nixos-stable.follows = "nixpkgs";
+        nixos-unstable.follows = "unstable";
+      };
+    };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    gitignore = {
+      url = "github:hercules-ci/gitignore.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
