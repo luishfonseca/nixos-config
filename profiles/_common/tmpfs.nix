@@ -25,6 +25,7 @@
 
         "/var/log"
         "/var/db/sudo/lectured"
+        "/var/lib/nixos"
       ];
     };
 
