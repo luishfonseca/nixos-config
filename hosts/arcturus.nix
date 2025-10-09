@@ -1,9 +1,8 @@
 {profiles, ...}: {
   imports = with profiles; [
     server
-
     hardware.common-pc
-    hardware.common-cpu-amd
+    cpu-amd
   ];
 
   lhf.fsRoot = {
