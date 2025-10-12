@@ -74,10 +74,10 @@ chmod 600 "$temp/etc/hashedPassword"
 mkpasswd -m sha-512 >"$temp/etc/hashedPassword"
 
 # If the root is a tmpfs, move the etc directory to the persistent storage
-if [ "$(nix eval ".#nixosConfigurations.$1.config.lhf.fsRoot.tmpfs")" = true ]; then
-	install -d -m755 "$temp/pst/local"
-	mv "$temp/etc" "$temp/pst/local/etc"
-fi
+# if [ "$(nix eval ".#nixosConfigurations.$1.config.lhf.fsRoot.tmpfs")" = true ]; then
+# 	install -d -m755 "$temp/pst/local"
+# 	mv "$temp/etc" "$temp/pst/local/etc"
+# fi
 
 # Install NixOS to the host system with our secrets
 nixos-anywhere "$nixos_anywhere_args" --extra-files "$temp" --flake .#"$1" "$2"

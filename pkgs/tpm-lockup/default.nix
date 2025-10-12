@@ -4,13 +4,13 @@
   lib,
   bash,
   jq,
-  sbctl,
+  lhf,
 }:
 stdenv.mkDerivation rec {
   name = "tpm-lockup";
   src = ./.;
 
-  buildInputs = [bash jq sbctl];
+  buildInputs = [bash jq lhf.sbctl];
   nativeBuildInputs = [makeWrapper];
   installPhase = ''
     mkdir -p $out/bin

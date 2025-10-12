@@ -10,7 +10,7 @@
     tailnet = "tail9db2a.ts.net";
   };
 
-  persist.local.directories = [
-    "/var/lib/tailscale"
-  ];
+  # persist.local.directories = [
+  #   "/var/lib/tailscale"
+  # ];
 }
