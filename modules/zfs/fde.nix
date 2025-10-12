@@ -1,7 +1,6 @@
 {
   inputs,
   config,
-  utils,
   pkgs,
   lib,
   publicKeys,
@@ -88,23 +87,28 @@ in {
   in
     lib.mkIf (config.lhf.zfs.enable && cfg.enable) (lib.mkMerge [
       {
+        fileSystems."/keys" = {
+          device = "/dev/mapper/keyvol";
+          options = ["defaults" "ro"];
+        };
+
         boot = {
           loader.systemd-boot.enable = true;
           initrd = {
             availableKernelModules = ["ext4"];
 
             systemd = {
-              contents."/etc/fstab".text = "/dev/mapper/keyvol /keys ext4 defaults 0 2";
+              contents."/etc/fstab".text = ''
+                /dev/mapper/keyvol /keys ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2
+              '';
+
               services = {
                 "zfs-import-zroot".enable = false; # disable default zfs import
 
-                "zfs-import-zroot-bare" = let
-                  devices = lib.map (d: utils.escapeSystemdPath "/dev/disk/by-partlabel/disk-${d.label}-zfs.device") config.lhf.zfs.disks;
-                in {
+                "zfs-import-zroot-bare" = {
                   enable = true;
-                  requiredBy = ["zroot-load-key.service"];
-                  after = devices;
-                  bindsTo = devices;
+                  wants = ["systemd-udev-settle.service"];
+                  after = ["systemd-udev-settle.service"];
                   unitConfig.DefaultDependencies = false;
                   serviceConfig = {
                     Type = "oneshot";
@@ -115,6 +119,8 @@ in {
 
                 zroot-load-key = {
                   enable = true;
+                  requires = ["zfs-import-zroot-bare.service"];
+                  after = ["zfs-import-zroot-bare.service"];
                   wantedBy = ["sysroot.mount"];
                   before = ["sysroot.mount"];
                   unitConfig = {
@@ -133,8 +139,6 @@ in {
             luks.devices.keyvol.device = "/dev/zvol/zroot/keyvol";
           };
         };
-
-        fileSystems."/keys".device = "/dev/mapper/keyvol";
 
         disko.devices.zpool.zroot = {
           datasets = {
@@ -185,16 +189,16 @@ in {
         }
         (lib.mkIf cfg.tpm.remote.enable (lib.mkMerge [
           {
+            fileSystems."/ssh".device = "/dev/mapper/sshvol";
+
             boot.initrd = {
               availableKernelModules = ["igb"];
 
               systemd = {
                 inherit (config.systemd) network;
 
-                contents."/etc/fstab".text = lib.mkForce ''
-                  /dev/mapper/keyvol /keys ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2"
+                contents."/etc/fstab".text = ''
                   /dev/mapper/sshvol /ssh ext4 defaults 0 2
-                  /ssh/var/lib/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/ssh/var/lib/tailscale
                 '';
 
                 tmpfiles.settings."50-ssh-host-keys" = {
@@ -225,8 +229,6 @@ in {
                 ignoreEmptyHostKeys = true;
               };
             };
-
-            fileSystems."/ssh".device = "/dev/mapper/sshvol";
 
             systemd.tmpfiles.settings."10-ssh-host-keys" = {
               "/etc/ssh/ssh_host_ed25519_key".C = {
@@ -271,6 +273,13 @@ in {
             };
           }
           (lib.mkIf cfg.tpm.remote.tailscale {
+            fileSystems."/var/lib/tailscale" = {
+              device = "/ssh/var/lib/tailscale";
+              depends = ["/ssh"];
+              fsType = "none";
+              options = ["bind"];
+            };
+
             boot.initrd = {
               availableKernelModules = ["tun" "nft_chain_nat"];
               services.resolved.enable = true;
@@ -278,6 +287,10 @@ in {
               systemd = {
                 initrdBin = with pkgs; [iptables iproute2 iputils tailscale];
                 packages = with pkgs; [tailscale];
+
+                contents."/etc/fstab".text = ''
+                  /ssh/var/lib/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/ssh/var/lib/tailscale
+                '';
 
                 tmpfiles.settings."50-tailscale"."var/run".L.argument = "/run";
 
@@ -299,13 +312,6 @@ in {
                   ];
                 };
               };
-            };
-
-            fileSystems."/var/lib/tailscale" = {
-              depends = ["/ssh"];
-              device = "/ssh/var/lib/tailscale";
-              fsType = "none";
-              options = ["bind"];
             };
 
             services.tailscale.enable = true;
