@@ -122,17 +122,27 @@ in {
                 zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank
               '';
             };
+
+            preCreateHook = ''
+              unlink /etc/hostid
+              ln -s ${config.environment.etc.hostid.source} /etc/hostid
+            ''; # use the hostId of the installed system instead of the installer
           };
         };
 
         boot = {
           zfs.forceImportRoot = false;
-          initrd.systemd.enable = true;
+          initrd.systemd = {
+            enable = true;
+            emergencyAccess = false; # See runbook on how to unlock if needed
+          };
           loader = {
             efi.canTouchEfiVariables = ! mirrored-esp; # efibootmgr doesn't understand mirrored ESP
             systemd-boot.configurationLimit = 2;
           };
         };
+
+        systemd.enableEmergencyMode = true;
       }
       (lib.mkIf mirrored-esp {
         disko.devices.mdadm.boot = {

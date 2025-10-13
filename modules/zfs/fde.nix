@@ -112,7 +112,7 @@ in {
                   unitConfig.DefaultDependencies = false;
                   serviceConfig = {
                     Type = "oneshot";
-                    ExecStart = "${config.boot.zfs.package}/bin/zpool import -f -N zroot";
+                    ExecStart = "${config.boot.zfs.package}/bin/zpool import -N zroot";
                     RemainAfterExit = true;
                   };
                 };
