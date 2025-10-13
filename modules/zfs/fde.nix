@@ -14,7 +14,7 @@ in {
       enable = mkEnableOption "TPM";
       remote = {
         enable = mkEnableOption "remote unlocking";
-        tailscale = mkEnableOption "tailscale in initrd";
+        tailscale = mkEnableOption "tailscale in initrd"; # TODO: test if tailscale works
         authorizedKeys = mkOption {
           type = types.listOf types.str;
           description = "Authorized keys for remote unlocking";

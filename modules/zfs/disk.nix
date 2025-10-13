@@ -36,7 +36,7 @@ in {
       disks = mkOption {
         type = types.listOf types.str;
         description = "Labels of the bootable disks";
-        default = [(lib.head cfg.disks).label];
+        default = [(lib.head cfg.disks).label]; # TODO: test if single disk works
       };
       sizeESP = mkOption {
         type = types.str;
@@ -109,7 +109,7 @@ in {
 
             rootFsOptions = {
               mountpoint = "none";
-              compression = "zstd";
+              compression = "on";
               "com.sun:auto-snapshot" = "false";
             };
 

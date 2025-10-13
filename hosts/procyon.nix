@@ -1,6 +1,5 @@
 {
   profiles,
-  pkgs,
   ...
 }: {
   imports = with profiles; [
