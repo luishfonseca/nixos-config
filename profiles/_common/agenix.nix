@@ -1,5 +1,4 @@
 {
-  lib,
   inputs,
   secrets,
   pkgs,
@@ -9,14 +8,8 @@
 
   environment.systemPackages = [pkgs.agenix pkgs.age];
 
-  services.openssh.hostKeys = [];
-
   age = {
     inherit secrets;
-    identityPaths = lib.mkDefault ["/etc/ssh/ssh_host_ed25519_key"];
+    identityPaths = ["/local/etc/ssh/ssh_host_ed25519_key"];
   };
-
-  # persist.local.files = [
-  #   "/etc/ssh/ssh_host_ed25519_key"
-  # ];
 }

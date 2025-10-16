@@ -22,7 +22,7 @@
 
     user = {
       isNormalUser = true;
-      hashedPasswordFile = lib.mkDefault "/etc/hashedPassword";
+      hashedPasswordFile = "/local/etc/hashedPassword";
     };
 
     home-manager = {

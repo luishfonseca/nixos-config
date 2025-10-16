@@ -111,16 +111,36 @@ in {
               mountpoint = "none";
               compression = "on";
               "com.sun:auto-snapshot" = "false";
+              atime = "off";
+              xattr = "sa";
+              acltype = "posix";
             };
 
-            options.ashift = "12";
+            options = {
+              ashift = "12";
+              autotrim = "on";
+            };
 
-            datasets.root = {
-              type = "zfs_fs";
-              mountpoint = "/";
-              postCreateHook = ''
-                zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank
-              '';
+            datasets = {
+              root = {
+                type = "zfs_fs";
+                mountpoint = "/";
+                postCreateHook = ''
+                  zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank
+                '';
+              };
+              "root/data" = {
+                type = "zfs_fs";
+                mountpoint = "/data";
+              };
+              "root/local" = {
+                type = "zfs_fs";
+                mountpoint = "/local";
+              };
+              "root/local/nix" = {
+                type = "zfs_fs";
+                mountpoint = "/nix";
+              };
             };
 
             preCreateHook = ''
@@ -130,16 +150,18 @@ in {
           };
         };
 
+        fileSystems = {
+          "/data".neededForBoot = true;
+          "/local".neededForBoot = true;
+        };
+
         boot = {
           zfs.forceImportRoot = false;
           initrd.systemd = {
             enable = true;
             emergencyAccess = false; # See runbook on how to unlock if needed
           };
-          loader = {
-            efi.canTouchEfiVariables = ! mirrored-esp; # efibootmgr doesn't understand mirrored ESP
-            systemd-boot.configurationLimit = 2;
-          };
+          loader.efi.canTouchEfiVariables = ! mirrored-esp; # efibootmgr doesn't understand mirrored ESP
         };
 
         systemd.enableEmergencyMode = true;

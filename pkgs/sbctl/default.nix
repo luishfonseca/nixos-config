@@ -1,24 +1,25 @@
 {
   pkgs,
   sbctl,
+  path ? "/local/keys/sbctl",
 }: let
   conf = pkgs.writeTextFile {
     name = "sbctl.conf";
     text = ''
-      keydir: /keys/sbctl/keys
-      guid: /keys/sbctl/GUID
-      files_db: /keys/sbctl/files.json
-      bundles_db: /keys/sbctl/bundles.json
+      keydir: ${path}/keys
+      guid: ${path}/GUID
+      files_db: ${path}/files.json
+      bundles_db: ${path}/bundles.json
       keys:
         pk:
-          privkey: /keys/sbctl/keys/PK/PK.key
-          pubkey: /keys/sbctl/keys/PK/PK.pem
+          privkey: ${path}/keys/PK/PK.key
+          pubkey: ${path}/keys/PK/PK.pem
         kek:
-          privkey: /keys/sbctl/keys/KEK/KEK.key
-          pubkey: /keys/sbctl/keys/KEK/KEK.pem
+          privkey: ${path}/keys/KEK/KEK.key
+          pubkey: ${path}/keys/KEK/KEK.pem
         db:
-          privkey: /keys/sbctl/keys/db/db.key
-          pubkey: /keys/sbctl/keys/db/db.pem
+          privkey: ${path}/keys/db/db.key
+          pubkey: ${path}/keys/db/db.pem
     '';
   };
 in
