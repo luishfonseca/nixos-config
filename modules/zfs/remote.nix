@@ -85,6 +85,8 @@ in {
               /dev/mapper/rd_shared_crypt /rd_shared ext4 defaults 0 2
             '';
 
+            users.root.shell = "${pkgs.systemd}/bin/systemd-tty-ask-password-agent";
+
             services = {
               "zfs-import-zroot-bare" = {
                 requiredBy = ["systemd-cryptsetup@rd_shared_crypt.service"];
