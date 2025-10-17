@@ -105,9 +105,11 @@ in {
           mkdir -p /mnt/local/rd_shared/tailscale
         '';
 
+        systemd.services.tailscaled.serviceConfig.Restart="on-success";
+
         services.tailscale.patch = {
           stateDir = "/local/rd_shared/tailscale";
-          depends = ["/local"];
+          depends = ["/local/rd_shared"];
         };
 
         boot.initrd = {
@@ -118,6 +120,15 @@ in {
             initrdBin = with pkgs; [iptables iproute2 iputils tailscale];
             packages = with pkgs; [tailscale];
 
+            contents."/etc/fstab".text = ''
+              /rd_shared/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/rd_shared
+            '';
+
+            tmpfiles.settings."10-tailscale" = {
+              "/var/run".L.argument = "/run";
+              "/etc/resolv.conf".f.argument = "nameserver 1.1.1.1"; # use cloudflare DNS on initrd
+            };
+
             network.networks."50-tailscale" = {
               matchConfig.Name = config.services.tailscale.interfaceName;
               linkConfig = {
@@ -126,13 +137,11 @@ in {
               };
             };
 
-            tmpfiles.settings."10-tailscale"."/var/run".L.argument = "/run";
-
             services.tailscaled = {
-              inherit (config.systemd.services.tailscaled) serviceConfig;
+              inherit (config.systemd.services.tailscaled) serviceConfig unitConfig;
               wantedBy = ["systemd-cryptsetup@key_crypt.service"];
               before = ["systemd-cryptsetup@key_crypt.service"];
-            }; # TODO: dns is crashing tailscaled in initrd
+            };
           };
         };
       })

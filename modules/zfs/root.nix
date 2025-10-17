@@ -161,7 +161,10 @@ in {
             enable = true;
             emergencyAccess = false; # See runbook on how to unlock if needed
           };
-          loader.efi.canTouchEfiVariables = ! mirrored-esp; # efibootmgr doesn't understand mirrored ESP
+          loader = {
+            systemd-boot.configurationLimit = 2;
+            efi.canTouchEfiVariables = ! mirrored-esp; # efibootmgr doesn't understand mirrored ESP
+          };
         };
 
         systemd.enableEmergencyMode = true;
