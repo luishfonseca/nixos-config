@@ -1,4 +1,8 @@
-{ config, lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   cfg = config.services.tailscale.patch;
 in {
   options.services.tailscale.patch = with lib; {

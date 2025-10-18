@@ -185,8 +185,18 @@ in {
           '');
 
           boot = {
-            initrd.systemd.tpm2.enable = true;
             loader.systemd-boot.enable = lib.mkForce false;
+
+            initrd = {
+              luks.devices.key_crypt.crypttabExtraOpts =
+                ["tpm2-device=auto"]
+                ++ [
+                  # See Elvish's comment in https://discourse.nixos.org/t/a-modern-and-secure-desktop-setup/41154/17
+                  # This can only be enabled when remote is disabled, since that setup requires another disk to be auto-unlocked
+                  (lib.optionalString (! cfg.tpm.remote.enable) "tpm2-measure-pcr=yes")
+                ]; #
+              systemd.tpm2.enable = true;
+            };
 
             lanzaboote = {
               enable = true;

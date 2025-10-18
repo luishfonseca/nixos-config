@@ -53,8 +53,9 @@ in {
           availableKernelModules = ["igb" "igc" "e1000e" "r8169" "virtio_pci" "virtio_net"];
 
           luks.devices.rd_shared_crypt = {
+            # See Elvish's comment in https://discourse.nixos.org/t/a-modern-and-secure-desktop-setup/41154/17
+            crypttabExtraOpts = ["tpm2-device=auto" "tpm2-measure-pcr=yes"];
             device = "/dev/zvol/zroot/rd_shared_vol";
-            crypttabExtraOpts = ["tpm2-device=auto"];
           };
 
           network = {
@@ -107,7 +108,7 @@ in {
           mkdir -p /mnt/local/rd_shared/tailscale
         '';
 
-        systemd.services.tailscaled.serviceConfig.Restart="on-success";
+        systemd.services.tailscaled.serviceConfig.Restart = "on-success";
 
         services.tailscale.patch = {
           stateDir = "/local/rd_shared/tailscale";
