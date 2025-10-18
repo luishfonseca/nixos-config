@@ -10,8 +10,17 @@ in {
   options.lhf.zfs.fde.tpm.remote = with lib; {
     enable = mkEnableOption "remote unlocking";
     # TODO: wireless - write script to dump ssid:psk from nmcli to a wpa_supplicant.conf in rd_shared on shutdown
-    tailscale = mkEnableOption "tailscale in initrd";
-    # TODO: tailscale.enforce - only allow ssh connections from tailscale
+    tailscale = {
+      enable = mkEnableOption "tailscale in initrd";
+      enforce = {
+        enable = mkEnableOption "restricting access to tailscale traffic only";
+        range = mkOption {
+          type = types.str;
+          description = "CIDR range used by tailscale";
+          default = "100.64.0.0/10";
+        };
+      };
+    };
     authorizedKeys = mkOption {
       type = types.listOf types.str;
       description = "Authorized keys for remote unlocking";
@@ -103,50 +112,57 @@ in {
           };
         };
       }
-      (lib.mkIf cfg.tailscale {
-        disko.devices.zpool.zroot.datasets.rd_shared_vol.content.content.postMountHook = lib.mkBefore ''
-          mkdir -p /mnt/local/rd_shared/tailscale
-        '';
+      (lib.mkIf cfg.tailscale.enable (lib.mkMerge [
+        {
+          disko.devices.zpool.zroot.datasets.rd_shared_vol.content.content.postMountHook = lib.mkBefore ''
+            mkdir -p /mnt/local/rd_shared/tailscale
+          '';
 
-        systemd.services.tailscaled.serviceConfig.Restart = "on-success";
+          systemd.services.tailscaled.serviceConfig.Restart = "on-success";
 
-        services.tailscale.patch = {
-          stateDir = "/local/rd_shared/tailscale";
-          depends = ["/local/rd_shared"];
-        };
+          services.tailscale.patch = {
+            stateDir = "/local/rd_shared/tailscale";
+            depends = ["/local/rd_shared"];
+          };
 
-        boot.initrd = {
-          availableKernelModules = ["tun" "nft_chain_nat"];
-          services.resolved.enable = true;
+          boot.initrd = {
+            availableKernelModules = ["tun" "nft_chain_nat"];
+            services.resolved.enable = true;
 
-          systemd = {
-            initrdBin = with pkgs; [iptables iproute2 iputils tailscale];
-            packages = with pkgs; [tailscale];
+            systemd = {
+              initrdBin = with pkgs; [iptables iproute2 iputils tailscale];
+              packages = with pkgs; [tailscale];
 
-            contents."/etc/fstab".text = ''
-              /rd_shared/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/rd_shared
-            '';
+              contents."/etc/fstab".text = ''
+                /rd_shared/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/rd_shared
+              '';
 
-            tmpfiles.settings."10-tailscale" = {
-              "/var/run".L.argument = "/run";
-              "/etc/resolv.conf".f.argument = "nameserver 1.1.1.1"; # use cloudflare DNS on initrd
-            };
+              tmpfiles.settings."10-tailscale" = {
+                "/var/run".L.argument = "/run";
+                "/etc/resolv.conf".f.argument = "nameserver 1.1.1.1"; # use cloudflare DNS on initrd
+              };
 
-            network.networks."50-tailscale" = {
-              matchConfig.Name = config.services.tailscale.interfaceName;
-              linkConfig = {
-                Unmanaged = true;
-                ActivationPolicy = "manual";
+              network.networks."50-tailscale" = {
+                matchConfig.Name = config.services.tailscale.interfaceName;
+                linkConfig = {
+                  Unmanaged = true;
+                  ActivationPolicy = "manual";
+                };
+              };
+
+              services.tailscaled = {
+                inherit (config.systemd.services.tailscaled) serviceConfig unitConfig;
+                wantedBy = ["systemd-cryptsetup@key_crypt.service"];
+                before = ["systemd-cryptsetup@key_crypt.service"];
               };
             };
-
-            services.tailscaled = {
-              inherit (config.systemd.services.tailscaled) serviceConfig unitConfig;
-              wantedBy = ["systemd-cryptsetup@key_crypt.service"];
-              before = ["systemd-cryptsetup@key_crypt.service"];
-            };
           };
-        };
-      })
+        }
+        (lib.mkIf cfg.tailscale.enforce.enable {
+          boot.initrd.network.ssh.extraConfig = ''
+            AllowUsers root@${cfg.tailscale.enforce.range}
+          '';
+        })
+      ]))
     ]);
 }
