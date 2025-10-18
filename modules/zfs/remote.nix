@@ -76,20 +76,12 @@ in {
               ignoreEmptyHostKeys = true;
               extraConfig = ''
                 HostKey /rd_shared/ssh_host_ed25519_key
-              ''; # When cfg.enable deploy-anywhere places the key in rd_shared, and symlinks it to /local/etc/ssh
+              ''; # When cfg.enable deploy-anywhere places the key in rd_shared and symlinks it to /local/etc/ssh
             };
           };
 
           systemd = {
-            network =
-              config.systemd.network
-              // {
-                # TODO: this still doesn't work
-                # networks."99-fallback" = {
-                #   name = "*";
-                #   DHCP = "yes";
-                # };
-              };
+            inherit (config.systemd) network;
 
             contents."/etc/fstab".text = ''
               /dev/mapper/rd_shared_crypt /rd_shared ext4 defaults 0 2

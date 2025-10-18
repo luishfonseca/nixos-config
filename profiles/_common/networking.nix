@@ -1,18 +1,36 @@
-{
-  systemd.network.enable = true;
+{config, ...}: {
+  assertions = [{
+    assertion = config.networking.interfaces == {};
+    message = "Use systemd.network.networks for declarative network configuration, networking.interfaces must be empty.";
+  }];
 
-  networking = {
-    # useDHCP = false;
-    # dhcpcd.enable = false;
-    useNetworkd = true;
-    # networkmanager = {
-    #   enable = true;
-    #   dns = "none";
-    #   wifi.powersave = true;
-    # };
+  systemd.network = {
+    enable = true;
+    networks."99-ethernet-dhcp-fallback" = {
+      matchConfig.Type = "ether";
+      networkConfig = {
+        IPv6AcceptRA = "yes";
+        DHCP = "yes";
+      };
+    };
   };
 
-  # user.extraGroups = ["networkmanager"];
+  programs.captive-browser = {
+    enable = true;
+    bindInterface = false;
+  };
+
+  networking.networkmanager = {
+    enable = true;
+    dns = "none";
+    unmanaged = [
+      "type:ethernet" # Let systemd-networkd handle ethernet interfaces
+      config.services.tailscale.interfaceName
+    ];
+    wifi.powersave = true;
+  };
+
+  user.extraGroups = ["networkmanager"];
 
   services.tailscale = {
     enable = true;
