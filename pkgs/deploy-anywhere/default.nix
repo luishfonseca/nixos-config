@@ -4,13 +4,13 @@
   lib,
   bash,
   nixos-anywhere,
-  agenix,
+  sops,
 }:
 stdenv.mkDerivation rec {
   name = "deploy-anywhere";
   src = ./.;
 
-  buildInputs = [bash nixos-anywhere agenix];
+  buildInputs = [bash nixos-anywhere sops];
   nativeBuildInputs = [makeWrapper];
   installPhase = ''
     mkdir -p $out/bin

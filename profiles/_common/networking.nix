@@ -1,8 +1,10 @@
 {config, ...}: {
-  assertions = [{
-    assertion = config.networking.interfaces == {};
-    message = "Use systemd.network.networks for declarative network configuration, networking.interfaces must be empty.";
-  }];
+  assertions = [
+    {
+      assertion = config.networking.interfaces == {};
+      message = "Use systemd.network.networks for declarative network configuration, networking.interfaces must be empty.";
+    }
+  ];
 
   systemd.network = {
     enable = true;

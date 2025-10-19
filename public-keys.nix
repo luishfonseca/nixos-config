@@ -1,16 +1,8 @@
 rec {
-  # user ssh key for each host
-  user = {
-    altair = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE98aQ0VshDOnylLmZcfEdbuxZllCDtfBYH2786f4nph";
-    arcturus = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHR+aMbG+4bnDNr7aBZIt9CFvEfNC2yjB68AS0Ix8VwF";
-    procyon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAmTPYUcAlK/mpCmn7FWQZPs9dGrVDFzwQpFtyBx1HeT";
-  };
+  user.altair = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE98aQ0VshDOnylLmZcfEdbuxZllCDtfBYH2786f4nph";
 
-  # host ssh key for each host
-  host = {
-    arcturus = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH4R8ObkUZHV371My9yXuO2ALIMTPYXTLC7kLRMUTF1S";
-    procyon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAmv76B5SFZ9w1cpGtd/V4TZrzkk2fqY5R7856zV8RpX";
-  };
+  host.procyon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIARR0zO7ZAXCreck2dNPoy5gnW8I+2CMSX+pfjG/8cLx";
+  user.procyon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMgdG/T3Hn99VeeWViwTEE7RlUyLJR/Z0SCyIbrK0+xa";
 
   users = builtins.attrValues user;
   hosts = builtins.attrValues host;

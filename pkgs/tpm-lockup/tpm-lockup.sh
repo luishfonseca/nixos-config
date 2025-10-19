@@ -58,11 +58,13 @@ WITH_PASSWORD=$(ask "Do you want to be asked for a password?" "N")
 
 if [ "$WITH_PASSWORD" -eq 1 ]; then
 	echo "Locking key_vol with TPM2 + password."
-elif [ "$WITH_SSH" -eq 0 ] then
-	echo "Locking key_vol with TPM2 only. It will be automatically unlocked on boot."
 else
-	echo "This system was configured with remote unlock. This requires rd_shared to be auto-unlocked. Multiple auto-unlocked disks are not supported."
-	exit 1
+	if [ "$WITH_SSH" -eq 0 ]; then
+		echo "Locking key_vol with TPM2 only. It will be automatically unlocked on boot."
+	else
+		echo "This system was configured with remote unlock. This requires rd_shared to be auto-unlocked. Multiple auto-unlocked disks are not supported."
+		exit 1
+	fi
 fi
 
 exe systemd-cryptenroll /dev/zvol/zroot/key_vol --wipe-slot=tpm2

@@ -107,10 +107,10 @@ in {
 
               services = {
                 # Disable the default zfs import service
-                "zfs-import-zroot".enable = false;
+                zfs-import-zroot.enable = false;
 
                 # Hold off on importing zroot until either all disks become available or timeout
-                "zfs-import-wait" = let
+                zfs-import-wait = let
                   devices = lib.map (d: utils.escapeSystemdPath "/dev/disk/by-partlabel/disk-${d.label}-zfs.device") config.lhf.zfs.disks;
                 in {
                   wants = devices;
@@ -127,7 +127,7 @@ in {
                 };
 
                 # Import zroot without mounting filesystems
-                "zfs-import-zroot-bare" = {
+                zfs-import-zroot-bare = {
                   wants = ["zfs-import-wait.service"];
                   after = ["zfs-import-wait.service"];
                   requiredBy = ["systemd-cryptsetup@key_crypt.service"];
@@ -160,9 +160,6 @@ in {
             };
           };
         };
-
-        # Fixes https://github.com/NixOS/nixpkgs/issues/290569
-        systemd.services."systemd-sysctl".after = ["local-fs.target"]; # TODO: This "fix" doesn't work
       }
       (
         lib.mkIf cfg.tpm.enable {

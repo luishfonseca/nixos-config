@@ -32,9 +32,8 @@
       lhf =
         final.lib.mapAttrsRecursive
         (_: pkg: (prev.callPackage pkg {}))
-        (lib.lhf.rakeLeaves pkgsPath);
+        (lib.lhf.rakeNixLeaves pkgsPath);
     })
-    inputs.agenix.overlays.default
     (final: _: {inherit (inputs.nixos-anywhere.packages.${final.system}) nixos-anywhere;})
   ];
 
@@ -137,36 +136,30 @@
   - hostname: The hostname for the target NixOS system.
 
   Output Format:
-  An attribute set where each common or host specific entry on secretsPath/secrets.nix is mapped to the corresponding file path.
+  An attribute set where each common or host specific entry under is mapped to the corresponding file path.
 
-  Example secrets.nix
+  Example secrets/ directory structure:
   ```
-  {
-    "common.age".publicKeys = users ++ hosts;
-    "your-host/password.age".privateKeys = users ++ [ your-host ];
-    "other-host/password.age".privateKeys = users ++ [ other-host ];
-  }
+  -- secrets/
+      -- common_secret
+      -- your-host/
+          -- password
   ```
 
   Example output for hostname `your-host`
   ```
   {
-    "common".file = "/path/to/secrets/common.age";
-    "password".file = "/path/to/secrets/your-host/password.age";
+    common_secret.sopsFile = "/path/to/secrets/common_secret";
+    password.sopsFile = "/path/to/secrets/your-host/password";
   }
   ```
 
   *
   */
   mkSecrets = secretsPath: hostname:
-    builtins.listToAttrs (
-      builtins.map (path:
-        lib.nameValuePair
-        (lib.removeSuffix ".age" (lib.last (lib.splitString "/" path)))
-        {file = "${secretsPath}/${path}";})
-      (lib.filter (path: (lib.hasPrefix "${hostname}/" path) || (! lib.hasInfix "/" path))
-        (builtins.attrNames (import "${secretsPath}/secrets.nix")))
-    );
+    builtins.mapAttrs (_: v: {sopsFile = v;})
+    ((a: (builtins.removeAttrs a [hostname]) // a."${hostname}" or {})
+      (lib.attrsets.filterAttrs (n: v: n == hostname || (! builtins.isAttrs v)) (lib.lhf.rakeAllLeaves secretsPath)));
 in {
   inherit mkOverlays mkHosts mkSecrets;
 }

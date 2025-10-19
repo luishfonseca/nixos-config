@@ -1,6 +1,14 @@
 # Run Book
 
-This run book provides instructions for recovering from common issues.
+This run book provides instructions for common procedures.
+
+## Installing new system
+
+- Prepare installation media with [ventoy-nixos](https://github.com/luishfonseca/ventoy-nixos).
+- Boot the instalation media on the target, approve it on tailscale.
+- Write the disk and network config in `hosts/<target>.nix`.
+- Run `prepare-secrets <target>` on the deployer. It must be able to decrypt deployer secrets.
+- Run `deploy-anywhere <target> nixos@nixos` on the deployer.
 
 ## Failed to import zroot ZFS pool
 

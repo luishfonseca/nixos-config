@@ -15,14 +15,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs = {
-        darwin.follows = "";
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
-        systems.follows = "systems";
-      };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixos-anywhere = {
@@ -50,8 +45,6 @@
     };
 
     hardware.url = "github:NixOS/nixos-hardware/master";
-
-    impermanence.url = "github:nix-community/impermanence";
 
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
@@ -122,8 +115,8 @@
       });
 
     nixosModules = {
-      modules = lib.lhf.rakeLeaves ./modules;
-      profiles = lib.lhf.rakeLeaves ./profiles // {hardware = inputs.hardware.nixosModules;};
+      modules = lib.lhf.rakeNixLeaves ./modules;
+      profiles = lib.lhf.rakeNixLeaves ./profiles // {hardware = inputs.hardware.nixosModules;};
     };
 
     overlays = lib.lhf.mkOverlays ./pkgs {inherit pkgsConfig;};
@@ -167,8 +160,8 @@
           inherit (checks.${system}) pre-commit-check;
           packages =
             [
-              age
-              agenix
+              sops
+              lhf.prepare-secrets
               lhf.deploy-anywhere
             ]
             ++ checks.${system}.pre-commit-check.enabledPackages;

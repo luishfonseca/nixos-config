@@ -58,6 +58,28 @@ in {
           };
         };
 
+        # TODO: figure out how to fix https://github.com/NixOS/nixpkgs/issues/290569. Follows a previous failed attempt:
+        # systemd.services = {
+        #   systemd-networkd.unitConfig.After = ["" "systemd-networkd.socket" "systemd-udevd.service" "network-pre.target"]; # Remove systemd-sysctl.service
+        #   systemd-sysctl.after = ["initrd-nixos-activation.service"];
+        # };
+
+        systemd.services.share-host-keys = {
+          description = "Share host SSH keys with initrd";
+          wantedBy = ["sops-install-secrets.service"];
+          after = ["sops-install-secrets.service"];
+          unitConfig.RequiresMountsFor = ["/local/rd_shared"];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = ''
+              ${pkgs.coreutils}/bin/cp -f ${config.sops.secrets.ssh_host_ed25519.path} /local/rd_shared/ssh_host_ed25519_key
+            '';
+            RemainAfterExit = true;
+          };
+        };
+
+        sops.secrets.ssh_host_ed25519.restartUnits = ["share-host-keys.service"];
+
         boot.initrd = {
           availableKernelModules = ["igb" "igc" "e1000e" "r8169" "virtio_pci" "virtio_net"];
 
@@ -90,13 +112,14 @@ in {
             users.root.shell = "${pkgs.systemd}/bin/systemd-tty-ask-password-agent";
 
             services = {
-              "zfs-import-zroot-bare" = {
+              zfs-import-zroot-bare = {
                 requiredBy = ["systemd-cryptsetup@rd_shared_crypt.service"];
                 before = ["systemd-cryptsetup@rd_shared_crypt.service"];
               };
 
               sshd = {
                 unitConfig.RequiresMountsFor = ["/rd_shared"];
+                serviceConfig.Restart = lib.mkForce "no";
                 wantedBy = ["systemd-cryptsetup@key_crypt.service"];
                 before = ["systemd-cryptsetup@key_crypt.service"];
               };
