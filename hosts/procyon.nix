@@ -1,7 +1,4 @@
-{
-  profiles,
-  ...
-}: {
+{profiles, ...}: {
   imports = with profiles; [
     client
     autologin
@@ -9,45 +6,36 @@
     cpu-amd
   ];
 
-  lhf.zfs = {
-    enable = true;
-    disks = [
+  lhf.boot.disk = {
+    mirror = true;
+    hibernate = true;
+    tpm = true;
+    devices = [
       {
-        path = "/dev/disk/by-id/nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641298E";
-        label = "S7U7NU0Y641298E";
+        id = "nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641298E";
         size = "1860G";
       }
       {
-        path = "/dev/disk/by-id/nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641450R";
-        label = "S7U7NU0Y641450R";
+        id = "nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641450R";
         size = "1860G";
       }
     ];
-    topology = {
-      type = "topology";
-      vdev = [
-        {
-          mode = "mirror";
-          members = [
-            "S7U7NU0Y641298E"
-            "S7U7NU0Y641450R"
-          ];
-        }
-      ];
-    };
-    boot.disks = [
-      "S7U7NU0Y641298E"
-      "S7U7NU0Y641450R"
+  };
+
+  persist = {
+    hideMounts = true;
+    directories = [
+      "/var/log"
+      "/var/lib/"
+      "/etc/NetworkManager/system-connections"
     ];
-    fde = {
-      enable = true;
-      tpm.enable = true;
-    };
+    files = [
+      "/etc/machine-id"
+    ];
   };
 
   boot.consoleLogLevel = 3;
 
-  networking.hostId = "22ab2bed";
   nixpkgs.hostPlatform = "x86_64-linux";
   system.stateVersion = "25.05";
 }

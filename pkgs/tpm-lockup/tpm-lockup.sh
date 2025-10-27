@@ -12,18 +12,18 @@ function gather_facts() {
 		exit 1
 	fi
 
-	KEY_VOL_KEY="/local/keys/key_vol.key"
-	if ! ls "$KEY_VOL_KEY" >/dev/null 2>&1; then
-		echo "Key file not found at $KEY_VOL_KEY. Exiting..."
+	ROOT_KEY="/recovery/root.key"
+	if ! ls "$ROOT_KEY" >/dev/null 2>&1; then
+		echo "Key file not found at $ROOT_KEY. Exiting..."
 		exit 1
 	fi
 
-	RD_SHARED_VOL_KEY="/local/keys/rd_shared_vol.key"
-	if ls "$RD_SHARED_VOL_KEY" >/dev/null 2>&1; then
-		WITH_SSH=1
-	else
-		WITH_SSH=0
-	fi
+	# RD_SHARED_VOL_KEY="/local/keys/rd_shared_vol.key"
+	# if ls "$RD_SHARED_VOL_KEY" >/dev/null 2>&1; then
+	# 	WITH_SSH=1
+	# else
+	# 	WITH_SSH=0
+	# fi
 }
 
 function ask() {
@@ -57,26 +57,31 @@ gather_facts
 WITH_PASSWORD=$(ask "Do you want to be asked for a password?" "N")
 
 if [ "$WITH_PASSWORD" -eq 1 ]; then
-	echo "Locking key_vol with TPM2 + password."
+	echo "Locking root with TPM2 + password."
 else
-	if [ "$WITH_SSH" -eq 0 ]; then
-		echo "Locking key_vol with TPM2 only. It will be automatically unlocked on boot."
-	else
-		echo "This system was configured with remote unlock. This requires rd_shared to be auto-unlocked. Multiple auto-unlocked disks are not supported."
-		exit 1
-	fi
+	# if [ "$WITH_SSH" -eq 0 ]; then
+	echo "Locking root with TPM2 only. It will be automatically unlocked on boot."
+	# else
+	# 	echo "This system was configured with remote unlock. This requires rd_shared to be auto-unlocked. Multiple auto-unlocked disks are not supported."
+	# 	exit 1
+	# fi
 fi
 
-exe systemd-cryptenroll /dev/zvol/zroot/key_vol --wipe-slot=tpm2
+PIN="no"
 if [ "$WITH_PASSWORD" -eq 1 ]; then
-	exe systemd-cryptenroll /dev/zvol/zroot/key_vol --unlock-key-file=$KEY_VOL_KEY --tpm2-device=auto --tpm2-with-pin=yes --tpm2-pcrs=7
-else
-	exe systemd-cryptenroll /dev/zvol/zroot/key_vol --unlock-key-file=$KEY_VOL_KEY --tpm2-device=auto --tpm2-with-pin=no --tpm2-pcrs=7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000
+	PIN="yes"
 fi
 
-if [ "$WITH_SSH" -eq 1 ]; then
-	echo "Locking rd_shared with TPM2 only. It will be automatically unlocked on boot."
+PCRS="7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000"
+# if [ "$WITH_SSH" -eq 1 ]; then
+# 	PCRS="7"
+# fi
 
-	exe systemd-cryptenroll /dev/zvol/zroot/rd_shared_vol --wipe-slot=tpm2
-	exe systemd-cryptenroll /dev/zvol/zroot/rd_shared_vol --unlock-key-file=$RD_SHARED_VOL_KEY --tpm2-device=auto --tpm2-with-pin=no --tpm2-pcrs=7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000
-fi
+exe systemd-cryptenroll /dev/md/root_mirror --wipe-slot=tpm2
+exe systemd-cryptenroll /dev/md/root_mirror --unlock-key-file=$ROOT_KEY --tpm2-device=auto --tpm2-with-pin="$PIN" --tpm2-pcrs="$PCRS"
+
+# if [ "$WITH_SSH" -eq 1 ]; then
+# 	echo "Locking rd_shared with TPM2 only. It will be automatically unlocked on boot."
+# 	exe systemd-cryptenroll /dev/zvol/zroot/rd_shared_vol --wipe-slot=tpm2
+# 	exe systemd-cryptenroll /dev/zvol/zroot/rd_shared_vol --unlock-key-file=$RD_SHARED_VOL_KEY --tpm2-device=auto --tpm2-with-pin=no --tpm2-pcrs=7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000
+# fi

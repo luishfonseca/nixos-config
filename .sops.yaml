@@ -1,8 +1,9 @@
 keys:
 - &altair age1n9l0amsxty0z4du87u5w96n97h3wpzcc67d7n2enm76ljyhv3q0qaqkf7m
-- &procyon age1hfx08t9ngl44vh4qthvkpfrj5cal5m08lcvejr20j4vyrawazf8qt3s2vn
+- &procyon age18nk2d5evh26qw43w8lwcp8p9dq4g2mdl0tj0uctsstdwxlnu3pgqkjqz4v
 deployers: &deployers
 - *altair
+- *procyon
 creation_rules:
 - path_regex: secrets/deployer/.*
   age: *deployers

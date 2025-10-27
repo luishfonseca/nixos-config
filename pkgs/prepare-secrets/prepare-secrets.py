@@ -61,17 +61,17 @@ with tempfile.TemporaryDirectory() as tmpdir:
 	age_pub = subprocess.run(["age-keygen", "-y", f"{tmpdir}/{host}.key"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()
 	deployer_secrets.append(f"{host}.key")
 
-	print("\nEnter the password for the user. Will be hashed using sha-512.")
+	print("\nEnter the password for the user. Will be hashed using yescrypt.")
 	with open(f"{tmpdir}/hashedPassword", "wb") as f:
-		subprocess.run(["mkpasswd", "-m", "sha-512"], check=True, stdout=f)
+		subprocess.run(["mkpasswd", "-m", "yescrypt"], check=True, stdout=f)
 	host_secrets.append("hashedPassword")
 
 	print("\nGenerating host ssh key pair...")
-	subprocess.run(["ssh-keygen", "-t", "ed25519", "-f", f"{tmpdir}/ssh_host_ed25519", "-N", "", "-C", ""], check=True)
+	subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-f", f"{tmpdir}/ssh_host_ed25519", "-N", "", "-C", ""], check=True)
 	host_secrets.append("ssh_host_ed25519")
 
 	print("\nGenerating user ssh key pair...")
-	subprocess.run(["ssh-keygen", "-t", "ed25519", "-f", f"{tmpdir}/id_ed25519", "-N", "", "-C", ""], check=True)
+	subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-f", f"{tmpdir}/id_ed25519", "-C", ""], check=True)
 	host_secrets.append("id_ed25519")
 
 	print("\nAdd the following ssh public keys to public-keys.nix")

@@ -15,12 +15,6 @@
   };
 
   config = {
-    services.userborn.enable = true;
-    systemd.services.userborn = {
-      wantedBy = ["dbus-daemon.service"];
-      before = ["dbus-daemon.service"];
-    };
-
     users = {
       mutableUsers = false;
       users.${config.user.name} = lib.mkAliasDefinitions options.user;

@@ -39,9 +39,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-install -d -m755 "$temp/local/"
-sops -d "secrets/deployer/$1.key" >"$temp/local/age.key"
-chmod 600 "$temp/local/age.key"
+install -d -m755 "$temp/nix/pst"
+sops -d "secrets/deployer/$1.key" >"$temp/nix/pst/age.key"
+chmod 600 "$temp/nix/pst/age.key"
 
 # Install NixOS to the host system with our secrets
 nixos-anywhere --extra-files "$temp" --flake .#"$1" "$2"
