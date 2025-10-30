@@ -23,10 +23,10 @@
   */
   mkOverlays = pkgsPath: {pkgsConfig}: [
     (final: _: {
-      unstable = import inputs.unstable ({
-          inherit (final) system;
-        }
-        // pkgsConfig);
+      unstable = import inputs.unstable {
+        inherit (final) system;
+        config = pkgsConfig;
+      };
     })
     (final: prev: {
       lhf =

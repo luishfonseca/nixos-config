@@ -1,6 +1,6 @@
-{profiles, ...}: {
+{profiles,pkgs, ...}: {
   imports = with profiles; [
-    client
+    graphical
     autologin
     hardware.common-pc
     cpu-amd
@@ -23,15 +23,60 @@
   };
 
   persist = {
-    hideMounts = true;
-    directories = [
-      "/var/log"
-      "/var/lib/"
-      "/etc/NetworkManager/system-connections"
-    ];
-    files = [
-      "/etc/machine-id"
-    ];
+    system = {
+      directories = [
+        "/var/log"
+        "/var/lib/"
+        "/etc/NetworkManager/system-connections"
+      ];
+      files = [
+        "/etc/machine-id"
+      ];
+    };
+    home = {
+      directories = [
+        # Chromium
+        ".config/chromium"
+        ".cache/chromium"
+        ".pki"
+
+        # Gnome Keyring
+        ".local/share/keyrings"
+      ];
+    };
+  };
+
+  environment.systemPackages = with pkgs; [
+    chromium
+  ];
+
+  hm = {
+    programs.vscode = {
+      enable = true;
+      package = pkgs.unstable.vscode;
+      mutableExtensionsDir = true;
+      profiles.default = {
+        extensions = with pkgs.unstable.vscode-extensions; [
+            github.copilot
+            github.copilot-chat
+
+            file-icons.file-icons
+
+            eamodio.gitlens
+
+            usernamehw.errorlens
+
+            jnoortheen.nix-ide
+          ];
+      };
+    };
+
+    home.file.".vscode/argv.json".text = ''
+      {
+        "use-inmemory-secretstorage": true,
+        "enable-crash-reporter": true,
+      }
+    '';
   };
 
   boot.consoleLogLevel = 3;

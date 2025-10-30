@@ -30,9 +30,13 @@
     home-manager = {
       useUserPackages = true;
       useGlobalPkgs = true;
+      backupFileExtension = "backup";
       users.${config.user.name} = lib.mkAliasDefinitions options.hm;
     };
 
-    hm.home.stateVersion = config.system.stateVersion;
+    hm = {
+      xdg.enable = true;
+      home.stateVersion = config.system.stateVersion;
+    };
   };
 }

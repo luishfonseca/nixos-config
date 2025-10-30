@@ -1,3 +1,6 @@
 {config, ...}: {
-  services.getty.autologinUser = config.user.name;
+  services.getty = {
+    autologinUser = config.user.name;
+    autologinOnce = true;
+  };
 }

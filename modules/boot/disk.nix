@@ -154,6 +154,7 @@ in {
             })
           cfg.devices);
 
+          # TODO: Could be interesting making this zram with zram-generator
           nodev."/" = {
             fsType = "tmpfs";
             mountOptions = ["size=${cfg.size.root}" "mode=755"];
