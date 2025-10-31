@@ -3,6 +3,7 @@
     (rust-bin.stable.latest.default.override {
       extensions = ["rust-src" "rust-analyzer"];
     })
+    clippy
   ];
 
   hm.programs.vscode.profiles.default.extensions = with pkgs.unstable.vscode-extensions; [
