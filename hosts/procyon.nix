@@ -2,6 +2,7 @@
   imports = with profiles; [
     graphical
     autologin
+    dev
     hardware.common-pc
     cpu-amd
   ];
