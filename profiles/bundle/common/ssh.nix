@@ -28,6 +28,8 @@
     mode = "0755";
   };
 
+  persist.home.files = [".ssh/known_hosts"];
+
   systemd.services.lock-ssh-agent = {
     description = "Lock SSH Agent";
     wantedBy = ["suspend.target" "hibernate.target"];
