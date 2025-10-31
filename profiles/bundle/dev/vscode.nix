@@ -22,5 +22,9 @@
     '';
   };
 
+  environment.systemPackages = with pkgs; [
+    nodejs # for mcp
+  ];
+
   persist.home.directories = [".config/Code"];
 }
