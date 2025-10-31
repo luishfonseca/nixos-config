@@ -32,29 +32,32 @@
 
   *
   */
-  rakeNixLeaves =
-    rakeLeaves
-    (file: type: (type == "regular" && lib.hasSuffix ".nix" file) || (type == "directory"));
+  rakeNixLeaves = rakeLeaves (lib.hasSuffix ".nix");
 
-  rakeAllLeaves =
-    rakeLeaves
-    (_: type: (type == "regular") || (type == "directory"));
+  rakeAllLeaves = rakeLeaves (_: true);
 
   rakeLeaves = sieve: dirPath: let
+    f = file: type:
+      (type == "directory")
+      || (type == "regular")
+      && (file != "default.nix")
+      && (sieve file);
+
     collect = file: type: {
       name = lib.removeSuffix ".nix" file;
       value = let
         path = dirPath + "/${file}";
       in
         if
-          (type == "regular")
-          || (type == "directory" && builtins.pathExists (path + "/default.nix"))
+          (type == "directory")
+          && (builtins.pathExists (path + "/default.nix"))
+          || (type == "regular")
         then path
         # recurse on directories that don't contain a `default.nix`
         else rakeLeaves sieve path;
     };
 
-    files = lib.filterAttrs sieve (builtins.readDir dirPath);
+    files = lib.filterAttrs f (builtins.readDir dirPath);
   in
     lib.filterAttrs (_: v: v != {}) (lib.mapAttrs' collect files);
 in {

@@ -22,8 +22,8 @@
     };
 
     systemd.services.root-diff = {
-      wantedBy = [ "final.target" ];
-      before = [ "final.target" "unmount.target"];
+      wantedBy = ["final.target"];
+      before = ["final.target" "unmount.target"];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${pkgs.lhf.root-diff}/bin/root-diff --capture";
