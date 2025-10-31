@@ -3,5 +3,5 @@
   lib,
   ...
 }: {
-  imports = builtins.attrValues (lib.lhf.rakeNixLeaves ./.);
+  imports =  lib.lhf.flattenLeaves (lib.lhf.rakeNixLeaves ./.);
 }

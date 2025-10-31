@@ -60,6 +60,17 @@
     files = lib.filterAttrs f (builtins.readDir dirPath);
   in
     lib.filterAttrs (_: v: v != {}) (lib.mapAttrs' collect files);
+
+  flattenLeaves = let
+    flatten = acc: _: v:
+      acc
+      ++ (
+        if lib.isAttrs v
+        then flattenLeaves v
+        else [v]
+      );
+  in
+    lib.attrsets.foldlAttrs flatten [];
 in {
-  inherit rakeNixLeaves rakeAllLeaves;
+  inherit rakeNixLeaves rakeAllLeaves flattenLeaves;
 }

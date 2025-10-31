@@ -3,5 +3,5 @@
   lib,
   ...
 }: {
-  imports = [profiles.bundle.common] ++ builtins.attrValues (lib.lhf.rakeNixLeaves ./.);
+  imports = [profiles.bundle.common] ++ lib.lhf.flattenLeaves (lib.lhf.rakeNixLeaves ./.);
 }
