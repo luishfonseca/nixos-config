@@ -27,6 +27,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixos-anywhere = {
       url = "github:nix-community/nixos-anywhere";
       inputs = {
@@ -83,11 +88,6 @@
       inputs.systems.follows = "systems";
     };
 
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-vm-test = {
       url = "github:Mic92/nix-vm-test";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -126,7 +126,12 @@
       profiles = lib.lhf.rakeNixLeaves ./profiles // {hardware = inputs.hardware.nixosModules;};
     };
 
-    overlays = lib.lhf.mkOverlays ./pkgs {inherit pkgsConfig;};
+    overlays = [
+      (lib.lhf.mkOverlay ./pkgs {inherit pkgsConfig;})
+      (final: _: {inherit (inputs.nixos-anywhere.packages.${final.system}) nixos-anywhere;})
+      inputs.rust-overlay.overlays.default
+    ];
+
     secrets = lib.lhf.mkSecrets ./secrets;
     publicKeys = import ./public-keys.nix;
 

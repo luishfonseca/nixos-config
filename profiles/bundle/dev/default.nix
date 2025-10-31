@@ -3,5 +3,5 @@
   lib,
   ...
 }: {
-  imports =  lib.lhf.flattenLeaves (lib.lhf.rakeNixLeaves ./.);
+  imports = lib.lhf.flattenLeaves (lib.lhf.rakeNixLeaves ./.);
 }

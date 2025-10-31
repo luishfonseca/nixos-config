@@ -14,28 +14,21 @@
   - pkgsConfig: The Nixpkgs configuration.
 
   Output Format:
-  A list of overlays with unstable and custom packages.
-  The first overlay adds the `unstable` channel packages under the `unstable` attribute, configured by `pkgsConfig`.
-  The second overlay adds the custom packages found in the `pkgsPath` directory under the `lhf` attribute.
-  Additional overlays are part of the flake inputs.
+  The first part adds the `unstable` channel packages under the `unstable` attribute, configured by `pkgsConfig`.
+  The second part adds the custom packages found in the `pkgsPath` directory under the `lhf` attribute.
 
   *
   */
-  mkOverlays = pkgsPath: {pkgsConfig}: [
-    (final: _: {
-      unstable = import inputs.unstable {
-        inherit (final) system;
-        config = pkgsConfig;
-      };
-    })
-    (final: prev: {
-      lhf =
-        final.lib.mapAttrsRecursive
-        (_: pkg: (prev.callPackage pkg {}))
-        (lib.lhf.rakeNixLeaves pkgsPath);
-    })
-    (final: _: {inherit (inputs.nixos-anywhere.packages.${final.system}) nixos-anywhere;})
-  ];
+  mkOverlay = pkgsPath: {pkgsConfig}: (final: prev: {
+    unstable = import inputs.unstable {
+      inherit (final) system;
+      config = pkgsConfig;
+    };
+    lhf =
+      final.lib.mapAttrsRecursive
+      (_: pkg: (prev.callPackage pkg {}))
+      (lib.lhf.rakeNixLeaves pkgsPath);
+  });
 
   /*
   *
@@ -161,5 +154,5 @@
     ((a: (builtins.removeAttrs a [hostname]) // a."${hostname}" or {})
       (lib.attrsets.filterAttrs (n: v: n == hostname || (! builtins.isAttrs v)) (lib.lhf.rakeAllLeaves secretsPath)));
 in {
-  inherit mkOverlays mkHosts mkSecrets;
+  inherit mkOverlay mkHosts mkSecrets;
 }

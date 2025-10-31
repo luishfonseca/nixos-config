@@ -1,8 +1,12 @@
-{profiles,pkgs, ...}: {
+{
+  profiles,
+  pkgs,
+  ...
+}: {
   imports = with profiles; [
-    graphical
+    bundle.graphical
+    bundle.dev
     autologin
-    dev
     hardware.common-pc
     cpu-amd
   ];
@@ -50,35 +54,6 @@
   environment.systemPackages = with pkgs; [
     chromium
   ];
-
-  hm = {
-    programs.vscode = {
-      enable = true;
-      package = pkgs.unstable.vscode;
-      mutableExtensionsDir = true;
-      profiles.default = {
-        extensions = with pkgs.unstable.vscode-extensions; [
-            github.copilot
-            github.copilot-chat
-
-            file-icons.file-icons
-
-            eamodio.gitlens
-
-            usernamehw.errorlens
-
-            jnoortheen.nix-ide
-          ];
-      };
-    };
-
-    home.file.".vscode/argv.json".text = ''
-      {
-        "use-inmemory-secretstorage": true,
-        "enable-crash-reporter": true,
-      }
-    '';
-  };
 
   boot.consoleLogLevel = 3;
 
