@@ -5,4 +5,6 @@
       "no-nerd-font"
     ];
   };
+
+  persist.home.files = [".bash_history"];
 }
