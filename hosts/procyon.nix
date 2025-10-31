@@ -45,8 +45,12 @@
         ".cache/chromium"
         ".pki"
 
-        # Gnome Keyring
-        ".local/share/keyrings"
+        # VSCode
+        ".config/Code/User"
+      ];
+      files = [
+        # VSCode
+        ".config/Code/Preferences"
       ];
     };
   };
