@@ -199,6 +199,8 @@ with inputs.nix-colors.colorSchemes.dracula; {
           "$mod, Space, exec, $run $menu --show drun"
           "$mod, V, exec, $run cliphist list | wofi --show dmenu | cliphist decode | wl-copy"
 
+          "$mod, C, togglespecialworkspace, config"
+
           "$mod, W, killactive"
           "$mod, Q, exec, uwsm stop"
           "$mod, F, fullscreen"
@@ -239,6 +241,10 @@ with inputs.nix-colors.colorSchemes.dracula; {
         windowrule = [
           "suppressevent maximize, class:.*"
           "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
+        ];
+
+        workspace = [
+          "special:config, on-created-empty:code $HOME/pst/nixos-config"
         ];
       };
     };
