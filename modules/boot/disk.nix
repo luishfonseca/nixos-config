@@ -298,7 +298,10 @@ in {
           };
         };
 
-        environment.systemPackages = with pkgs; [lhf.sbctl lhf.tpm-lockup];
+        environment.systemPackages = with pkgs; [
+          (lhf.sbctl.override {path = "/recovery/sbctl";})
+          lhf.tpm-lockup
+        ];
       })
       (lib.mkIf cfg.hibernate {
         disko.devices.lvm_vg.root_pool.lvs.swap = {

@@ -1,7 +1,7 @@
 {
   pkgs,
   sbctl,
-  path ? "/recovery/sbctl",
+  path,
 }: let
   conf = pkgs.writeTextFile {
     name = "sbctl.conf";
