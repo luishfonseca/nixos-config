@@ -22,28 +22,19 @@
     owner = config.user.name;
   };
 
-  systemd = {
-    services.chown-ssh-dir = {
-      description = "Ensure correct ownership of .ssh directory";
-      wantedBy = ["sops-install-secrets.service"];
-      after = ["sops-install-secrets.service"];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = ''
-          ${pkgs.coreutils}/bin/chown ${config.user.name}:users /home/${config.user.name}/.ssh
-        '';
-        RemainAfterExit = true;
-      };
-    };
-    user.services.ssh-agent.serviceConfig.Restart = lib.mkForce "always";
-    services.lock-ssh-agent = {
-      description = "Lock SSH Agent";
-      wantedBy = ["suspend.target" "hibernate.target"];
-      before = ["systemd-suspend.service" "systemd-hibernate.service" "systemd-suspend-then-hibernate.service"];
-      serviceConfig = {
-        ExecStart = "${pkgs.killall}/bin/killall ssh-agent";
-        Type = "forking";
-      };
+  systemd.tmpfiles.settings.prepare-home-ssh."/home/${config.user.name}/.ssh".d = {
+    user = config.user.name;
+    group = "users";
+    mode = "0755";
+  };
+
+  systemd.services.lock-ssh-agent = {
+    description = "Lock SSH Agent";
+    wantedBy = ["suspend.target" "hibernate.target"];
+    before = ["systemd-suspend.service" "systemd-hibernate.service" "systemd-suspend-then-hibernate.service"];
+    serviceConfig = {
+      ExecStart = "${pkgs.killall}/bin/killall ssh-agent";
+      Type = "forking";
     };
   };
 }
