@@ -21,4 +21,6 @@
       }
     '';
   };
+
+  persist.home.directories = [".config/Code"];
 }

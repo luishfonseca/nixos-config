@@ -9,5 +9,7 @@
     wifi.powersave = true;
   };
 
+  persist.system.directories = ["/etc/NetworkManager/system-connections"];
+
   user.extraGroups = ["networkmanager"];
 }

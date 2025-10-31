@@ -32,8 +32,12 @@
 
     persist = {
       system = {
-        hideMounts = true;
         users."${config.user.name}" = lib.mkAliasDefinitions options.persist.home;
+        directories = [
+          "/var/log"
+          "/var/lib/"
+        ];
+        files = ["/etc/machine-id"];
       };
       home.directories = ["pst"];
     };

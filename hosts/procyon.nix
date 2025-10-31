@@ -27,38 +27,6 @@
     ];
   };
 
-  persist = {
-    system = {
-      directories = [
-        "/var/log"
-        "/var/lib/"
-        "/etc/NetworkManager/system-connections"
-      ];
-      files = [
-        "/etc/machine-id"
-      ];
-    };
-    home = {
-      directories = [
-        # Chromium
-        ".config/chromium"
-        ".cache/chromium"
-        ".pki"
-
-        # VSCode
-        ".config/Code/User"
-      ];
-      files = [
-        # VSCode
-        ".config/Code/Preferences"
-      ];
-    };
-  };
-
-  environment.systemPackages = with pkgs; [
-    chromium
-  ];
-
   boot.consoleLogLevel = 3;
 
   nixpkgs.hostPlatform = "x86_64-linux";
