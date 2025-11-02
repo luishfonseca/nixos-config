@@ -218,6 +218,10 @@ with inputs.nix-colors.colorSchemes.dracula; {
           "$mod, right, movefocus, r"
           "$mod, down, movefocus, d"
           "$mod, up, movefocus, u"
+          "$mod, N, movefocus, l"
+          "$mod, I, movefocus, r"
+          "$mod, E, movefocus, d"
+          "$mod, U, movefocus, u"
 
           "$mod, 1, workspace, 1"
           "$mod, 2, workspace, 2"
