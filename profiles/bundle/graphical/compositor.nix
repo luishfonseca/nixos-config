@@ -153,7 +153,6 @@ with inputs.nix-colors.colorSchemes.dracula; {
           kb_layout = layout;
           kb_variant = variant;
           kb_options = options;
-          natural_scroll = true;
         };
 
         general = {
