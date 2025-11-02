@@ -236,6 +236,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
           "$mod, E, movefocus, d"
           "$mod, U, movefocus, u"
 
+          "$mod, grave, workspace, emptym"
           "$mod, 1, workspace, 1"
           "$mod, 2, workspace, 2"
           "$mod, 3, workspace, 3"
@@ -247,6 +248,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
           "$mod, 9, workspace, 9"
           "$mod, 0, workspace, 10"
 
+          "$mod SHIFT, grave, movetoworkspace, emptym"
           "$mod SHIFT, 1, movetoworkspace, 1"
           "$mod SHIFT, 2, movetoworkspace, 2"
           "$mod SHIFT, 3, movetoworkspace, 3"
