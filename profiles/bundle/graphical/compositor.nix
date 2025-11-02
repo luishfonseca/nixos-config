@@ -16,6 +16,11 @@ with inputs.nix-colors.colorSchemes.dracula; {
       alsa.enable = true;
       pulse.enable = true;
     };
+    physlock = {
+      enable = true;
+      muteKernelMessages = true;
+      allowAnyUser = true;
+    };
   };
 
   programs = {
@@ -66,7 +71,6 @@ with inputs.nix-colors.colorSchemes.dracula; {
     };
 
     programs = {
-      hyprlock.enable = true;
       wofi.enable = true;
       kitty = {
         enable = true;
@@ -88,29 +92,28 @@ with inputs.nix-colors.colorSchemes.dracula; {
         enable = true;
         settings = {
           general = {
-            lock_cmd = "pidof hyprlock || hyprlock";
-            before_sleep_cmd = "loginctl lock-session";
-            after_sleep_cmd = "hyprctl dispatch dpms on && brightnessctl -r";
+            lock_cmd = "physlock";
+            after_sleep_cmd = "uwsm app -- hyprctl dispatch dpms on && brightnessctl -r";
           };
 
           listener = [
             {
               timeout = 120; # 2 min
-              on-timeout = "brightnessctl -s set 1%";
-              on-resume = "brightnessctl -r";
+              on-timeout = "uwsm app -- brightnessctl -s set 1%";
+              on-resume = "uwsm app -- brightnessctl -r";
             }
             {
-              timeout = 150; # 2.5 min
-              on-timeout = "loginctl lock-session";
+              timeout = 300; # 5 min
+              on-timeout = "uwsm app -- loginctl lock-session";
             }
             {
-              timeout = 180; # 3 min
-              on-timeout = "hyprctl dispatch dpms off";
-              on-resume = "hyprctl dispatch dpms on";
+              timeout = 480; # 8 min
+              on-timeout = "uwsm app -- hyprctl dispatch dpms off";
+              on-resume = "uwsm app -- hyprctl dispatch dpms on";
             }
             {
               timeout = 600; # 10 min
-              on-timeout = "systemctl sleep";
+              on-timeout = "uwsm app -- systemctl sleep";
             }
           ];
         };
@@ -198,6 +201,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
           "$mod, Return, exec, $run $term"
           "$mod, Space, exec, $run $menu --show drun"
           "$mod, V, exec, $run cliphist list | wofi --show dmenu | cliphist decode | wl-copy"
+          "$mod, L, exec, $run loginctl lock-session"
 
           "$mod, C, togglespecialworkspace, config"
 
