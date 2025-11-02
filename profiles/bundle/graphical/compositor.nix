@@ -20,6 +20,11 @@ with inputs.nix-colors.colorSchemes.dracula; {
       enable = true;
       muteKernelMessages = true;
       allowAnyUser = true;
+      lockOn = {
+        # let hyprland manage this
+        suspend = false;
+        hibernate = false;
+      };
     };
   };
 
@@ -92,28 +97,30 @@ with inputs.nix-colors.colorSchemes.dracula; {
         enable = true;
         settings = {
           general = {
-            lock_cmd = "physlock";
-            after_sleep_cmd = "uwsm app -- hyprctl dispatch dpms on && brightnessctl -r";
+            lock_cmd = "pidof physlock || physlock";
+            inhibit_sleep = 3; # wait for lock before sleep
+            before_sleep_cmd = "loginctl lock-session";
+            after_sleep_cmd = "hyprctl dispatch dpms on && brightnessctl -r";
           };
 
           listener = [
             {
               timeout = 120; # 2 min
-              on-timeout = "uwsm app -- brightnessctl -s set 1%";
-              on-resume = "uwsm app -- brightnessctl -r";
+              on-timeout = "brightnessctl -s set 1%";
+              on-resume = "brightnessctl -r";
             }
             {
               timeout = 300; # 5 min
-              on-timeout = "uwsm app -- loginctl lock-session";
+              on-timeout = "loginctl lock-session";
             }
             {
               timeout = 480; # 8 min
-              on-timeout = "uwsm app -- hyprctl dispatch dpms off";
-              on-resume = "uwsm app -- hyprctl dispatch dpms on";
+              on-timeout = "hyprctl dispatch dpms off";
+              on-resume = "hyprctl dispatch dpms on";
             }
             {
               timeout = 600; # 10 min
-              on-timeout = "uwsm app -- systemctl sleep";
+              on-timeout = "systemctl sleep";
             }
           ];
         };
@@ -274,6 +281,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
       [settings]
       logout_cmd = "uwsm stop"
+      lock_cmd = "loginctl lock-session"
       suspend_cmd = "systemctl sleep"
       audio_sinks_more_cmd = "uwsm app -- pavucontrol -t 3"
       audio_sources_more_cmd = "uwsm app -- pavucontrol -t 4"
