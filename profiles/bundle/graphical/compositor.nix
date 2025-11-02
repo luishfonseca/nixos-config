@@ -186,8 +186,13 @@ with inputs.nix-colors.colorSchemes.dracula; {
         };
 
         exec-once = [
+          "systemd-inhibit --who='hyprland config' --why='Custom keybind' --what=handle-power-key sleep infinity & echo $! > /tmp/.hyprland-systemd-inhibit"
           "$run $term --start-as=hidden"
           "$run $bar"
+        ];
+
+        exec-shutdown = [
+          "kill -9 '$(cat /tmp/.hyprland-systemd-inhibit)'"
         ];
 
         gesture = [
@@ -214,6 +219,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
           "$mod, W, killactive"
           "$mod, Q, exec, uwsm stop"
+          ", XF86PowerOff, exec, uwsm stop"
           "$mod, F, fullscreen, 1"
           "$mod, P, togglefloating"
           "$mod, R, layoutmsg, movetoroot"
