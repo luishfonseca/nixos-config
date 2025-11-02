@@ -207,7 +207,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
           "$mod, W, killactive"
           "$mod, Q, exec, uwsm stop"
-          "$mod, F, fullscreen"
+          "$mod, F, fullscreen, 1"
           "$mod, P, togglefloating"
           "$mod, R, layoutmsg, movetoroot"
 
@@ -243,11 +243,18 @@ with inputs.nix-colors.colorSchemes.dracula; {
         ];
 
         windowrule = [
+          # remove border of maximized windows
+          "noborder, fullscreen:1"
+
+          # ignore maximize requests from apps
           "suppressevent maximize, class:.*"
-          "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
+
+          # fix dragging issues
+          "nofocus, class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
         ];
 
         workspace = [
+          # open nixos-config on vscode when the special workspace is created
           "special:config, on-created-empty:code $HOME/pst/nixos-config"
         ];
       };
