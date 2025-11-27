@@ -9,6 +9,8 @@
     autologin
 
     games
+    discord
+
     cpu-amd
   ];
 
