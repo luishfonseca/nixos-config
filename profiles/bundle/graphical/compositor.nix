@@ -32,8 +32,6 @@ with inputs.nix-colors.colorSchemes.dracula; {
     hyprland = {
       enable = true;
       withUWSM = true;
-      package = pkgs.unstable.hyprland;
-      portalPackage = pkgs.unstable.xdg-desktop-portal-hyprland;
     };
     dconf.profiles.user.databases = [
       {
@@ -68,7 +66,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
         qt5.qtwayland
         qt6.qtwayland
         wl-clipboard
-        unstable.ashell
+        ashell
         pavucontrol
         networkmanagerapplet
         brightnessctl
@@ -89,10 +87,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
     };
 
     services = {
-      dunst = {
-        enable = true;
-        package = pkgs.unstable.dunst;
-      };
+      dunst.enable = true;
       hypridle = {
         enable = true;
         settings = {
