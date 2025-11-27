@@ -174,6 +174,7 @@
           inherit (checks.${system}) pre-commit-check;
           packages =
             [
+              disko
               sops
               lhf.prepare-secrets
               lhf.deploy-anywhere
