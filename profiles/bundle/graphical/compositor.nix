@@ -33,14 +33,17 @@ with inputs.nix-colors.colorSchemes.dracula; {
       enable = true;
       withUWSM = true;
     };
-    dconf.profiles.user.databases = [
-      {
-        lockAll = true;
-        settings = {
-          "org/gnome/desktop/interface".color-scheme = "prefer-dark";
-        };
-      }
-    ];
+    dconf = {
+      enable = true;
+      profiles.user.databases = [
+        {
+          lockAll = true;
+          settings = {
+            "org/gnome/desktop/interface".color-scheme = "prefer-dark";
+          };
+        }
+      ];
+    };
   };
 
   environment.loginShellInit = ''
