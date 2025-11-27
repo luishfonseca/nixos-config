@@ -7,7 +7,8 @@
     bundle.graphical
     bundle.dev
     autologin
-    hardware.common-pc
+
+    games
     cpu-amd
   ];
 
@@ -25,6 +26,10 @@
         size = "1860G";
       }
     ];
+  };
+
+  hm.wayland.windowManager.hyprland.settings = {
+    xwayland.force_zero_scaling = true;
   };
 
   boot = {
