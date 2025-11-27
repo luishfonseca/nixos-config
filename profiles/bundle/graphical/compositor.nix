@@ -77,6 +77,10 @@ with inputs.nix-colors.colorSchemes.dracula; {
         pavucontrol
         networkmanagerapplet
         brightnessctl
+
+        # https://wiki.archlinux.org/title/Screen_capture#Wayland
+        grim
+        slurp
       ];
     };
 
