@@ -6,10 +6,8 @@
   imports = with profiles; [
     bundle.graphical
     bundle.dev
+    bundle.entertainment
     autologin
-
-    games
-    discord
 
     cpu-amd
   ];
