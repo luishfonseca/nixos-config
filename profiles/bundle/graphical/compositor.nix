@@ -270,11 +270,15 @@ with inputs.nix-colors.colorSchemes.dracula; {
           # open nixos-config on vscode when the special workspace is created
           "special:config, on-created-empty:code $HOME/pst/nixos-config"
         ];
+
+        monitor = lib.mkAfter [
+          " , preferred, auto, 1"
+        ];
       };
     };
 
     xdg.configFile."ashell/config.toml".text = ''
-      outputs = "Active"
+      outputs = "All"
 
       [appearance]
       style = "Solid"

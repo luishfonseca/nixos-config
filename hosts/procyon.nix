@@ -32,6 +32,11 @@
 
   hm.wayland.windowManager.hyprland.settings = {
     xwayland.force_zero_scaling = true;
+
+    monitor = [
+      "desc:Dell Inc. DELL U2713HM 7JNY53BB272L, 1920x1080@60, auto-left, 1" # work monitor
+      "eDP-1, 2560x1600@180, 0x0, 1.6"
+    ];
   };
 
   boot = {
