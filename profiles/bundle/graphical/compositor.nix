@@ -2,6 +2,7 @@
   inputs,
   config,
   pkgs,
+  lib,
   ...
 }:
 with inputs.nix-colors.colorSchemes.dracula; {
@@ -52,6 +53,8 @@ with inputs.nix-colors.colorSchemes.dracula; {
     fi
   '';
 
+  fonts.enableDefaultPackages = true;
+
   hm = {
     home = {
       shellAliases.ssh = "kitten ssh"; # Sends terminfo to remote host
@@ -66,6 +69,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
       };
 
       packages = with pkgs; [
+        adwaita-icon-theme
         qt5.qtwayland
         qt6.qtwayland
         wl-clipboard
