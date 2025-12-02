@@ -1,4 +1,8 @@
-{config, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   networking.networkmanager = {
     enable = true;
     dns = "none";
@@ -7,6 +11,7 @@
       config.services.tailscale.interfaceName
     ];
     wifi.powersave = true;
+    plugins = with pkgs; [networkmanager-openconnect];
   };
 
   persist.system.directories = ["/etc/NetworkManager/system-connections"];
