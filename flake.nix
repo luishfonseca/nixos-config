@@ -130,7 +130,7 @@
 
     overlays = [
       (lib.lhf.mkOverlay ./pkgs {inherit pkgsConfig;})
-      (final: _: {inherit (inputs.nixos-anywhere.packages.${final.system}) nixos-anywhere;})
+      (final: _: {inherit (inputs.nixos-anywhere.packages.${final.stdenv.hostPlatform.system}) nixos-anywhere;})
       inputs.rust-overlay.overlays.default
     ];
 
@@ -157,13 +157,20 @@
         hooks = {
           # Nix
           alejandra.enable = true;
-          flake-checker.enable = true;
+          flake-checker = {
+            enable = true;
+            package = pkgs.${system}.unstable.flake-checker;
+          };
           statix.enable = true;
           deadnix.enable = true;
 
           # Shell
           shellcheck.enable = true;
           shfmt.enable = true;
+
+          # Python
+          ruff.enable = true;
+          ruff-format.enable = true;
         };
       };
     });

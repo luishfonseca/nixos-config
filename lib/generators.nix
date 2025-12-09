@@ -21,7 +21,7 @@
   */
   mkOverlay = pkgsPath: {pkgsConfig}: (final: prev: {
     unstable = import inputs.unstable {
-      inherit (final) system;
+      inherit (final.stdenv.hostPlatform) system;
       config = pkgsConfig;
     };
     lhf =

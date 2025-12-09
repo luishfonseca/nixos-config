@@ -28,7 +28,7 @@
 
   hm = {
     home.file.".cache/nix-index/files".source =
-      inputs.nix-index-database.packages.${pkgs.system}.nix-index-database;
+      inputs.nix-index-database.packages.${pkgs.stdenv.hostPlatform.system}.nix-index-database;
 
     xdg.stateFile."nix/profiles/profile/manifest.json".text = ''
       {"elements":[],"version":2}

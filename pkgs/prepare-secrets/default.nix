@@ -9,8 +9,9 @@ with python3Packages;
   buildPythonPackage rec {
     name = "prepare-secrets";
     src = ./.;
+    pyproject = true;
+    build-system = [setuptools];
     propagatedBuildInputs = [
-      setuptools
       ruamel-yaml
       age
       sops
