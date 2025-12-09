@@ -11,7 +11,7 @@ on:
 
 jobs:
   vulnxscan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       matrix:
         host: [procyon]
