@@ -7,6 +7,7 @@
     bundle.graphical
     bundle.dev
     bundle.entertainment
+    bundle.research
     autologin
 
     cpu-amd
