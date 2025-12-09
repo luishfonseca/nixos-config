@@ -1,0 +1,50 @@
+name: Vulnerability Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  vulnxscan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: [procyon]
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Setup cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build
+        run: nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
+
+      - name: Scan
+        run: nix run github:tiiuae/sbomnix#vulnxscan -- result --out vulns.csv
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulns-${{ matrix.host }}
+          path: vulns.csv
+
+      - name: Summary
+        run: |
+          echo "## Vulnerability Scan: ${{ matrix.host }}" >> $GITHUB_STEP_SUMMARY
+          if [ -s vulns.csv ]; then
+            echo "⚠️ Vulnerabilities found:" >> $GITHUB_STEP_SUMMARY
+            head -50 vulns.csv >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+          fi
