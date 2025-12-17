@@ -4,14 +4,19 @@
       enable = true;
       package = pkgs.unstable.vscode;
       mutableExtensionsDir = true;
-      profiles.default.extensions = with pkgs.unstable.vscode-extensions; [
-        github.copilot
-        github.copilot-chat
+      profiles.default = {
+        userSettings = {
+          "editor.inlayHints.enabled" = "offUnlessPressed";
+        };
+        extensions = with pkgs.unstable.vscode-extensions; [
+          github.copilot
+          github.copilot-chat
 
-        file-icons.file-icons
+          file-icons.file-icons
 
-        usernamehw.errorlens
-      ];
+          usernamehw.errorlens
+        ];
+      };
     };
 
     home.file.".vscode/argv.json".text = ''
