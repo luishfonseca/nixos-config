@@ -181,6 +181,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
         misc = {
           disable_hyprland_logo = true;
           disable_splash_rendering = true;
+          focus_on_activate = true;
           enable_swallow = true;
           swallow_regex = "^(kitty)$";
         };
