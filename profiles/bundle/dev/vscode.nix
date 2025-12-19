@@ -7,7 +7,8 @@
       profiles.default = {
         userSettings = {
           "editor.inlayHints.enabled" = "offUnlessPressed";
-          "git.confirmSync" = "false";
+          "git.confirmSync" = false;
+          "git.enableSmartCommit" = true;
         };
         extensions = with pkgs.unstable.vscode-extensions; [
           github.copilot
