@@ -55,6 +55,8 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
   fonts.enableDefaultPackages = true;
 
+  persist.home.files = [".cache/wofi-drun"];
+
   hm = {
     home = {
       shellAliases.ssh = "kitten ssh"; # Sends terminfo to remote host
