@@ -9,6 +9,7 @@
           "editor.inlayHints.enabled" = "offUnlessPressed";
           "git.confirmSync" = false;
           "git.enableSmartCommit" = true;
+          "workbench.startupEditor" = "none";
         };
         extensions = with pkgs.unstable.vscode-extensions; [
           github.copilot
