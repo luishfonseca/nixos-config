@@ -75,7 +75,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
         qt5.qtwayland
         qt6.qtwayland
         wl-clipboard
-        ashell
+        unstable.ashell
         pavucontrol
         networkmanagerapplet
         brightnessctl
