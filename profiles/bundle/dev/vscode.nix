@@ -10,6 +10,7 @@
           "git.confirmSync" = false;
           "git.enableSmartCommit" = true;
           "workbench.startupEditor" = "none";
+          "chat.mcp.gallery.enabled" = true;
         };
         extensions = with pkgs.unstable.vscode-extensions; [
           github.copilot
