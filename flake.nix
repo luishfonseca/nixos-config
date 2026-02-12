@@ -4,6 +4,7 @@
 
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    pr-stremio.url = "github:nixos/nixpkgs?ref=pull/468728/merge";
 
     impermanence.url = "github:nix-community/impermanence";
 
@@ -129,7 +130,11 @@
     };
 
     overlays = [
-      (lib.lhf.mkOverlay ./pkgs {inherit pkgsConfig;})
+      (lib.lhf.mkOverlay {
+        inherit pkgsConfig;
+        extraChannels = {inherit (inputs) unstable pr-stremio;};
+        pkgsPath = ./pkgs;
+      })
       (final: _: {inherit (inputs.nixos-anywhere.packages.${final.stdenv.hostPlatform.system}) nixos-anywhere;})
       inputs.rust-overlay.overlays.default
     ];

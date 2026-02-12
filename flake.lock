@@ -420,6 +420,22 @@
         "type": "github"
       }
     },
+    "pr-stremio": {
+      "locked": {
+        "lastModified": 1770890540,
+        "narHash": "sha256-DAJN45a51Y6lk1JTkgXR93j1fBdhKUWaUDAAN4Xklzc=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "11cfcba5870820a97ed032c6e8721b2da8ef7731",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "pull/468728/merge",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -486,6 +502,7 @@
         "nixos-anywhere": "nixos-anywhere",
         "nixos-images": "nixos-images",
         "nixpkgs": "nixpkgs_2",
+        "pr-stremio": "pr-stremio",
         "pre-commit-hooks-nix": "pre-commit-hooks-nix",
         "rust-overlay": "rust-overlay",
         "sops-nix": "sops-nix",

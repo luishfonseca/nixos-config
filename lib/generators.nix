@@ -5,30 +5,34 @@
 }: let
   /*
   *
-  Synopsis: mkOverlay pkgsPath { pkgsConfig }
+  Synopsis: mkOverlay { pkgsConfig, pkgsPath, extraChannels }
 
-  Generate an overlay with unstable and custom packages.
+  Generate an overlay with extra channels and custom packages.
 
   Inputs:
-  - pkgsPath: The path to the directory containing custom Nix packages.
   - pkgsConfig: The Nixpkgs configuration.
-
-  Output Format:
-  The first part adds the `unstable` channel packages under the `unstable` attribute, configured by `pkgsConfig`.
-  The second part adds the custom packages found in the `pkgsPath` directory under the `lhf` attribute.
+  - pkgsPath: The path to the directory containing custom Nix packages.
+  - extraChannels: Attrset of additional nixpkgs branches, e.g { unstable = inputs.unstable; }
 
   *
   */
-  mkOverlay = pkgsPath: {pkgsConfig}: (final: prev: {
-    unstable = import inputs.unstable {
-      inherit (final.stdenv.hostPlatform) system;
-      config = pkgsConfig;
-    };
-    lhf =
-      final.lib.mapAttrsRecursive
-      (_: pkg: (prev.callPackage pkg {}))
-      (lib.lhf.rakeNixLeaves pkgsPath);
-  });
+  mkOverlay = {
+    pkgsConfig,
+    pkgsPath,
+    extraChannels,
+  }: (final: prev:
+    (lib.mapAttrs (_: ch:
+      import ch {
+        inherit (final.stdenv.hostPlatform) system;
+        config = pkgsConfig;
+      })
+    extraChannels)
+    // {
+      lhf =
+        final.lib.mapAttrsRecursive
+        (_: pkg: (prev.callPackage pkg {}))
+        (lib.lhf.rakeNixLeaves pkgsPath);
+    });
 
   /*
   *
