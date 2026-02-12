@@ -11,6 +11,7 @@
           "git.enableSmartCommit" = true;
           "workbench.startupEditor" = "none";
           "chat.mcp.gallery.enabled" = true;
+          "telemetry.telemetryLevel" = "off";
         };
         extensions = with pkgs.unstable.vscode-extensions; [
           github.copilot
