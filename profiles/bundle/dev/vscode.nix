@@ -27,7 +27,7 @@
     home.file.".vscode/argv.json".text = ''
       {
         "use-inmemory-secretstorage": true,
-        "enable-crash-reporter": true,
+        "enable-crash-reporter": true
       }
     '';
   };
