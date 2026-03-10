@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
-    zotero
+    unstable.zotero
   ];
 
-  persist.home.directories = ["Zotero"];
+  persist.home.directories = ["Zotero" ".zotero"];
 }
