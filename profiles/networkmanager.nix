@@ -11,7 +11,7 @@
       config.services.tailscale.interfaceName
     ];
     wifi.powersave = true;
-    plugins = with pkgs; [networkmanager-openconnect];
+    plugins = with pkgs; [networkmanager-openconnect networkmanager-openvpn];
   };
 
   persist.system.directories = ["/etc/NetworkManager/system-connections"];
