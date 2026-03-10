@@ -1,0 +1,3 @@
+{
+  services.qdrant.enable = true;
+}

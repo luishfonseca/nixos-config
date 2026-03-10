@@ -5,8 +5,19 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     pr-stremio.url = "github:nixos/nixpkgs?ref=pull/468728/merge";
+    pr-mcpo.url = "github:nixos/nixpkgs?ref=pull/410836/merge";
 
     impermanence.url = "github:nix-community/impermanence";
+
+    llama-cpp = {
+      url = "github:ggml-org/llama.cpp";
+      flake = false;
+    };
+
+    llm-functions = {
+      url = "github:sigoden/llm-functions";
+      flake = false;
+    };
 
     nix-colors = {
       url = "github:misterio77/nix-colors";
@@ -132,7 +143,7 @@
     overlays = [
       (lib.lhf.mkOverlay {
         inherit pkgsConfig;
-        extraChannels = {inherit (inputs) unstable pr-stremio;};
+        extraChannels = {inherit (inputs) unstable pr-stremio pr-mcpo;};
         pkgsPath = ./pkgs;
       })
       (final: _: {inherit (inputs.nixos-anywhere.packages.${final.stdenv.hostPlatform.system}) nixos-anywhere;})

@@ -8,6 +8,7 @@
     bundle.dev
     bundle.entertainment
     bundle.research
+    bundle.llm
     autologin
 
     cpu-amd
@@ -45,9 +46,23 @@
       yt6801 # ethernet driver
     ];
 
-    # keyboard dead after suspend fix:
-    # https://gitlab.com/tuxedocomputers/development/packages/linux/-/commit/ac7f9947f4289a476a21eb67e07cdb9669258567
-    kernelParams = ["i8042.nomux=1" "i8042.reset=1" "i8042.noloop=1" "i8042.nopnp=1"];
+    kernelParams = [
+      # keyboard dead after suspend fix:
+      # https://gitlab.com/tuxedocomputers/development/packages/linux/-/commit/ac7f9947f4289a476a21eb67e07cdb9669258567
+      "i8042.nomux=1"
+      "i8042.reset=1"
+      "i8042.noloop=1"
+      "i8042.nopnp=1"
+
+      # maybe makes llms faster
+      "amd_iommu=off"
+    ];
+
+    # give 88GB of ram to llms
+    extraModprobeConfig = ''
+      options ttm pages_limit=23068672
+      options ttm page_pool_size=11534336
+    '';
   };
 
   hardware.tuxedo-drivers.enable = true;
