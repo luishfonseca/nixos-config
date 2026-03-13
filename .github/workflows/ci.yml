@@ -32,7 +32,7 @@ jobs:
           path: flake.lock
 
       - name: Check
-        run: nix flake check
+        run: nix flake check --eval-store auto --store ssh-ng://eu.nixbuild.net
 
   build:
     needs: check
