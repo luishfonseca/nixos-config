@@ -9,34 +9,6 @@ on:
     - cron: '0 0 * * 1'
   workflow_dispatch:
 
-x-strategy: &strategy
-  matrix:
-    host: [procyon]
-  fail-fast: false
-
-x-setup-ssh: &setup-ssh
-  name: Setup SSH
-  uses: shimataro/ssh-key-action@v2
-  with:
-    key: ${{ secrets.NIXBUILD_SSH_KEY }}
-    name: id_ed25519
-    known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
-    config: |
-      Host eu.nixbuild.net
-        ServerAliveInterval 60
-        IPQoS throughput
-
-x-install-nix: &install-nix
-  name: Install Nix
-  uses: nixbuild/nix-quick-install-action@v34
-  with:
-    enable_kvm: false
-    nix_conf: |
-      substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
-      trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
-      builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
-      max-jobs = 0
-
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -44,10 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - *setup-ssh
-      - *install-nix
+      - uses: ./.github/actions/nix-setup
+        with:
+          ssh_key: ${{ secrets.NIXBUILD_SSH_KEY }}
 
-      - name: Update flake (if triggered by the cron)
+      - name: Update flake
         if: github.event_name == 'schedule'
         run: nix flake update
 
@@ -64,13 +37,17 @@ jobs:
   build:
     needs: check
     runs-on: ubuntu-latest
-    strategy: *strategy
+    strategy:
+      matrix:
+        host: [procyon]
+      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - *setup-ssh
-      - *install-nix
+      - uses: ./.github/actions/nix-setup
+        with:
+          ssh_key: ${{ secrets.NIXBUILD_SSH_KEY }}
 
       - name: Download updated flake.lock
         if: github.event_name == 'schedule'
@@ -86,13 +63,17 @@ jobs:
   vulnix:
     needs: build
     runs-on: ubuntu-latest
-    strategy: *strategy
+    strategy:
+      matrix:
+        host: [procyon]
+      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - *setup-ssh
-      - *install-nix
+      - uses: ./.github/actions/nix-setup
+        with:
+          ssh_key: ${{ secrets.NIXBUILD_SSH_KEY }}
 
       - name: Get store path
         id: path
