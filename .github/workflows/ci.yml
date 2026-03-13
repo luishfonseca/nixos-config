@@ -9,6 +9,33 @@ on:
     - cron: '0 0 * * 1'
   workflow_dispatch:
 
+x-strategy: &strategy
+  matrix:
+    host: [procyon]
+  fail-fast: false
+
+x-setup-ssh: &setup-ssh
+  name: Setup SSH
+  uses: shimataro/ssh-key-action@v2
+  with:
+    key: ${{ secrets.NIXBUILD_SSH_KEY }}
+    name: id_ed25519
+    known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
+    config: |
+      Host eu.nixbuild.net
+        ServerAliveInterval 60
+        IPQoS throughput
+
+x-install-nix: &install-nix
+  name: Install Nix
+  uses: nixbuild/nix-quick-install-action@v34
+  with:
+    enable_kvm: false
+    nix_conf: |
+      substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
+      trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
+      builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -16,25 +43,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup SSH
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.NIXBUILD_SSH_KEY }}
-          name: id_ed25519
-          known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
-          config: |
-            Host eu.nixbuild.net
-              ServerAliveInterval 60
-              IPQoS throughput
+      - *setup-ssh
+      - *install-nix
 
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
+      - name: Update flake (if triggered by the cron)
+        if: github.event_name == 'schedule'
+        run: nix flake update
+
+      - name: Upload flake.lock
+        if: github.event_name == 'schedule'
+        uses: actions/upload-artifact@v4
         with:
-          enable_kvm: false
-          nix_conf: |
-            substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
-            builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+          name: flake-lock
+          path: flake.lock
 
       - name: Check
         run: nix flake check --store ssh-ng://eu.nixbuild.net
@@ -42,82 +63,50 @@ jobs:
   build:
     needs: check
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        host: [procyon]
-      fail-fast: false
-    outputs:
-      store_path: ${{ steps.build.outputs.store_path }}
+    strategy: *strategy
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup SSH
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.NIXBUILD_SSH_KEY }}
-          name: id_ed25519
-          known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
-          config: |
-            Host eu.nixbuild.net
-              ServerAliveInterval 60
-              IPQoS throughput
+      - *setup-ssh
+      - *install-nix
 
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
+      - name: Download updated flake.lock
+        if: github.event_name == 'schedule'
+        uses: actions/download-artifact@v4
         with:
-          enable_kvm: false
-          nix_conf: |
-            substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
-            builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+          name: flake-lock
 
       - name: Build
-        id: build
         run: |
-          OUT=$(nix build --store ssh-ng://eu.nixbuild.net --json \
-            .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel \
-            | jq -r '.[0].outputs.out')
-          echo "store_path=$OUT" >> $GITHUB_OUTPUT
+          nix build --store ssh-ng://eu.nixbuild.net \
+            .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
 
   vulnix:
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        host: [procyon]
-      fail-fast: false
+    strategy: *strategy
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup SSH
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.NIXBUILD_SSH_KEY }}
-          name: id_ed25519
-          known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
-          config: |
-            Host eu.nixbuild.net
-              ServerAliveInterval 60
-              IPQoS throughput
+      - *setup-ssh
+      - *install-nix
 
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
-        with:
-          enable_kvm: false
-          nix_conf: |
-            substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
-            builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+      - name: Get store path
+        id: path
+        run: |
+          OUT=$(nix eval --raw \
+            .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel)
+          echo "store_path=$OUT" >> $GITHUB_OUTPUT
 
       - name: Copy from remote store
-        run: nix copy --from ssh-ng://eu.nixbuild.net ${{ needs.build.outputs.store_path }}
+        run: nix copy --from ssh-ng://eu.nixbuild.net ${{ steps.path.outputs.store_path }}
 
       - name: Scan
         run: |
           nix run github:tiiuae/sbomnix#vulnxscan -- \
-            ${{ needs.build.outputs.store_path }} --out vulns.csv
+            ${{ steps.path.outputs.store_path }} --out vulns.csv
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -134,3 +123,26 @@ jobs:
           else
             echo "✅ No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
           fi
+
+  commit:
+    needs: vulnix
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download updated flake.lock
+        uses: actions/download-artifact@v4
+        with:
+          name: flake-lock
+
+      - name: Commit flake.lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flake.lock
+          git diff --staged --quiet || git commit -m "chore: bump flake.lock"
+          git push
