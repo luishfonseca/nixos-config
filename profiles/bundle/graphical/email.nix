@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+_: {
   programs.thunderbird.enable = true;
   persist.home.directories = [".thunderbird"];
 }

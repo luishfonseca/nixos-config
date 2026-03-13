@@ -9,7 +9,7 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
 
@@ -17,11 +17,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
+      - name: Setup SSH 
+        env:
+          SSH_KEY: ${{ secrets.NIXBUILD_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          echo "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519
 
-      - name: Setup cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v34
+        with:
+          enable_kvm: false
+          nix_conf: |
+            substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
+            builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
 
       - name: Check
         run: nix flake check
