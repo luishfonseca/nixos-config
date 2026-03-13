@@ -19,6 +19,10 @@ runs:
           Host eu.nixbuild.net
             ServerAliveInterval 60
             IPQoS throughput
+            Compression yes
+            ControlMaster auto
+            ControlPath ~/.ssh/cm-%C
+            ControlPersist 10m
 
     - name: Install Nix
       uses: nixbuild/nix-quick-install-action@v34
