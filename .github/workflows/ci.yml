@@ -32,7 +32,7 @@ jobs:
           path: flake.lock
 
       - name: Check
-        run: nix flake check
+        run: nix flake check --builders "" --eval-store auto --store ssh-ng://eu.nixbuild.net
 
   build:
     needs: check
@@ -57,7 +57,8 @@ jobs:
 
       - name: Build
         run: |
-          nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
+          nix build --builders "" --eval-store auto --store ssh-ng://eu.nixbuild.net \
+            .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
 
   vulnix:
     needs: build
@@ -71,13 +72,20 @@ jobs:
         with:
           ssh_key: ${{ secrets.NIXBUILD_SSH_KEY }}
 
-      - name: Build
+      - name: Get store path
+        id: path
         run: |
-          nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
+          OUT=$(nix eval --raw \
+            .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel)
+          echo "store_path=$OUT" >> $GITHUB_OUTPUT
+
+      - name: Copy from remote store
+        run: nix copy --from ssh-ng://eu.nixbuild.net ${{ steps.path.outputs.store_path }}
 
       - name: Scan
         run: |
-          nix run github:tiiuae/sbomnix#vulnxscan -- result --out vulns.csv
+          nix run github:tiiuae/sbomnix#vulnxscan -- \
+            ${{ steps.path.outputs.store_path }} --out vulns.csv
 
       - name: Upload results
         uses: actions/upload-artifact@v4
