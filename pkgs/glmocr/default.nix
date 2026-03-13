@@ -3,7 +3,6 @@
   python3Packages,
   fetchFromGitHub,
 }:
-
 python3Packages.buildPythonPackage rec {
   pname = "glmocr";
   version = "0.1.1";
@@ -26,7 +25,7 @@ python3Packages.buildPythonPackage rec {
   ];
 
   pythonRemoveDeps = [
-    "opencv-python"  # provided by opencv4
+    "opencv-python" # provided by opencv4
   ];
 
   dependencies = with python3Packages; [
@@ -54,7 +53,7 @@ python3Packages.buildPythonPackage rec {
     flask
   ];
 
-  pythonImportsCheck = [ "glmocr" ];
+  pythonImportsCheck = ["glmocr"];
 
   # Tests require network access and API keys
   doCheck = false;
@@ -63,7 +62,7 @@ python3Packages.buildPythonPackage rec {
     description = "Optical Character Recognition powered by GLM";
     homepage = "https://github.com/zai-org/glm-ocr";
     license = lib.licenses.asl20;
-    maintainers = [ ];
+    maintainers = [];
     mainProgram = "glmocr";
   };
 }
