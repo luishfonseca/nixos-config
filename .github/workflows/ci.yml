@@ -35,6 +35,7 @@ x-install-nix: &install-nix
       substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
       trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
       builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+      max-jobs = 0
 
 jobs:
   check:
