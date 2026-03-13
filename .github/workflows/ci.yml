@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.NIXBUILD_SSH_KEY }}
+          name: id_ed25519
+          known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
+          config: |
+            Host eu.nixbuild.net
+              ServerAliveInterval 60
+              IPQoS throughput
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v34
+        with:
+          enable_kvm: false
+          nix_conf: |
+            substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
+            builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+
+      - name: Check
+        run: nix flake check --store ssh-ng://eu.nixbuild.net
+
+  build:
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: [procyon]
+      fail-fast: false
+    outputs:
+      store_path: ${{ steps.build.outputs.store_path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.NIXBUILD_SSH_KEY }}
+          name: id_ed25519
+          known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
+          config: |
+            Host eu.nixbuild.net
+              ServerAliveInterval 60
+              IPQoS throughput
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v34
+        with:
+          enable_kvm: false
+          nix_conf: |
+            substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
+            builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+
+      - name: Build
+        id: build
+        run: |
+          OUT=$(nix build --store ssh-ng://eu.nixbuild.net --json \
+            .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel \
+            | jq -r '.[0].outputs.out')
+          echo "store_path=$OUT" >> $GITHUB_OUTPUT
+
+  vulnix:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: [procyon]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.NIXBUILD_SSH_KEY }}
+          name: id_ed25519
+          known_hosts: "eu.nixbuild.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM"
+          config: |
+            Host eu.nixbuild.net
+              ServerAliveInterval 60
+              IPQoS throughput
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v34
+        with:
+          enable_kvm: false
+          nix_conf: |
+            substituters = https://cache.nixos.org/ ssh://eu.nixbuild.net
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixbuild.net/bob-1:8tJU22/XxyINhP+wM65gwSIlg0rrQrmWhFf5+8u8F/s=
+            builders = eu.nixbuild.net x86_64-linux - 100 1 benchmark,big-parallel
+
+      - name: Copy from remote store
+        run: nix copy --from ssh-ng://eu.nixbuild.net ${{ needs.build.outputs.store_path }}
+
+      - name: Scan
+        run: |
+          nix run github:tiiuae/sbomnix#vulnxscan -- \
+            ${{ needs.build.outputs.store_path }} --out vulns.csv
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulns-${{ matrix.host }}
+          path: vulns.csv
+
+      - name: Summary
+        run: |
+          echo "## Vulnerability Scan: ${{ matrix.host }}" >> $GITHUB_STEP_SUMMARY
+          if [ -s vulns.csv ]; then
+            echo "⚠️ Vulnerabilities found:" >> $GITHUB_STEP_SUMMARY
+            head -50 vulns.csv >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+          fi
