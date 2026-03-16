@@ -9,13 +9,15 @@
   cfg = config.lhf.boot.disk;
 in {
   options.lhf.boot.disk = with lib; {
+    encrypt = (mkEnableOption "LUKS disk encryption") // {default = true;};
+    bios = mkEnableOption "legacy BIOS boot (GPT + GRUB)";
     mirror = mkEnableOption "mirrored boot disk";
     hibernate = mkEnableOption "enable swap for hibernation";
     tpm = mkEnableOption "unlocking disk with TPM";
     size = {
-      ESP = mkOption {
+      boot = mkOption {
         type = types.str;
-        description = "Size of the ESP partition";
+        description = "Size of the boot partition";
         default = "512M";
       };
       root = mkOption {
@@ -57,6 +59,14 @@ in {
       mountOptions = ["umask=0077" "nofail"];
     };
 
+    root_content =
+      if cfg.encrypt
+      then root_crypt
+      else {
+        type = "lvm_pv";
+        vg = "root_pool";
+      };
+
     root_crypt = {
       type = "luks";
       name = "root_crypt";
@@ -75,7 +85,7 @@ in {
       '';
 
       postCreateHook = ''
-        systemd-cryptenroll /dev/md/root_mirror --unlock-key-file=/keys/root.key ${
+        systemd-cryptenroll "$(cryptsetup status root_crypt | awk '/device:/{print $2}')" --unlock-key-file=/keys/root.key ${
           if cfg.tpm
           then "--tpm2-device=auto --tpm2-pcrs="
           else "--password"
@@ -115,6 +125,14 @@ in {
             assertion = cfg.mirror -> (builtins.length cfg.devices > 1);
             message = "At least two disks are required for mirrored boot.";
           }
+          {
+            assertion = cfg.tpm -> cfg.encrypt;
+            message = "TPM unlocking requires disk encryption to be enabled.";
+          }
+          {
+            assertion = cfg.bios -> !cfg.tpm;
+            message = "TPM unlocking requires UEFI and is incompatible with legacy BIOS boot.";
+          }
         ];
 
         fileSystems."/nix".neededForBoot = true;
@@ -126,30 +144,40 @@ in {
               device = "/dev/disk/by-id/${d.id}";
               content = {
                 type = "gpt";
-                partitions = {
-                  ESP = {
-                    size = cfg.size.ESP;
-                    type = "EF00";
-                    content =
-                      if cfg.mirror
-                      then {
-                        type = "mdraid";
-                        name = "boot_mirror";
-                      }
-                      else boot;
+                partitions =
+                  lib.optionalAttrs cfg.bios {
+                    bios_boot = {
+                      size = "1M";
+                      type = "EF02";
+                    };
+                  }
+                  // {
+                    boot = {
+                      size = cfg.size.boot;
+                      type =
+                        if cfg.bios
+                        then "8300"
+                        else "EF00";
+                      content =
+                        if cfg.mirror
+                        then {
+                          type = "mdraid";
+                          name = "boot_mirror";
+                        }
+                        else boot;
+                    };
+                    root = {
+                      inherit (d) size;
+                      type = "8E00";
+                      content =
+                        if cfg.mirror
+                        then {
+                          type = "mdraid";
+                          name = "root_mirror";
+                        }
+                        else root_content;
+                    };
                   };
-                  root = {
-                    inherit (d) size;
-                    type = "8E00";
-                    content =
-                      if cfg.mirror
-                      then {
-                        type = "mdraid";
-                        name = "root_mirror";
-                      }
-                      else root_crypt;
-                  };
-                };
               };
             })
           cfg.devices);
@@ -163,38 +191,41 @@ in {
           lvm_vg = {
             root_pool = {
               type = "lvm_vg";
-              lvs = {
-                nix = {
-                  size = "100%";
-                  content = {
-                    type = "filesystem";
-                    format = "ext4";
-                    mountOptions = ["noatime"];
-                    mountpoint = "/nix";
+              lvs =
+                {
+                  nix = {
+                    size = "100%";
+                    content = {
+                      type = "filesystem";
+                      format = "ext4";
+                      mountOptions = ["noatime"];
+                      mountpoint = "/nix";
+                    };
                   };
-                };
-                recovery = {
-                  size = "64M";
-                  content = {
-                    type = "filesystem";
-                    format = "ext4";
-                    mountpoint = "/recovery";
+                }
+                // lib.optionalAttrs cfg.encrypt {
+                  recovery = {
+                    size = "64M";
+                    content = {
+                      type = "filesystem";
+                      format = "ext4";
+                      mountpoint = "/recovery";
 
-                    # Move keys into the encrypted volume, and bind mount it back to /keys
-                    # This way all previous keys are stored and more keys can be added
-                    postMountHook = ''
-                      mount -o remount,rw /mnt/recovery
-                      for f in $(ls /keys); do
-                        mv "/keys/$f" /mnt/recovery
-                      done
-                      mount --bind /mnt/recovery /keys
-                    '';
-                    preUnmountHook = ''
-                      umount /keys
-                    '';
+                      # Move keys into the encrypted volume, and bind mount it back to /keys
+                      # This way all previous keys are stored and more keys can be added
+                      postMountHook = ''
+                        mount -o remount,rw /mnt/recovery
+                        for f in $(ls /keys); do
+                          mv "/keys/$f" /mnt/recovery
+                        done
+                        mount --bind /mnt/recovery /keys
+                      '';
+                      preUnmountHook = ''
+                        umount /keys
+                      '';
+                    };
                   };
                 };
-              };
             };
           };
         };
@@ -204,9 +235,9 @@ in {
             enable = true;
             emergencyAccess = false; # See runbook on how to unlock if needed
           };
-          loader = {
-            systemd-boot.enable = ! cfg.tpm;
-            efi.canTouchEfiVariables = ! cfg.mirror; # efibootmgr doesn't understand mirrored ESP
+          loader = lib.mkIf (!cfg.bios) {
+            systemd-boot.enable = !cfg.tpm;
+            efi.canTouchEfiVariables = !cfg.mirror; # efibootmgr doesn't understand mirrored ESP
           };
         };
 
@@ -224,7 +255,7 @@ in {
           root_mirror = {
             type = "mdadm";
             level = 1;
-            content = root_crypt;
+            content = root_content;
           };
         };
 
@@ -246,9 +277,14 @@ in {
             };
           };
 
-          assemble-root-mirror = {
-            requiredBy = ["systemd-cryptsetup@root_crypt.service"];
-            before = ["systemd-cryptsetup@root_crypt.service"];
+          assemble-root-mirror = let
+            target =
+              if cfg.encrypt
+              then "systemd-cryptsetup@root_crypt.service"
+              else "initrd-root-device.target";
+          in {
+            requiredBy = [target];
+            before = [target];
             wants = ["wait-boot-disks.service"];
             after = ["wait-boot-disks.service"];
             unitConfig.DefaultDependencies = false;
@@ -278,6 +314,13 @@ in {
           AUTO -all
           PROGRAM ${pkgs.coreutils}/bin/true
         ''; # Disable auto assembly
+      })
+      (lib.mkIf cfg.bios {
+        boot.loader.grub = {
+          enable = true;
+          efiSupport = false;
+          # devices is auto-set by disko from the EF02 partition
+        };
       })
       (lib.mkIf cfg.tpm {
         boot = {

@@ -195,6 +195,7 @@
       default = with pkgs.${system};
         mkShell {
           inherit (checks.${system}) pre-commit-check;
+          SOPS_AGE_KEY_CMD = "sudo cat /nix/pst/age.key";
           packages =
             [
               disko

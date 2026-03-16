@@ -19,7 +19,7 @@ with python3Packages;
       mkpasswd
     ];
     preBuild = ''
-      echo "setuptools.setup(name='${name}', scripts=['${name}.py'])" > setup.py
+      echo "import setuptools; setuptools.setup(name='${name}', scripts=['${name}.py'])" > setup.py
     '';
     postInstall = ''
       mv -v $out/bin/${name}.py $out/bin/${name}

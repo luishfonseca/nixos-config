@@ -27,6 +27,8 @@ def add_host_rule(data, host, key_anchor):
 
     data["creation_rules"].append(dict(path_regex=f"secrets/{host}/.*", age=[]))
     data["creation_rules"][-1]["age"].append(key_anchor)
+    for deployer in data["deployers"]:
+        data["creation_rules"][-1]["age"].append(deployer)
 
 
 def prompt_diff(old, new):

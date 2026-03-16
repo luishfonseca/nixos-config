@@ -1,12 +1,15 @@
 keys:
-- &altair age1n9l0amsxty0z4du87u5w96n97h3wpzcc67d7n2enm76ljyhv3q0qaqkf7m
 - &procyon age18nk2d5evh26qw43w8lwcp8p9dq4g2mdl0tj0uctsstdwxlnu3pgqkjqz4v
+- &pollux age14edghp35n0lsgnrxslg273nm6jfc3rs9qsl7vddd99papjlz6f2s5zqagn
 deployers: &deployers
-- *altair
 - *procyon
 creation_rules:
 - path_regex: secrets/deployer/.*
   age: *deployers
 - path_regex: secrets/procyon/.*
   age:
+  - *procyon
+- path_regex: secrets/pollux/.*
+  age:
+  - *pollux
   - *procyon
