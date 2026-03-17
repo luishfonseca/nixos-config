@@ -7,6 +7,7 @@
     (modulesPath + "/profiles/qemu-guest.nix")
     bundle.server
     exit-node
+    storage-box
   ];
 
   lhf.boot.disk = {
