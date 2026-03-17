@@ -61,7 +61,11 @@ Local derivations overlaid onto nixpkgs. Includes `deploy-anywhere` (wraps nixos
 
 ### Secrets (`secrets/`)
 
-Encrypted with `sops` + age keys. Two age deployers (altair, procyon) configured in `.sops.yaml`. Per-host secret directories hold SSH keys, hashed passwords, and API keys. Edit secrets with `sops secrets/<host>/file.yaml`.
+Encrypted with `sops` + age keys. Two age deployers (altair, procyon) configured in `.sops.yaml`. Per-host secret directories hold SSH keys, hashed passwords, and API keys. Edit secrets with `sops secrets/<host>/file.yaml`. When piping into sops from stdin, use `--filename-override` so sops matches the correct `.sops.yaml` creation rule instead of matching against `/dev/stdin`:
+
+```bash
+echo "secret" | sops -e --filename-override secrets/host/name /dev/stdin > secrets/host/name
+```
 
 ## Conventions
 

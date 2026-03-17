@@ -8,6 +8,7 @@
     bundle.server
     exit-node
     storage-box
+    backup-server
   ];
 
   lhf.boot.disk = {

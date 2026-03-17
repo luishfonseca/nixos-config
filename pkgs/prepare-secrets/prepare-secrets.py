@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import base64
 import sys
 import subprocess
 import tempfile
@@ -104,6 +105,16 @@ with tempfile.TemporaryDirectory() as tmpdir:
         check=True,
     )
     host_secrets.append("id_ed25519")
+
+    print("\nGenerating borg backup passphrase...")
+    raw = subprocess.run(
+        ["head", "-c", "32", "/dev/urandom"],
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout
+    with open(f"{tmpdir}/borg-passphrase", "wb") as f:
+        f.write(base64.b64encode(raw))
+    host_secrets.append("borg-passphrase")
 
     print("\nAdd the following ssh public keys to public-keys.nix")
     with open(f"{tmpdir}/ssh_host_ed25519.pub", "r") as f:
