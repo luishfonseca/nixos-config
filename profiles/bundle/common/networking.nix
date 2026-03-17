@@ -17,11 +17,6 @@
     };
   };
 
-  services.tailscale = {
-    enable = true;
-    openFirewall = true;
-  };
-
   lhf.dnsResolver = {
     enable = true;
     upstream = {
