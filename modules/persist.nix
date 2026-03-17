@@ -17,19 +17,7 @@
 
   config = lib.mkMerge [
     {
-      environment = {
-        persistence."/nix/pst" = lib.mkAliasDefinitions options.persist.system;
-        systemPackages = [pkgs.lhf.root-diff];
-      };
-
-      systemd.services.root-diff = {
-        wantedBy = ["multi-user.target"];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStop = "${pkgs.lhf.root-diff}/bin/root-diff --capture";
-        };
-      };
+      environment.persistence."/nix/pst" = lib.mkAliasDefinitions options.persist.system;
 
       persist = {
         system = {

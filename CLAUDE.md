@@ -57,7 +57,7 @@ Each host file calls `mkHost` and selects profile bundles. `procyon.nix` is the 
 
 ### Custom Packages (`pkgs/`)
 
-Local derivations overlaid onto nixpkgs. Includes `deploy-anywhere` (wraps nixos-anywhere), `prepare-secrets`, `brave-search-mcp-server`, `glmocr`, `sbctl`, `tpm-lockup`, `root-diff`.
+Local derivations overlaid onto nixpkgs. Includes `deploy-anywhere` (wraps nixos-anywhere), `prepare-secrets`, `brave-search-mcp-server`, `glmocr`, `sbctl`, `tpm-lockup`.
 
 ### Secrets (`secrets/`)
 
