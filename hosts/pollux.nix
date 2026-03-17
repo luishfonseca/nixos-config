@@ -4,8 +4,9 @@
   ...
 }: {
   imports = with profiles; [
-    bundle.server
     (modulesPath + "/profiles/qemu-guest.nix")
+    bundle.server
+    exit-node
   ];
 
   lhf.boot.disk = {
@@ -18,6 +19,8 @@
       }
     ];
   };
+
+  networking.useNetworkd = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
   system.stateVersion = "25.11";
