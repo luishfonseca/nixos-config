@@ -36,17 +36,7 @@ in {
         export BORG_RSH="ssh -i ${config.sops.secrets.ssh_host_ed25519.path}"
         export BORG_PASSCOMMAND="cat ${config.sops.secrets.borg-passphrase.path}"
         export BORG_REPO="${cfg.repo}"
-
-        # Auto-prepend :: to bare archive names (detected by ISO timestamp)
-        args=()
-        for arg in "$@"; do
-          if [[ "$arg" =~ [0-9]{4}-[0-9]{2}-[0-9]{2}T && "$arg" != ::* && "$arg" != /* ]]; then
-            args+=("::$arg")
-          else
-            args+=("$arg")
-          fi
-        done
-        exec borg "''${args[@]}"
+        exec borg "$@"
       '')
     ];
 
