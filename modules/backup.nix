@@ -5,14 +5,23 @@
   ...
 }: let
   cfg = config.lhf.backup;
-  hostname = config.networking.hostName;
-  repo = "borg-${hostname}@${cfg.host}:/mnt/box/borg/${hostname}";
 in {
   options.lhf.backup = with lib; {
     enable = mkEnableOption "borg backup to remote host";
-    host = mkOption {
+    repo = mkOption {
       type = types.str;
-      description = "Backup server hostname";
+      description = "Borg repository path";
+    };
+    extraPaths = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Additional paths to back up besides /nix/pst";
+    };
+    exclude = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      example = ["/nix/pst/var/lib/docker"];
+      description = "Paths to exclude from backup";
     };
   };
 
@@ -26,14 +35,24 @@ in {
 
         export BORG_RSH="ssh -i ${config.sops.secrets.ssh_host_ed25519.path}"
         export BORG_PASSCOMMAND="cat ${config.sops.secrets.borg-passphrase.path}"
-        export BORG_REPO="${repo}"
-        exec borg "$@"
+        export BORG_REPO="${cfg.repo}"
+
+        # Auto-prepend :: to bare archive names (detected by ISO timestamp)
+        args=()
+        for arg in "$@"; do
+          if [[ "$arg" =~ [0-9]{4}-[0-9]{2}-[0-9]{2}T && "$arg" != ::* && "$arg" != /* ]]; then
+            args+=("::$arg")
+          else
+            args+=("$arg")
+          fi
+        done
+        exec borg "''${args[@]}"
       '')
     ];
 
     services.borgbackup.jobs.default = {
-      inherit repo;
-      paths = ["/nix/pst"];
+      inherit (cfg) repo exclude;
+      paths = ["/nix/pst"] ++ cfg.extraPaths;
       encryption = {
         mode = "repokey";
         passCommand = "cat ${config.sops.secrets.borg-passphrase.path}";

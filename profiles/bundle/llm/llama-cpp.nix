@@ -130,4 +130,6 @@ in {
     amdgpu_top
     python3Packages.huggingface-hub
   ];
+
+  lhf.backup.exclude = ["/nix/pst${modelsDir}"];
 }
