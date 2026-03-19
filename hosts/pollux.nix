@@ -11,15 +11,17 @@
     backup-server
   ];
 
-  lhf.boot.disk = {
-    bios = true;
-    encrypt = false;
-    devices = [
-      {
-        path = "/dev/sda";
-        size = "100%";
-      }
-    ];
+  lhf.boot = {
+    tailscale.enable = true;
+    disk = {
+      bios = true;
+      devices = [
+        {
+          path = "/dev/sda";
+          size = "100%";
+        }
+      ];
+    };
   };
 
   boot.loader.systemd-boot.configurationLimit = 5;
