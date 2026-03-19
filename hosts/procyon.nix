@@ -20,11 +20,11 @@
     tpm = true;
     devices = [
       {
-        id = "nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641298E";
+        path = "/dev/disk/by-id/nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641298E";
         size = "1860G";
       }
       {
-        id = "nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641450R";
+        path = "/dev/disk/by-id/nvme-Samsung_SSD_990_EVO_Plus_2TB_S7U7NU0Y641450R";
         size = "1860G";
       }
     ];

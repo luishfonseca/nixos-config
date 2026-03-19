@@ -29,9 +29,9 @@ in {
     devices = mkOption {
       type = types.listOf (types.submodule {
         options = {
-          id = mkOption {
+          path = mkOption {
             type = types.str;
-            description = "ID of the disk";
+            description = "Device path";
           };
           size = mkOption {
             type = types.str;
@@ -139,9 +139,9 @@ in {
 
         disko.devices = {
           disk = lib.listToAttrs (lib.map (d:
-            lib.nameValuePair d.id {
+            lib.nameValuePair (baseNameOf d.path) {
               type = "disk";
-              device = "/dev/disk/by-id/${d.id}";
+              device = d.path;
               content = {
                 type = "gpt";
                 partitions =
@@ -262,7 +262,7 @@ in {
         boot.initrd.systemd.services = {
           # Hold off on assembling root-mirror until either all disks become available or timeout
           wait-boot-disks = let
-            devices = lib.map (d: utils.escapeSystemdPath "/dev/disk/by-id/${d.id}.device") cfg.devices;
+            devices = lib.map (d: utils.escapeSystemdPath "${d.path}.device") cfg.devices;
           in {
             wants = devices;
             after = devices;
@@ -330,7 +330,6 @@ in {
               "tpm2-device=auto"
 
               # See Elvish's comment in https://discourse.nixos.org/t/a-modern-and-secure-desktop-setup/41154/17
-              # This can only be enabled when remote is disabled, since that setup requires another disk to be auto-unlocked
               "tpm2-measure-pcr=yes"
             ];
           };

@@ -16,11 +16,13 @@
     encrypt = false;
     devices = [
       {
-        id = "scsi-0QEMU_QEMU_HARDDISK_113867753";
+        path = "/dev/sda";
         size = "100%";
       }
     ];
   };
+
+  boot.loader.systemd-boot.configurationLimit = 5;
 
   networking.useNetworkd = true;
 

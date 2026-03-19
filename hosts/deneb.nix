@@ -8,15 +8,17 @@
     bundle.server
   ];
 
-  lhf.boot.disk = {
-    encrypt = false;
-    devices = [
+  lhf.boot = {
+    tailscale.enable = true;
+    disk.devices = [
       {
-        id = "wwn-0x6081867f28a2406a98cf33a5dbfcd450";
+        path = "/dev/sda";
         size = "100%";
       }
     ];
   };
+
+  boot.loader.systemd-boot.configurationLimit = 5;
 
   networking.useNetworkd = true;
 
