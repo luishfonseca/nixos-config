@@ -33,9 +33,17 @@ in {
       availableKernelModules = ["tun" "nft_chain_nat"];
       systemd = {
         packages = [tsPkg];
-        initrdBin = [pkgs.iptables pkgs.iproute2 tsPkg];
-        extraBin.ping = "${pkgs.iputils}/bin/ping";
+
         contents."/etc/resolv.conf".text = "nameserver 1.1.1.1\n";
+        initrdBin = [pkgs.iptables pkgs.iproute2 pkgs.getent tsPkg];
+        extraBin = {
+          ping = "${pkgs.iputils}/bin/ping";
+          unlock-shell = pkgs.writeShellScript "unlock-shell" ''
+            exec /bin/systemd-tty-ask-password-agent --watch
+          '';
+        };
+
+        users.root.shell = "/bin/unlock-shell";
 
         network = {
           enable = true;
