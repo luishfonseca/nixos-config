@@ -32,6 +32,7 @@
         extensions = with pkgs.unstable.vscode-extensions; [
           github.copilot
           github.copilot-chat
+          anthropic.claude-code
 
           file-icons.file-icons
 
