@@ -17,16 +17,12 @@
     };
   };
 
-  lhf.dnsResolver = {
+  networking.nameservers = [ "1.1.1.1#one.one.one.one" "1.0.0.1#one.one.one.one" ];
+
+  services.resolved = {
     enable = true;
-    upstream = {
-      name = "one.one.one.one";
-      ip = "1.1.1.1";
-    };
-    magicDNS = {
-      enable = true;
-      internalDomain = "in.lhf.pt";
-      tailnet = "tail9db2a.ts.net";
-    };
+    domains = [ "~." ]; # always use systemd-resolved
+    dnssec = "true";
+    dnsovertls = "true";
   };
 }

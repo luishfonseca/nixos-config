@@ -1,5 +1,5 @@
 {
-  lhf.exitNodeVpn = {
+  lhf.tailscale.exitNode = {
     enable = true;
     node = "pollux";
   };

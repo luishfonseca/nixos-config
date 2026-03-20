@@ -48,8 +48,8 @@ in {
         network = {
           enable = true;
           wait-online.anyInterface = true;
-          networks."10-dhcp" = {
-            matchConfig.Name = "en*";
+          networks."10-ethernet-dhcp" = {
+            matchConfig.Type = "ether";
             networkConfig.DHCP = "yes";
           };
           networks."50-tailscale" = {
