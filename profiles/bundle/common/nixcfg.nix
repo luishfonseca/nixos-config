@@ -13,6 +13,11 @@
       "nixpkgs=${inputs.nixpkgs}"
     ];
 
+    checkConfig = false;
+    extraOptions = ''
+      include ${config.sops.templates.nix-access-tokens.path}
+    '';
+
     settings = {
       experimental-features = ["nix-command" "flakes"];
       allowed-users = ["root" config.user.name];
@@ -26,5 +31,13 @@
       automatic = true;
       persistent = true;
     };
+  };
+
+  sops.templates.nix-access-tokens = {
+    mode = "0660";
+    group = "wheel";
+    content = ''
+      access-tokens = github.com=${config.sops.placeholder.nix-github-token}
+    '';
   };
 }

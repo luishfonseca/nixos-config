@@ -1,4 +1,4 @@
-keys:
+keys: &all
 - &procyon age18nk2d5evh26qw43w8lwcp8p9dq4g2mdl0tj0uctsstdwxlnu3pgqkjqz4v
 - &pollux age14edghp35n0lsgnrxslg273nm6jfc3rs9qsl7vddd99papjlz6f2s5zqagn
 - &deneb age1t66ju8ht83aupjuqsszqcs6nefw4fs75nk0476qvd5qem7zp24fqe2jlhf
@@ -18,3 +18,5 @@ creation_rules:
   age:
   - *deneb
   - *procyon
+- path_regex: secrets/.*
+  age: *all
