@@ -173,10 +173,7 @@
         hooks = {
           # Nix
           alejandra.enable = true;
-          flake-checker = {
-            enable = true;
-            package = pkgs.${system}.unstable.flake-checker;
-          };
+          flake-checker.enable = true;
           statix.enable = true;
           deadnix.enable = true;
 
