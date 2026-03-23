@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
-    pr-stremio.stremio-linux-shell
+    stremio-linux-shell
     mpv
   ];
 

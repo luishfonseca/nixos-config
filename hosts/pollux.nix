@@ -1,42 +1,61 @@
 {
+  inputs,
   profiles,
   modulesPath,
   ...
 }: {
   imports = with profiles; [
     (modulesPath + "/profiles/qemu-guest.nix")
+    inputs.network-unlock.nixosModules.default
     bundle.server
     exit-node
     storage-box
     backup-server
   ];
 
-  lhf.boot = {
-    tailscale.enable = true;
-    mutualUnlock = {
+  boot.initrd.systemd.network = {
+    enable = true;
+    networks."99-dhcp" = {
+      matchConfig.Type = "ether";
+      networkConfig.DHCP = "yes";
+    };
+  };
+
+  networkUnlock = rec {
+    server = {
       enable = true;
-      wants = ["tailscaled.service"];
+      openFirewall = true;
+      internal = "100.123.137.111";
+      public = "178.104.72.93";
+    };
+    client = {
+      enable = true;
+      units = ["tailscaled.service"];
       self = {
-        internal = "100.123.137.111";
-        external = "178.104.72.93";
+        inherit (server) internal public;
       };
       peer = {
         internal = "100.105.35.24";
         public = "158.178.156.3";
       };
-    };
-    disk = {
-      bios = true;
-      devices = [
-        {
-          path = "/dev/sda";
-          size = "100%";
-        }
-      ];
+      luks = {
+        crypt = "root_crypt";
+        key = "/recovery/root.key";
+      };
     };
   };
 
-  boot.loader.systemd-boot.configurationLimit = 3;
+  lhf.boot.disk = {
+    bios = true;
+    devices = [
+      {
+        path = "/dev/sda";
+        size = "100%";
+      }
+    ];
+  };
+
+  boot.loader.grub.configurationLimit = 3;
 
   networking.useNetworkd = true;
 

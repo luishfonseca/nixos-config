@@ -1,10 +1,9 @@
 {
   inputs = {
-    systems.url = "github:nix-systems/x86_64-linux"; # override this to use a different systems set
+    systems.url = "github:nix-systems/default-linux";
 
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    pr-stremio.url = "github:nixos/nixpkgs?ref=pull/468728/merge";
     pr-mcpo.url = "github:nixos/nixpkgs?ref=pull/410836/merge";
 
     impermanence.url = "github:nix-community/impermanence";
@@ -89,6 +88,14 @@
       };
     };
 
+    network-unlock = {
+      url = "github:luishfonseca/network-unlock";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
+
     ### === Not used by me, but other inputs need it === ###
     flake-compat.url = "github:edolstra/flake-compat";
 
@@ -143,7 +150,7 @@
     overlays = [
       (lib.lhf.mkOverlay {
         inherit pkgsConfig;
-        extraChannels = {inherit (inputs) unstable pr-stremio pr-mcpo;};
+        extraChannels = {inherit (inputs) unstable pr-mcpo;};
         pkgsPath = ./pkgs;
       })
       (final: _: {inherit (inputs.nixos-anywhere.packages.${final.stdenv.hostPlatform.system}) nixos-anywhere;})
