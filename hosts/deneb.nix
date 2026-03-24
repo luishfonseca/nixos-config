@@ -13,6 +13,7 @@
   ];
 
   # deneb:WVbL9VL8s2wXdDz+rV+ZVO8zh4vO1CCgTLfa7q9FGuI=
+  pasta.endpoints.cache = "http://deneb:5000";
   services.nix-serve = {
     enable = true;
     package = pkgs.nix-serve-ng;
