@@ -269,11 +269,11 @@
     "llama-cpp": {
       "flake": false,
       "locked": {
-        "lastModified": 1774305229,
-        "narHash": "sha256-5cuwT9kBLUKkdTsFbKLdzAlwM5C3gvjxh2KWLkdBq28=",
+        "lastModified": 1774355613,
+        "narHash": "sha256-8dlvTeGNSDBm4YE+DGQMTO9q/LiabiI0gDzpK29Mp1A=",
         "owner": "ggml-org",
         "repo": "llama.cpp",
-        "rev": "7cadbfce10fc16032cfb576ca4607cd2dd183bf1",
+        "rev": "29771a0a4c16e82a3e32974fddcb3e7b85359f53",
         "type": "github"
       },
       "original": {
@@ -308,11 +308,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774312920,
-        "narHash": "sha256-dgEnOQ3L0xlLP8oWppXJ8mZb341GAKDcUNDTDNaSYYo=",
+        "lastModified": 1774351795,
+        "narHash": "sha256-VG6Am+j2oLEMB0aTN1yEBVmvBlWe5I5uyZ+pFEXeBXg=",
         "owner": "luishfonseca",
         "repo": "network-unlock",
-        "rev": "0ddf9c11573aee042ad6717b5e26955d0c84f262",
+        "rev": "f5a0d1a6f716dc9191b65929dac812a17043f40c",
         "type": "github"
       },
       "original": {
@@ -577,11 +577,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774235565,
-        "narHash": "sha256-D8OOwvq3zDDCtIhMcNueb9tGSZaZUanKpWDleRgQ80U=",
+        "lastModified": 1774321696,
+        "narHash": "sha256-g18xMjMNla/nsF5XyQCNyWmtb2UlZpkY0XE8KinIXAA=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "dc00324a2438762582b49954373112b8eab29cab",
+        "rev": "49a67e6894d4cb782842ee6faa466aa90c92812d",
         "type": "github"
       },
       "original": {
