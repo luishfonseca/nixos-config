@@ -1,5 +1,7 @@
 {
   inputs,
+  config,
+  pkgs,
   profiles,
   modulesPath,
   ...
@@ -9,6 +11,13 @@
     inputs.network-unlock.nixosModules.default
     bundle.server
   ];
+
+  # deneb:WVbL9VL8s2wXdDz+rV+ZVO8zh4vO1CCgTLfa7q9FGuI=
+  services.nix-serve = {
+    enable = true;
+    package = pkgs.nix-serve-ng;
+    secretKeyFile = config.sops.secrets.binary-cache-key.path;
+  };
 
   boot.initrd.systemd.network = {
     enable = true;

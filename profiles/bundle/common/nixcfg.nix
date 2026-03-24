@@ -19,6 +19,8 @@
     '';
 
     settings = {
+      trusted-public-keys = [ "deneb:WVbL9VL8s2wXdDz+rV+ZVO8zh4vO1CCgTLfa7q9FGuI=" ];
+      substituters = [ "http://deneb:5000" ];
       experimental-features = ["nix-command" "flakes"];
       allowed-users = ["root" config.user.name];
       auto-optimise-store = true;
