@@ -9,111 +9,56 @@ on:
     - cron: '0 0 * * 1'
   workflow_dispatch:
 
+env:
+  BUILDER: 158.178.156.3 # deneb
+
 jobs:
-  check:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.configs.outputs.matrix }}
+      flake: ${{ steps.archive.outputs.flake }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - uses: ./.github/actions/nix-setup
-        with:
-          ssh_key: ${{ secrets.NIXBUILD_SSH_KEY }}
-
-      - name: Update flake
-        if: github.event_name == 'schedule'
-        run: nix flake update
-
-      - name: Upload flake.lock
-        if: github.event_name == 'schedule'
-        uses: actions/upload-artifact@v4
-        with:
-          name: flake-lock
-          path: flake.lock
-
-      - name: Check
-        run: nix flake check
+      - uses: actions/checkout@v4
+      - uses: nixbuild/nix-quick-install-action@v34
+      - &setup-ssh
+        name: Setup SSH
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan $BUILDER >> ~/.ssh/known_hosts
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+      - id: archive
+        name: Archive flake to builder
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          nix flake archive --to "ssh://builder@$BUILDER"
+          echo "flake=$(nix flake metadata --json | jq -r .path)" >> $GITHUB_OUTPUT
+      - id: configs
+        run: |
+          NAMES=$(nix eval .#nixosConfigurations --apply 'x: builtins.attrNames x' --json)
+          echo "matrix={\"config\":$NAMES}" >> $GITHUB_OUTPUT
 
   build:
-    needs: check
+    needs: setup
     runs-on: ubuntu-latest
-    strategy: &strategy
-      matrix:
-        host: [procyon]
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      max-parallel: 1
       fail-fast: false
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - uses: ./.github/actions/nix-setup
-        with:
-          ssh_key: ${{ secrets.NIXBUILD_SSH_KEY }}
-
-      - name: Download updated flake.lock
-        if: github.event_name == 'schedule'
-        uses: actions/download-artifact@v4
-        with:
-          name: flake-lock
-
+      - uses: nixbuild/nix-quick-install-action@v34
+      - *setup-ssh
       - name: Build
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
+          while sleep 300; do echo "=== still building ==="; done &
+          HEARTBEAT=$!
+          ssh -o ServerAliveInterval=60 builder@$BUILDER \
+            nix build "path:${{ needs.setup.outputs.flake }}#nixosConfigurations.${{ matrix.config }}.config.system.build.toplevel"
+          kill $HEARTBEAT
 
-  vulnix:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy: *strategy
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - uses: ./.github/actions/nix-setup
-        with:
-          ssh_key: ${{ secrets.NIXBUILD_SSH_KEY }}
-
-      - name: Build
-        run: |
-          nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
-
-      - name: Scan
-        run: |
-          nix run github:tiiuae/sbomnix#vulnxscan -- ./result --out vulns.csv
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: vulns-${{ matrix.host }}
-          path: vulns.csv
-
-      - name: Summary
-        run: |
-          echo "## Vulnerability Scan: ${{ matrix.host }}" >> $GITHUB_STEP_SUMMARY
-          if [ -s vulns.csv ]; then
-            echo "⚠️ Vulnerabilities found:" >> $GITHUB_STEP_SUMMARY
-            head -50 vulns.csv >> $GITHUB_STEP_SUMMARY
-          else
-            echo "✅ No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
-          fi
-
-  commit:
-    needs: vulnix
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Download updated flake.lock
-        uses: actions/download-artifact@v4
-        with:
-          name: flake-lock
-
-      - name: Commit flake.lock
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add flake.lock
-          git diff --staged --quiet || git commit -m "chore: bump flake.lock"
-          git push

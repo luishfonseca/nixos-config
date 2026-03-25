@@ -20,6 +20,65 @@
     secretKeyFile = config.sops.secrets.binary-cache-key.path;
   };
 
+  services.openssh.extraConfig = let
+    registry = pkgs.writeText "registry.json" (builtins.toJSON {
+      version = 2;
+      flakes = [
+        {
+          from = {
+            type = "indirect";
+            id = "nixpkgs";
+          };
+          to = {
+            type = "path";
+            inherit (pkgs) path;
+          };
+        }
+      ];
+    });
+
+
+    nixConf = pkgs.writeText "nix.conf" ''
+      experimental-features = nix-command flakes
+      flake-registry = file://${registry}
+    '';
+  in ''
+    Match User builder
+      ForceCommand ${pkgs.writeShellScript "builder-sandbox" ''
+      exec ${pkgs.bubblewrap}/bin/bwrap \
+        --die-with-parent \
+        --unshare-all \
+        --dev /dev \
+        --proc /proc \
+        --tmpfs /tmp \
+        --bind /nix/var /nix/var \
+        --ro-bind /nix/store /nix/store \
+        --ro-bind /etc/passwd /etc/passwd \
+        --ro-bind /etc/group /etc/group \
+        --ro-bind ${nixConf} /etc/nix/nix.conf \
+        --clearenv \
+        --setenv PATH ${pkgs.lib.makeBinPath (with pkgs; [bash coreutils nix])} \
+        -- bash ''${SSH_ORIGINAL_COMMAND:+-c "$SSH_ORIGINAL_COMMAND"}
+    ''}
+  '';
+
+
+  boot.binfmt.emulatedSystems = ["x86_64-linux"];
+  nix.settings = {
+    allowed-users = ["builder"];
+    trusted-public-keys = ["github-ci-runner:fzPtqB5rudN+PwaT3opbYgRyL2jXD8QlOfW02GFccfs="];
+  };
+
+  users.groups.builder = {};
+  users.users.builder = {
+    isNormalUser = true;
+    group = "builder";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJF+oSja/1sRd3MVrwAfF3rFgvqwxL4ENRQ+dQAJUj6o"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMw4W1SN63EFsyIunxa3IXnqCgpsQ0NS/xSUyFU5kWZP github-ci-runner"
+    ];
+  };
+
   boot.initrd.systemd.network = {
     enable = true;
     networks."99-dhcp" = {
