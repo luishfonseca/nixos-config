@@ -6,7 +6,10 @@
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     pr-mcpo.url = "github:nixos/nixpkgs?ref=pull/410836/merge";
 
-    impermanence.url = "github:nix-community/impermanence";
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.home-manager.follows = "home-manager";
+    };
 
     llama-cpp = {
       url = "github:ggml-org/llama.cpp";
@@ -66,6 +69,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         rust-overlay.follows = "rust-overlay";
+        pre-commit.follows = "pre-commit-hooks-nix";
       };
     };
 
