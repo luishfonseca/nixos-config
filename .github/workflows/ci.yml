@@ -50,7 +50,6 @@ jobs:
       max-parallel: 1
       fail-fast: false
     steps:
-      - uses: nixbuild/nix-quick-install-action@v34
       - *setup-ssh
       - name: Build
         env:
@@ -59,6 +58,16 @@ jobs:
           while sleep 300; do echo "=== still building ==="; done &
           HEARTBEAT=$!
           ssh -o ServerAliveInterval=60 builder@$BUILDER \
-            nix build "path:${{ needs.setup.outputs.flake }}#nixosConfigurations.${{ matrix.config }}.config.system.build.toplevel"
+            nix build "path:${{ needs.setup.outputs.flake }}#nixosConfigurations.${{ matrix.config }}.config.system.build.toplevel" \
+            --out-link ${{ matrix.config }}
           kill $HEARTBEAT
 
+  build:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - *setup-ssh
+      - name: Collect Garbage
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: ssh builder@$BUILDER nix-collect-garbage

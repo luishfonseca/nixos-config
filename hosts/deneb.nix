@@ -52,6 +52,7 @@
         --proc /proc \
         --tmpfs /tmp \
         --bind /nix/var /nix/var \
+        --bind /home/builder /home/builder \
         --ro-bind /nix/store /nix/store \
         --ro-bind /etc/passwd /etc/passwd \
         --ro-bind /etc/group /etc/group \
