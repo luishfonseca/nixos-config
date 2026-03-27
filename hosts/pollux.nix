@@ -13,14 +13,6 @@
     backup-server
   ];
 
-  boot.initrd.systemd.network = {
-    enable = true;
-    networks."99-dhcp" = {
-      matchConfig.Type = "ether";
-      networkConfig.DHCP = "yes";
-    };
-  };
-
   networkUnlock = rec {
     server = {
       enable = true;
@@ -55,7 +47,16 @@
     ];
   };
 
-  boot.loader.grub.configurationLimit = 3;
+  boot = {
+    loader.grub.configurationLimit = 3;
+    initrd.systemd.network = {
+      enable = true;
+      networks."99-dhcp" = {
+        matchConfig.Type = "ether";
+        networkConfig.DHCP = "yes";
+      };
+    };
+  };
 
   networking.useNetworkd = true;
 

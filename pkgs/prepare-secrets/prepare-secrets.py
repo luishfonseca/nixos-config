@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import base64
+import os
 import sys
 import subprocess
 import tempfile
@@ -134,6 +135,17 @@ with tempfile.TemporaryDirectory() as tmpdir:
 
     with open(".sops.yaml", "wb") as f:
         yaml.dump(data, f)
+
+    shared_secrets = [
+        f for f in os.listdir("secrets") if os.path.isfile(os.path.join("secrets", f))
+    ]
+    if shared_secrets:
+        print(f"\nRekeying shared secrets: {', '.join(shared_secrets)}")
+        for secret in shared_secrets:
+            subprocess.run(
+                ["sops", "updatekeys", "-y", f"secrets/{secret}"],
+                check=True,
+            )
 
     for secret in deployer_secrets:
         subprocess.run(["mkdir", "-p", "secrets/deployer"], check=True)

@@ -2,9 +2,12 @@ keys: &all
 - &procyon age18nk2d5evh26qw43w8lwcp8p9dq4g2mdl0tj0uctsstdwxlnu3pgqkjqz4v
 - &pollux age14edghp35n0lsgnrxslg273nm6jfc3rs9qsl7vddd99papjlz6f2s5zqagn
 - &deneb age1t66ju8ht83aupjuqsszqcs6nefw4fs75nk0476qvd5qem7zp24fqe2jlhf
+- &albireo-a age18pnddsplcfg9hhnwt4jpfu3l93vlsa9qf66ry30zzfh65keee3fqw6zjg8
 deployers: &deployers
 - *procyon
 creation_rules:
+- path_regex: secrets/.*
+  age: *all
 - path_regex: secrets/deployer/.*
   age: *deployers
 - path_regex: secrets/procyon/.*
@@ -18,5 +21,7 @@ creation_rules:
   age:
   - *deneb
   - *procyon
-- path_regex: secrets/.*
-  age: *all
+- path_regex: secrets/albireo-a/.*
+  age:
+  - *albireo-a
+  - *procyon

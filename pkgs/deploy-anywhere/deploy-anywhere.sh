@@ -12,8 +12,8 @@
 # $2: The remote user. Example: root@your-ip
 
 # Check if have 2 arguments
-if [ ! $# -eq 2 ]; then
-	echo "Usage: $0 <hostname> <remote user>"
+if [ $# -lt 2 ]; then
+	echo "Usage: $0 <hostname> <remote user> [extra nixos-anywhere args...]"
 	exit 1
 fi
 
@@ -44,4 +44,4 @@ sops -d "secrets/deployer/$1.key" >"$temp/nix/pst/age.key"
 chmod 600 "$temp/nix/pst/age.key"
 
 # Install NixOS to the host system with our secrets
-nixos-anywhere --extra-files "$temp" --flake .#"$1" "$2"
+nixos-anywhere --extra-files "$temp" --flake .#"$1" "${@:3}" "$2"

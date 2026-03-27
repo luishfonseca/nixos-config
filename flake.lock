@@ -253,11 +253,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774351795,
-        "narHash": "sha256-VG6Am+j2oLEMB0aTN1yEBVmvBlWe5I5uyZ+pFEXeBXg=",
+        "lastModified": 1774612851,
+        "narHash": "sha256-TZs3bwpWPQA0rPUCF9GK3crS8JU7P5oNSunGqLnNu38=",
         "owner": "luishfonseca",
         "repo": "network-unlock",
-        "rev": "f5a0d1a6f716dc9191b65929dac812a17043f40c",
+        "rev": "d295e1bdc5dd1f90eabea31258ce0bc41f90d5a8",
         "type": "github"
       },
       "original": {

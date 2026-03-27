@@ -8,6 +8,9 @@ rec {
   host.deneb = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBqBT8URXtsFfABGGp92y1K40VuJXCWK9ivvc8nkRT8T";
   user.deneb = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINF36sbQ+2Vfuup1ErUCZBk3MGk8ieBBztISGff9kE4/";
 
+  host.albireo-a = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGZZoeQlgOPcYYKLmP7Iw9kimDivcEK674q72wknHj5O";
+  user.albireo-a = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIE2e1Mnsjk4JXdsa3poag4YLrFrupC3o0vswCKeMlR9";
+
   users = builtins.attrValues user;
   hosts = builtins.attrValues host;
 }

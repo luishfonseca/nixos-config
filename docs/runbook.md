@@ -10,6 +10,23 @@ This run book provides instructions for common procedures.
 - Run `prepare-secrets <target>` on the deployer. It must be able to decrypt deployer secrets.
 - Run `deploy-anywhere <target> nixos@nixos` on the deployer.
 
+### If the machine is very underpowered
+
+Enable zram:
+```sh
+modprobe zram
+zramctl /dev/zram0 --size $(free -m | awk '/Mem:/{print $2}')M --algorithm zstd
+mkswap /dev/zram0
+swapon -p 100 /dev/zram0
+
+sysctl vm.swappiness=150
+echo 3 > /proc/sys/vm/drop_caches
+```
+
+You may also need to enable it on the original OS.
+
+Additionally, use the following deploy flags `--no-substitute-on-destination --build-on local`
+
 ## Emergency Shell
 
 - Disable Secure Boot in BIOS settings.

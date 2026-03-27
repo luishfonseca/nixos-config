@@ -37,7 +37,6 @@
       ];
     });
 
-
     nixConf = pkgs.writeText "nix.conf" ''
       experimental-features = nix-command flakes
       flake-registry = file://${registry}
@@ -63,8 +62,6 @@
     ''}
   '';
 
-
-  boot.binfmt.emulatedSystems = ["x86_64-linux"];
   nix.settings = {
     allowed-users = ["builder"];
     trusted-public-keys = ["github-ci-runner:fzPtqB5rudN+PwaT3opbYgRyL2jXD8QlOfW02GFccfs="];
@@ -78,14 +75,6 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJF+oSja/1sRd3MVrwAfF3rFgvqwxL4ENRQ+dQAJUj6o"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMw4W1SN63EFsyIunxa3IXnqCgpsQ0NS/xSUyFU5kWZP github-ci-runner"
     ];
-  };
-
-  boot.initrd.systemd.network = {
-    enable = true;
-    networks."99-dhcp" = {
-      matchConfig.Type = "ether";
-      networkConfig.DHCP = "yes";
-    };
   };
 
   networkUnlock = rec {
@@ -120,7 +109,17 @@
     }
   ];
 
-  boot.loader.systemd-boot.configurationLimit = 3;
+  boot = {
+    binfmt.emulatedSystems = ["x86_64-linux"];
+    loader.systemd-boot.configurationLimit = 3;
+    initrd.systemd.network = {
+      enable = true;
+      networks."99-dhcp" = {
+        matchConfig.Type = "ether";
+        networkConfig.DHCP = "yes";
+      };
+    };
+  };
 
   networking.useNetworkd = true;
 
