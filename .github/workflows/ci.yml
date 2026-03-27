@@ -39,7 +39,7 @@ jobs:
           echo "flake=$(nix flake metadata --json | jq -r .path)" >> $GITHUB_OUTPUT
       - id: configs
         run: |
-          NAMES=$(nix eval .#nixosConfigurations --apply 'x: builtins.attrNames x' --json)
+          NAMES=$(nix eval .#nixosConfigurations --apply 'builtins.attrNames' --json)
           echo "matrix={\"config\":$NAMES}" >> $GITHUB_OUTPUT
 
   build:
