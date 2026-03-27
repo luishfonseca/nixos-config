@@ -10,6 +10,9 @@
     agentTimeout = "1h";
     extraConfig = ''
       AddKeysToAgent yes
+
+      Host * ${lib.strings.concatMapStringsSep " " (x: "!${x}") (builtins.attrNames publicKeys.host)}
+        SetEnv TERM=xterm-256color
     '';
 
     knownHosts =

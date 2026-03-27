@@ -59,8 +59,6 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
   hm = {
     home = {
-      shellAliases.ssh = "kitten ssh"; # Sends terminfo to remote host
-
       pointerCursor = {
         enable = true;
         package = pkgs.vanilla-dmz;
