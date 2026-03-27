@@ -21,6 +21,7 @@
 
   nix.settings = {
     allowed-users = ["builder"];
+    extra-platforms = ["i686-linux"];
     secret-key-files = config.sops.secrets.binary-cache-key.path; # sign on behalf of deneb
   };
 

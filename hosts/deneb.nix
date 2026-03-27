@@ -78,7 +78,7 @@
     buildMachines = [
       {
         hostName = "albireo-a";
-        system = "x86_64-linux";
+        systems = ["x86_64-linux" "i686-linux"];
         protocol = "ssh-ng";
         maxJobs = 1;
         supportedFeatures = ["nixos-test" "benchmark" "big-parallel"];
