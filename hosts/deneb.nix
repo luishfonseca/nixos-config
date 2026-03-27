@@ -47,6 +47,7 @@
       exec ${pkgs.bubblewrap}/bin/bwrap \
         --die-with-parent \
         --unshare-all \
+        --share-net \
         --dev /dev \
         --proc /proc \
         --tmpfs /tmp \
@@ -61,6 +62,22 @@
         -- bash ''${SSH_ORIGINAL_COMMAND:+-c "$SSH_ORIGINAL_COMMAND"}
     ''}
   '';
+
+  # The daemon won't substitute if the client thinks it's offline
+  # Thus --share-net is required, but this firewall blocks all traffic
+  networking.nftables = {
+    enable = true;
+    tables.builder-sandbox = {
+      family = "inet";
+      content = ''
+        chain output {
+          type filter hook output priority 0; policy accept;
+          meta skuid != ${toString config.users.users.builder.uid} accept
+          reject
+        }
+      '';
+    };
+  };
 
   programs.ssh.extraConfig = ''
     Host albireo-a
@@ -80,7 +97,7 @@
         hostName = "albireo-a";
         systems = ["x86_64-linux" "i686-linux"];
         protocol = "ssh-ng";
-        maxJobs = 1;
+        maxJobs = 2;
         supportedFeatures = ["nixos-test" "benchmark" "big-parallel"];
         mandatoryFeatures = [];
       }
@@ -88,10 +105,11 @@
     distributedBuilds = true;
   };
 
-  users.groups.builder = {};
+  users.groups.builder = {gid = 1400;};
   users.users.builder = {
     isNormalUser = true;
     group = "builder";
+    uid = 1400;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMw4W1SN63EFsyIunxa3IXnqCgpsQ0NS/xSUyFU5kWZP github-ci-runner"
     ];

@@ -35,7 +35,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          nix flake archive --to "ssh://builder@$BUILDER"
+          nix flake archive --to ssh-ng://builder@$BUILDER
           echo "flake=$(nix flake metadata --json | jq -r .path)" >> $GITHUB_OUTPUT
       - id: configs
         run: |
@@ -59,7 +59,7 @@ jobs:
           HEARTBEAT=$!
           ssh -o ServerAliveInterval=60 builder@$BUILDER \
             nix build "path:${{ needs.setup.outputs.flake }}#nixosConfigurations.${{ matrix.config }}.config.system.build.toplevel" \
-            --out-link ${{ matrix.config }}
+             --out-link ${{ matrix.config }}
           kill $HEARTBEAT
 
   clean:
