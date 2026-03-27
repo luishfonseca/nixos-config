@@ -129,7 +129,6 @@
   ];
 
   boot = {
-    binfmt.emulatedSystems = ["x86_64-linux"];
     loader.systemd-boot.configurationLimit = 3;
     initrd.systemd.network = {
       enable = true;
