@@ -54,5 +54,5 @@
     };
   };
 
-  persist.home.files = [".local/share/fish/fish_history"];
+  persist.home.directories = [".local/share/fish"];
 }
