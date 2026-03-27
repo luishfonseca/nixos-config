@@ -19,7 +19,7 @@ jobs:
       matrix: ${{ steps.configs.outputs.matrix }}
       flake: ${{ steps.archive.outputs.flake }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: nixbuild/nix-quick-install-action@v34
       - &setup-ssh
         name: Setup SSH
