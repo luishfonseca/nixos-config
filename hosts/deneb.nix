@@ -18,6 +18,7 @@
     enable = true;
     package = pkgs.nix-serve-ng;
     secretKeyFile = config.sops.secrets.binary-cache-key.path;
+    openFirewall = true;
   };
 
   services.openssh.extraConfig = let
