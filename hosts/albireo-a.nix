@@ -40,7 +40,12 @@
     };
   };
 
+  # The root is tiny, we need a bigger /tmp for building
+  persist.system.directories = ["/tmp"];
+  lhf.backup.exclude = ["/nix/pst/tmp"];
+
   boot = {
+    tmp.cleanOnBoot = true; # tmp is persisted for increased capacity
     loader.systemd-boot.configurationLimit = 3;
     initrd.systemd.network = {
       enable = true;
