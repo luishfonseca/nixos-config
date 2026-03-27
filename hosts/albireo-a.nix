@@ -1,5 +1,6 @@
 {
   inputs,
+  config,
   publicKeys,
   profiles,
   modulesPath,
@@ -11,12 +12,16 @@
     bundle.server
   ];
 
-  nix.settings.allowed-users = ["builder"];
   users.groups.builder = {};
   users.users.builder = {
     isNormalUser = true;
     group = "builder";
     openssh.authorizedKeys.keys = [publicKeys.host.deneb];
+  };
+
+  nix.settings = {
+    allowed-users = ["builder"];
+    secret-key-files = config.sops.secrets.binary-cache-key.path; # sign on behalf of deneb
   };
 
   networkUnlock.client = {
