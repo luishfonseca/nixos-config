@@ -1,5 +1,6 @@
 {
   inputs,
+  publicKeys,
   profiles,
   modulesPath,
   ...
@@ -9,6 +10,14 @@
     inputs.network-unlock.nixosModules.default
     bundle.server
   ];
+
+  nix.settings.allowed-users = ["builder"];
+  users.groups.builder = {};
+  users.users.builder = {
+    isNormalUser = true;
+    group = "builder";
+    openssh.authorizedKeys.keys = [publicKeys.host.deneb];
+  };
 
   networkUnlock.client = {
     enable = true;

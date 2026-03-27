@@ -8,7 +8,7 @@
   programs.ssh = {
     startAgent = true;
     agentTimeout = "1h";
-    extraConfig = ''
+    extraConfig = lib.mkAfter ''
       AddKeysToAgent yes
 
       Host * ${lib.strings.concatMapStringsSep " " (x: "!${x}") (builtins.attrNames publicKeys.host)}

@@ -62,9 +62,29 @@
     ''}
   '';
 
-  nix.settings = {
-    allowed-users = ["builder"];
-    trusted-public-keys = ["github-ci-runner:fzPtqB5rudN+PwaT3opbYgRyL2jXD8QlOfW02GFccfs="];
+  programs.ssh.extraConfig = ''
+    Host albireo-a
+      IdentitiesOnly yes
+      IdentityFile ${config.sops.secrets.ssh_host_ed25519.path}
+      User builder
+  '';
+
+  nix = {
+    settings = {
+      allowed-users = ["builder"];
+      trusted-public-keys = ["github-ci-runner:fzPtqB5rudN+PwaT3opbYgRyL2jXD8QlOfW02GFccfs="];
+    };
+    buildMachines = [
+      {
+        hostName = "albireo-a";
+        system = "x86_64-linux";
+        protocol = "ssh-ng";
+        maxJobs = 1;
+        supportedFeatures = ["nixos-test" "benchmark" "big-parallel"];
+        mandatoryFeatures = [];
+      }
+    ];
+    distributedBuilds = true;
   };
 
   users.groups.builder = {};
@@ -72,7 +92,6 @@
     isNormalUser = true;
     group = "builder";
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJF+oSja/1sRd3MVrwAfF3rFgvqwxL4ENRQ+dQAJUj6o"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMw4W1SN63EFsyIunxa3IXnqCgpsQ0NS/xSUyFU5kWZP github-ci-runner"
     ];
   };
