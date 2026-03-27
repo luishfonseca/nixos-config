@@ -62,8 +62,9 @@ jobs:
             --out-link ${{ matrix.config }}
           kill $HEARTBEAT
 
-  build:
+  clean:
     needs: build
+    if: success() || failure()
     runs-on: ubuntu-latest
     steps:
       - *setup-ssh
