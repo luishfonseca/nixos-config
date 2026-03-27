@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
-      max-parallel: 1
+      max-parallel: 2
       fail-fast: false
     steps:
       - *setup-ssh
