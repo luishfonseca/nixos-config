@@ -92,6 +92,7 @@
       allowed-users = ["builder"];
       trusted-public-keys = ["github-ci-runner:fzPtqB5rudN+PwaT3opbYgRyL2jXD8QlOfW02GFccfs="];
       secret-key-files = config.sops.secrets.binary-cache-key.path;
+      builders-use-substitutes = true;
     };
     buildMachines = [
       {
