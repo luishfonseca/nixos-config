@@ -11,6 +11,7 @@
     exit-node
     storage-box
     backup-server
+    rmfakecloud
   ];
 
   networkUnlock = rec {
