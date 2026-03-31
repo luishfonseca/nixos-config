@@ -10,8 +10,8 @@
     bundle.server
     exit-node
     storage-box
-    backup-server
-    rmfakecloud
+    services.backup-server
+    services.rmfakecloud
   ];
 
   networkUnlock = rec {
