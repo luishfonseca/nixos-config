@@ -42,10 +42,9 @@ in {
           extraSetFlags = ["--operator=${config.user.name}"];
         };
 
-        resolved.domains = [cfg.tailnet];
+        # TODO: does it make sense to set ~. on common/networking.nix?
+        resolved.domains = lib.mkForce []; # global ~. breaks dns
       };
-
-      networking.nameservers = lib.mkBefore ["100.100.100.100"];
     }
     (lib.mkIf cfg.autostart.enable {
       services.tailscale = {
