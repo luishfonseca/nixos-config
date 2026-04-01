@@ -18,6 +18,11 @@
     services.s3
   ];
 
+  lhf.tailscale.splitDns = {
+    enable = true;
+    domain = "lhf.pt";
+  };
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "luis@lhf.pt";

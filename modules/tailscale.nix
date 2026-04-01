@@ -24,6 +24,13 @@ in {
         description = "Additional ACL tags to advertise (without the `tag:` prefix). The hostname is always included.";
       };
     };
+    splitDns = {
+      enable = mkEnableOption "split DNS via Unbound, resolving a custom domain to this host's Tailscale address";
+      domain = mkOption {
+        type = types.str;
+        description = "Domain to resolve to this host within the tailnet (e.g., lhf.pt)";
+      };
+    };
     exitNode = {
       enable = mkEnableOption "NetworkManager-based VPN toggle for a Tailscale exit node";
       node = mkOption {
@@ -57,6 +64,32 @@ in {
           allTags = cfg.autostart.extraTags ++ [config.networking.hostName];
           tags = lib.concatMapStringsSep "," (t: "tag:${t}") allTags;
         in ["--advertise-tags=${tags}"];
+      };
+    })
+    # Requires adding this host's Tailscale IP as a nameserver restricted
+    # to the configured domain in the Tailscale admin console:
+    # https://login.tailscale.com/admin/dns
+    (lib.mkIf cfg.splitDns.enable {
+      services.unbound = {
+        enable = true;
+        resolveLocalQueries = false;
+        settings = {
+          server = {
+            interface = [config.services.tailscale.interfaceName];
+            access-control = ["100.64.0.0/10 allow"];
+            local-zone = [''"${cfg.splitDns.domain}." redirect''];
+            local-data = [''"${cfg.splitDns.domain}. IN CNAME ${config.networking.hostName}.${cfg.tailnet}."''];
+          };
+          forward-zone = [{
+            name = "${cfg.tailnet}.";
+            forward-addr = ["100.100.100.100"];
+          }];
+        };
+      };
+
+      networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
+        allowedTCPPorts = [53];
+        allowedUDPPorts = [53];
       };
     })
     (lib.mkIf cfg.exitNode.enable {

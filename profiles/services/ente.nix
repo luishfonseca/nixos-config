@@ -9,7 +9,7 @@
     photos = "photos.${config.lhf.tailscale.tailnet}";
     accounts = "ente-accounts.${config.lhf.tailscale.tailnet}";
     api = "ente-api.${config.lhf.tailscale.tailnet}";
-    public-albums = "photos.lhf.pt";
+    public-albums = "albums.lhf.pt";
     public-api = "ente-api.lhf.pt";
     public-s3 = "s3.lhf.pt";
   };
