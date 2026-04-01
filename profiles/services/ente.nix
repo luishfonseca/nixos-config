@@ -9,6 +9,9 @@
     photos = "photos.${config.lhf.tailscale.tailnet}";
     accounts = "ente-accounts.${config.lhf.tailscale.tailnet}";
     api = "ente-api.${config.lhf.tailscale.tailnet}";
+    public-albums = "photos.lhf.pt";
+    public-api = "ente-api.lhf.pt";
+    public-s3 = "s3.lhf.pt";
   };
 in {
   imports = [
@@ -41,7 +44,10 @@ in {
           port = builtins.toString port;
           use-tls = false;
         };
-        apps.accounts = "https://${hosts.accounts}";
+        apps = {
+          accounts = "https://${hosts.accounts}";
+          public-albums = "https://${hosts.public-albums}";
+        };
         webauthn = {
           rpid = hosts.accounts;
           rporigins = ["https://${hosts.accounts}"];
@@ -53,7 +59,7 @@ in {
             # sudo garage bucket create ente
             # sudo garage bucket allow --read --write --owner ente --key ente
             # sudo garage bucket allow --read --write --owner ente --key admin
-            endpoint = "https://s3.${config.lhf.tailscale.tailnet}";
+            endpoint = "https://${hosts.public-s3}";
             region = "garage";
             bucket = "ente";
             key = "GK130a7d96cba2f421dd6c03f0";
@@ -68,30 +74,32 @@ in {
         internal.admin = "1580559962386438";
       };
     };
-    caddy.virtualHosts = let 
-      webApp = enteApp: config.services.ente.web.package.override {
+    caddy.virtualHosts = let
+      webApp = enteApp: api:
+        config.services.ente.web.package.override {
           inherit enteApp;
           enteMainUrl = "https://${hosts.photos}";
           extraBuildEnv = {
-            NEXT_PUBLIC_ENTE_ENDPOINT = "https://${hosts.api}";
+            NEXT_PUBLIC_ENTE_ENDPOINT = "https://${api}";
+            NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT = "https://${hosts.public-albums}";
             NEXT_TELEMETRY_DISABLED = "1";
           };
         };
-      in{
+    in {
       "photos:80".extraConfig = ''
         bind tailscale/photos
         redir https://${hosts.photos} permanent
       '';
       ${hosts.photos}.extraConfig = ''
         bind tailscale/photos
-        root * ${webApp "photos"}
+        root * ${webApp "photos" hosts.api}
         try_files {path} {path}.html /index.html
         file_server
         header Access-Control-Allow-Origin "https://${hosts.photos}"
       '';
       ${hosts.accounts}.extraConfig = ''
         bind tailscale/ente-accounts
-        root * ${webApp "accounts"}
+        root * ${webApp "accounts" hosts.api}
         try_files {path} {path}.html /index.html
         file_server
         header Access-Control-Allow-Origin "https://${hosts.accounts}"
@@ -100,6 +108,29 @@ in {
         bind tailscale/ente-api
         reverse_proxy :${toString port}
       '';
+      ${hosts.public-albums} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          root * ${webApp "photos" hosts.public-api}
+          try_files {path} {path}.html /index.html
+          file_server
+          header Access-Control-Allow-Origin "https://${hosts.public-albums}"
+        '';
+      };
+      ${hosts.public-api} = {
+        useACMEHost = "lhf.pt";
+        # Filter public api to minimum required to share albums
+        extraConfig = ''
+          handle /public-collection* {
+              reverse_proxy :${toString port}
+          }
+          handle {
+              respond 403
+          }
+        '';
+      };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [443];
 }

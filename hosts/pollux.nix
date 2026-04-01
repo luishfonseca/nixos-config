@@ -1,5 +1,6 @@
 {
   inputs,
+  config,
   profiles,
   modulesPath,
   ...
@@ -16,6 +17,19 @@
     services.ente
     services.s3
   ];
+
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "luis@lhf.pt";
+    certs = {
+      "lhf.pt" = {
+        extraDomainNames = ["*.lhf.pt"];
+        group = "caddy";
+        dnsProvider = "cloudflare";
+        environmentFile = config.sops.secrets.cf-dns-api-token.path;
+      };
+    };
+  };
 
   networkUnlock = rec {
     server = {

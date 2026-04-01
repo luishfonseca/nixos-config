@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: let
   s3Port = 3900;
@@ -8,6 +9,8 @@
   adminPort = 3903;
   name = "s3";
   url = "https://${name}.${config.lhf.tailscale.tailnet}";
+  publicUrl = "s3.lhf.pt";
+  publicBuckets = ["ente"];
 in {
   imports = [
     ./caddy-tailscale.nix
@@ -59,6 +62,18 @@ in {
         bind tailscale/${name}
         reverse_proxy :${toString s3Port}
       '';
+      ${publicUrl} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @allowed path ${lib.concatMapStringsSep " " (b: "/${b}/*") publicBuckets}
+          handle @allowed {
+              reverse_proxy :${toString s3Port}
+          }
+          handle {
+              respond 403
+          }
+        '';
+      };
     };
   };
 }
