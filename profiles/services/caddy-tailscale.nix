@@ -3,6 +3,11 @@
   config,
   ...
 }: {
+  systemd.services.caddy = {
+    after = ["network-online.target"];
+    wants = ["network-online.target"];
+  };
+
   services.caddy = {
     enable = true;
     package = pkgs.caddy.withPlugins {
