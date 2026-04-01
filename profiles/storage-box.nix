@@ -13,8 +13,9 @@
     options = [
       "x-systemd.automount"
       "noauto"
+      "x-systemd.requires=network-online.target"
+      "x-systemd.after=network-online.target"
       "x-systemd.idle-timeout=60"
-      "x-systemd.device-timeout=5s"
       "x-systemd.mount-timeout=5s"
       "uid=1000"
       "gid=${toString config.users.groups.box.gid}"
