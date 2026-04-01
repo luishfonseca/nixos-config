@@ -5,6 +5,7 @@
 }: let
   port = 9200;
   radicalePort = 5232;
+  opencloudUid = 990;
   name = "opencloud";
   url = "https://${name}.${config.lhf.tailscale.tailnet}";
 
@@ -28,6 +29,21 @@ in {
   };
 
   persist.system.directories = ["/etc/opencloud"];
+
+  users.users.${config.services.opencloud.user}.uid = opencloudUid;
+  networking.nftables = {
+    enable = true;
+    tables.radicale-guard = {
+      family = "inet";
+      content = ''
+        chain output {
+          type filter hook output priority 0; policy accept;
+          tcp dport ${toString radicalePort} meta skuid ${toString opencloudUid} accept
+          tcp dport ${toString radicalePort} reject
+        }
+      '';
+    };
+  };
 
   services = {
     opencloud = {
