@@ -12,6 +12,7 @@
     storage-box
     services.backup-server
     services.rmfakecloud
+    services.opencloud
     services.s3
   ];
 
