@@ -13,6 +13,7 @@
     services.backup-server
     services.rmfakecloud
     services.opencloud
+    services.ente
     services.s3
   ];
 
