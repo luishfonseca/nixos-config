@@ -75,6 +75,51 @@ echo "secret" | sops -e --filename-override secrets/host/name /dev/stdin > secre
 - Persistent state paths must be declared in `modules/persist.nix` or per-host persist config
 - Secrets must be referenced through the `sops` module; never hardcode credentials
 
+## Adding a New Service
+
+Service profiles live in `profiles/services/` and are auto-imported by `rakeNixLeaves`. Each service gets its own Tailscale node and Caddy reverse proxy.
+
+Structure of a service profile (`profiles/services/<name>.nix`):
+
+```nix
+{config, ...}: let
+  port = <port>;
+  name = "<name>";
+  url = "https://${name}.${config.lhf.tailscale.tailnet}";
+in {
+  imports = [
+    ./caddy-tailscale.nix
+  ];
+
+  services = {
+    <name> = {
+      enable = true;
+      # service-specific config
+    };
+
+    caddy.virtualHosts = {
+      "${name}:80".extraConfig = ''
+        bind tailscale/${name}
+        redir ${url} permanent
+      '';
+      ${url}.extraConfig = ''
+        bind tailscale/${name}
+        reverse_proxy :${toString port}
+      '';
+    };
+  };
+}
+```
+
+Key patterns:
+- Import `./caddy-tailscale.nix` for Tailscale-authenticated Caddy
+- Bind Caddy to `tailscale/${name}` — this creates a Tailscale node per service
+- Add an HTTP-to-HTTPS redirect vhost alongside the main vhost
+- If the service needs secrets, use `environmentFile = config.sops.secrets.<name>-env.path`
+- If the service depends on another (e.g. Garage S3), add `systemd.services.<name> = { requires = ["garage.service"]; after = ["garage.service"]; }`
+- If the service needs persistent state beyond its default `/var/lib`, declare paths in `persist.system.directories`
+- Add the service to the host's imports: `services.<name>` in `hosts/<host>.nix`
+
 ## Deploying a New Host
 
 1. `prepare-secrets <target>` on a deployer machine
