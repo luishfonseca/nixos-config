@@ -42,11 +42,11 @@
       if [ ! -f ${cipher}/gocryptfs.conf ]; then
         gocryptfs -init -passfile ${passfile} ${cipher}
       fi
-      exec gocryptfs -fg -allow_other -passfile ${passfile} ${cipher} ${plain}
+      gocryptfs -allow_other -passfile ${passfile} ${cipher} ${plain}
     '';
 
     serviceConfig = {
-      Type = "simple";
+      Type = "forking";
       ExecStop = "${pkgs.util-linux}/bin/fusermount -u ${plain}";
       Restart = "on-failure";
     };
