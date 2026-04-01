@@ -1,3 +1,3 @@
 {
-  boot.kernelParams = ["console=ttyS0,115200"];
+  boot.kernelParams = ["console=tty0" "console=ttyS0,115200"];
 }
