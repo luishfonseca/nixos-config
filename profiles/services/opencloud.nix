@@ -1,8 +1,22 @@
-{config, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   port = 9200;
   radicalePort = 5232;
   name = "opencloud";
   url = "https://${name}.${config.lhf.tailscale.tailnet}";
+
+  mkRadicaleRoutes = endpoints:
+    lib.mapAttrsToList (endpoint: name: {
+      inherit endpoint;
+      backend = "http://127.0.0.1:${toString radicalePort}";
+      remote_user_header = "X-Remote-User";
+      skip_x_access_token = true;
+      additional_headers = [{"X-Script-Name" = name;}];
+    })
+    endpoints;
 in {
   imports = [
     ./caddy-tailscale.nix
@@ -20,20 +34,36 @@ in {
       enable = true;
       inherit url port;
       address = "127.0.0.1";
-      environment = {
-        PROXY_TLS = "false";
-
-        # sudo garage key create opencloud
-        # sudo garage bucket create opencloud
-        # sudo garage bucket allow --read --write --owner opencloud --key opencloud
-        # sudo garage bucket allow --read opencloud --key admin
-        STORAGE_USERS_DRIVER = "decomposeds3";
-        STORAGE_USERS_DECOMPOSEDS3_ENDPOINT = "https://s3.${config.lhf.tailscale.tailnet}";
-        STORAGE_USERS_DECOMPOSEDS3_REGION = "garage";
-        STORAGE_USERS_DECOMPOSEDS3_BUCKET = "opencloud";
-        STORAGE_USERS_DECOMPOSEDS3_ACCESS_KEY= "GK460de077d300ba9f0d38c91e";
-      };
       environmentFile = config.sops.secrets.opencloud-env.path;
+      settings = {
+        storage-users = {
+          # sudo garage key create opencloud
+          # sudo garage bucket create opencloud
+          # sudo garage bucket allow --read --write --owner opencloud --key opencloud
+          # sudo garage bucket allow --read opencloud --key admin
+          driver = "decomposeds3";
+          drivers.decomposeds3 = {
+            endpoint = "https://s3.${config.lhf.tailscale.tailnet}";
+            region = "garage";
+            bucket = "opencloud";
+            access_key = "GK460de077d300ba9f0d38c91e";
+          };
+        };
+        proxy = {
+          http.tls = false;
+          additional_policies = [
+            {
+              name = "default";
+              routes = mkRadicaleRoutes {
+                "/caldav/" = "/caldav";
+                "/.well-known/caldav" = "/caldav";
+                "/carddav/" = "/carddav";
+                "/.well-known/carddav" = "/carddav";
+              };
+            }
+          ];
+        };
+      };
     };
 
     radicale = {
@@ -44,6 +74,18 @@ in {
           ssl = false;
         };
         auth.type = "http_x_remote_user";
+        web.type = "none";
+        storage.predefined_collections = builtins.toJSON {
+          def-addressbook = {
+            "D:displayname" = "OpenCloud Address Book";
+            tag = "VADDRESSBOOK";
+          };
+          def-calendar = {
+            "C:supported-calendar-component-set" = "VEVENT,VJOURNAL,VTODO";
+            "D:displayname" = "OpenCloud Calendar";
+            tag = "VCALENDAR";
+          };
+        };
       };
     };
 
@@ -54,31 +96,7 @@ in {
       '';
       ${url}.extraConfig = ''
         bind tailscale/${name}
-
-        handle /caldav/* {
-          reverse_proxy :${toString radicalePort} {
-            header_up X-Script-Name /caldav
-          }
-        }
-        handle /.well-known/caldav {
-          reverse_proxy :${toString radicalePort} {
-            header_up X-Script-Name /caldav
-          }
-        }
-        handle /carddav/* {
-          reverse_proxy :${toString radicalePort} {
-            header_up X-Script-Name /carddav
-          }
-        }
-        handle /.well-known/carddav {
-          reverse_proxy :${toString radicalePort} {
-            header_up X-Script-Name /carddav
-          }
-        }
-
-        handle {
-          reverse_proxy :${toString port}
-        }
+        reverse_proxy :${toString port}
       '';
     };
   };

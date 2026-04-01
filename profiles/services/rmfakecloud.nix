@@ -50,7 +50,7 @@ in {
       enable = true;
       extraSettings = {
         RM_HTTPS_COOKIE = "true";
-        
+
         # sudo garage key create rmfakecloud
         # sudo garage bucket create rmfakecloud
         # sudo garage bucket allow --read --write --owner rmfakecloud --key rmfakecloud
