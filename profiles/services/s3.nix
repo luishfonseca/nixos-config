@@ -50,7 +50,7 @@ in {
       enable = true;
       virtualHosts.${url} = let
         public = {
-          ente = "GET HEAD OPTIONS";
+          ente = "GET HEAD PUT OPTIONS";
         };
       in {
         useACMEHost = "lhf.pt";
