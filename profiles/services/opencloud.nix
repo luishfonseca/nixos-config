@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   port = 9200;
@@ -18,6 +19,30 @@
       additional_headers = [{"X-Script-Name" = name;}];
     })
     endpoints;
+
+  externalSites = pkgs.fetchzip {
+    url = "https://github.com/opencloud-eu/web-extensions/releases/download/external-sites-v1.3.0/external-sites-1.3.0.zip";
+    hash = "sha256-++ZuTpLkTiAYSbIRzajmzSopfmBqpzY1iG1yCJmxhXA=";
+  };
+
+  externalSitesConfig = pkgs.writeText "external-sites-config.json" (builtins.toJSON {
+    config.sites = [
+      {
+        name = "Photos";
+        url = "https://photos.${config.lhf.tailscale.tailnet}";
+        target = "external";
+        color = "#00B33C";
+        icon = "image";
+        priority = 50;
+      }
+    ];
+  });
+
+  webApps = pkgs.runCommand "opencloud-web-apps" {} ''
+    mkdir -p $out/external-sites
+    cp -r ${externalSites}/* $out/external-sites
+    cp ${externalSitesConfig} $out/external-sites/config.json
+  '';
 in {
   imports = [
     ./caddy-tailscale.nix
@@ -50,6 +75,7 @@ in {
       enable = true;
       inherit url port;
       address = "127.0.0.1";
+      environment.WEB_ASSET_APPS_PATH = "${webApps}";
       environmentFile = config.sops.secrets.opencloud-env.path;
       settings = {
         storage-users = {
