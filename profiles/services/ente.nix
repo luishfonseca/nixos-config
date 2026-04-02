@@ -76,6 +76,7 @@ in {
             enteMainUrl = "https://${hosts.photos}";
             extraBuildEnv = {
               NEXT_PUBLIC_ENTE_ENDPOINT = "https://${api}";
+              NEXT_PUBLIC_ENTE_PHOTOS_ENDPOINT = "https://${hosts.photos}";
               NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT = "https://${hosts.public-albums}";
               NEXT_TELEMETRY_DISABLED = "1";
             };
