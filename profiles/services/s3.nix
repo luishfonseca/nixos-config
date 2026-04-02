@@ -4,18 +4,11 @@
   lib,
   ...
 }: let
-  s3Port = 3900;
+  port = 3900;
   rpcPort = 3901;
   adminPort = 3903;
-  name = "s3";
-  url = "https://${name}.${config.lhf.tailscale.tailnet}";
-  publicUrl = "s3.lhf.pt";
-  publicBuckets = ["ente"];
+  url = "s3.lhf.pt";
 in {
-  imports = [
-    ./caddy-tailscale.nix
-  ];
-
   systemd.services.garage = {
     requires = ["vault.service"];
     after = ["vault.service"];
@@ -42,7 +35,7 @@ in {
         rpc_secret = "@env:GARAGE_RPC_SECRET";
 
         s3_api = {
-          api_bind_addr = "127.0.0.1:${toString s3Port}";
+          api_bind_addr = "127.0.0.1:${toString port}";
           s3_region = "garage";
         };
 
@@ -53,30 +46,30 @@ in {
       };
     };
 
-    caddy.virtualHosts = {
-      "${name}:80".extraConfig = ''
-        bind tailscale/${name}
-        redir ${url} permanent
-      '';
-      ${url}.extraConfig = ''
-        bind tailscale/${name}
-        reverse_proxy :${toString s3Port}
-      '';
-      ${publicUrl} = {
+    caddy = {
+      enable = true;
+      virtualHosts.${url} = let
+        public = {
+          ente = "GET HEAD OPTIONS";
+        };
+      in {
         useACMEHost = "lhf.pt";
         extraConfig = ''
           @tailscale remote_ip 100.64.0.0/10
           handle @tailscale {
-              reverse_proxy :${toString s3Port}
+              reverse_proxy :${toString port}
           }
 
-          @public_read {
-              path ${lib.concatMapStringsSep " " (b: "/${b}/*") publicBuckets}
-              method GET HEAD OPTIONS
-          }
-          handle @public_read {
-              reverse_proxy :${toString s3Port}
-          }
+          ${lib.concatStringsSep "\n\n" (lib.mapAttrsToList (bucket: methods: ''
+              @${bucket} {
+                  path /${bucket}/*
+                  method ${methods}
+              }
+              handle  {
+                  reverse_proxy @${bucket} :${toString port}
+              }
+            '')
+            public)}
 
           handle {
               respond 403
@@ -85,4 +78,6 @@ in {
       };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [443];
 }

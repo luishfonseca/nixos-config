@@ -1,23 +1,16 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }: let
   port = 8094;
   hosts = {
-    photos = "photos.${config.lhf.tailscale.tailnet}";
-    accounts = "ente-accounts.${config.lhf.tailscale.tailnet}";
-    api = "ente-api.${config.lhf.tailscale.tailnet}";
+    photos = "photos.lhf.pt";
+    accounts = "ente-accounts.lhf.pt";
     public-albums = "albums.lhf.pt";
-    public-api = "ente-api.lhf.pt";
-    public-s3 = "s3.lhf.pt";
+    api = "ente-api.lhf.pt";
   };
 in {
-  imports = [
-    ./caddy-tailscale.nix
-  ];
-
   systemd.services.ente = {
     requires = ["garage.service"];
     after = ["garage.service"];
@@ -59,7 +52,7 @@ in {
             # sudo garage bucket create ente
             # sudo garage bucket allow --read --write --owner ente --key ente
             # sudo garage bucket allow --read --write --owner ente --key admin
-            endpoint = "https://${hosts.public-s3}";
+            endpoint = "https://s3.lhf.pt";
             region = "garage";
             bucket = "ente";
             key = "GK130a7d96cba2f421dd6c03f0";
@@ -74,60 +67,79 @@ in {
         internal.admin = "1580559962386438";
       };
     };
-    caddy.virtualHosts = let
-      webApp = enteApp: api:
-        config.services.ente.web.package.override {
-          inherit enteApp;
-          enteMainUrl = "https://${hosts.photos}";
-          extraBuildEnv = {
-            NEXT_PUBLIC_ENTE_ENDPOINT = "https://${api}";
-            NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT = "https://${hosts.public-albums}";
-            NEXT_TELEMETRY_DISABLED = "1";
+    caddy = {
+      enable = true;
+      virtualHosts = let
+        webApp = enteApp: api:
+          config.services.ente.web.package.override {
+            inherit enteApp;
+            enteMainUrl = "https://${hosts.photos}";
+            extraBuildEnv = {
+              NEXT_PUBLIC_ENTE_ENDPOINT = "https://${api}";
+              NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT = "https://${hosts.public-albums}";
+              NEXT_TELEMETRY_DISABLED = "1";
+            };
           };
+      in {
+        ${hosts.photos} = {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            @tailscale remote_ip 100.64.0.0/10
+            handle @tailscale {
+                root * ${webApp "photos" hosts.api}
+                try_files {path} {path}.html /index.html
+                file_server
+                header Access-Control-Allow-Origin "https://${hosts.photos}"
+            }
+
+            handle {
+                respond 403
+            }
+          '';
         };
-    in {
-      "photos:80".extraConfig = ''
-        bind tailscale/photos
-        redir https://${hosts.photos} permanent
-      '';
-      ${hosts.photos}.extraConfig = ''
-        bind tailscale/photos
-        root * ${webApp "photos" hosts.api}
-        try_files {path} {path}.html /index.html
-        file_server
-        header Access-Control-Allow-Origin "https://${hosts.photos}"
-      '';
-      ${hosts.accounts}.extraConfig = ''
-        bind tailscale/ente-accounts
-        root * ${webApp "accounts" hosts.api}
-        try_files {path} {path}.html /index.html
-        file_server
-        header Access-Control-Allow-Origin "https://${hosts.accounts}"
-      '';
-      ${hosts.api}.extraConfig = ''
-        bind tailscale/ente-api
-        reverse_proxy :${toString port}
-      '';
-      ${hosts.public-albums} = {
-        useACMEHost = "lhf.pt";
-        extraConfig = ''
-          root * ${webApp "photos" hosts.public-api}
-          try_files {path} {path}.html /index.html
-          file_server
-          header Access-Control-Allow-Origin "https://${hosts.public-albums}"
-        '';
-      };
-      ${hosts.public-api} = {
-        useACMEHost = "lhf.pt";
-        # Filter public api to minimum required to share albums
-        extraConfig = ''
-          handle /public-collection* {
-              reverse_proxy :${toString port}
-          }
-          handle {
-              respond 403
-          }
-        '';
+        ${hosts.accounts} = {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            @tailscale remote_ip 100.64.0.0/10
+            handle @tailscale {
+              root * ${webApp "accounts" hosts.api}
+              try_files {path} {path}.html /index.html
+              file_server
+              header Access-Control-Allow-Origin "https://${hosts.accounts}"
+            }
+
+            handle {
+                respond 403
+            }
+          '';
+        };
+        ${hosts.api} = {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            @tailscale remote_ip 100.64.0.0/10
+            handle @tailscale {
+                reverse_proxy :${toString port}
+            }
+
+            @public path /public-collection*
+            handle  {
+                reverse_proxy @public :${toString port}
+            }
+
+            handle {
+                respond 403
+            }
+          '';
+        };
+        ${hosts.public-albums} = {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            root * ${webApp "photos" hosts.api}
+            try_files {path} {path}.html /index.html
+            file_server
+            header Access-Control-Allow-Origin "https://${hosts.public-albums}"
+          '';
+        };
       };
     };
   };

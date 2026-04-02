@@ -82,10 +82,12 @@ in {
             local-zone = [''"${cfg.splitDns.domain}." redirect''];
             local-data = [''"${cfg.splitDns.domain}. IN CNAME ${config.networking.hostName}.${cfg.tailnet}."''];
           };
-          forward-zone = [{
-            name = "${cfg.tailnet}.";
-            forward-addr = ["100.100.100.100"];
-          }];
+          forward-zone = [
+            {
+              name = "${cfg.tailnet}.";
+              forward-addr = ["100.100.100.100"];
+            }
+          ];
         };
       };
 

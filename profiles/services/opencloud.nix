@@ -6,9 +6,7 @@
 }: let
   port = 9200;
   radicalePort = 5232;
-  opencloudUid = 990;
-  name = "opencloud";
-  url = "https://${name}.${config.lhf.tailscale.tailnet}";
+  url = "https://opencloud.lhf.pt";
 
   mkRadicaleRoutes = endpoints:
     lib.mapAttrsToList (endpoint: name: {
@@ -29,7 +27,7 @@
     config.sites = [
       {
         name = "Photos";
-        url = "https://photos.${config.lhf.tailscale.tailnet}";
+        url = "https://photos.lhf.pt";
         target = "external";
         color = "#00B33C";
         icon = "image";
@@ -44,10 +42,6 @@
     cp ${externalSitesConfig} $out/external-sites/config.json
   '';
 in {
-  imports = [
-    ./caddy-tailscale.nix
-  ];
-
   systemd.services.opencloud = {
     requires = ["garage.service"];
     after = ["garage.service"];
@@ -55,7 +49,7 @@ in {
 
   persist.system.directories = ["/etc/opencloud"];
 
-  users.users.${config.services.opencloud.user}.uid = opencloudUid;
+  users.users.${config.services.opencloud.user}.uid = 990;
   networking.nftables = {
     enable = true;
     tables.radicale-guard = {
@@ -63,7 +57,7 @@ in {
       content = ''
         chain output {
           type filter hook output priority 0; policy accept;
-          tcp dport ${toString radicalePort} meta skuid ${toString opencloudUid} accept
+          tcp dport ${toString radicalePort} meta skuid 990 accept
           tcp dport ${toString radicalePort} reject
         }
       '';
@@ -85,7 +79,7 @@ in {
           # sudo garage bucket allow --read opencloud --key admin
           driver = "decomposeds3";
           drivers.decomposeds3 = {
-            endpoint = "https://s3.${config.lhf.tailscale.tailnet}";
+            endpoint = "https://s3.lhf.pt";
             region = "garage";
             bucket = "opencloud";
             access_key = "GK460de077d300ba9f0d38c91e";
@@ -131,15 +125,33 @@ in {
       };
     };
 
-    caddy.virtualHosts = {
-      "${name}:80".extraConfig = ''
-        bind tailscale/${name}
-        redir ${url} permanent
-      '';
-      ${url}.extraConfig = ''
-        bind tailscale/${name}
-        reverse_proxy :${toString port}
-      '';
+    caddy = {
+      enable = true;
+      virtualHosts.${url} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @tailscale remote_ip 100.64.0.0/10
+          handle @tailscale {
+              reverse_proxy :${toString port}
+          }
+
+          @public path /s/* /files/upload/* /remote.php/dav/public-files/* /app/list
+          handle @public {
+              reverse_proxy :${toString port}
+          }
+
+          @static path_regexp \.(js|mjs|css|woff2?|ttf|svg|png|jpe?g|ico|json)$
+          handle @static {
+              reverse_proxy :${toString port}
+          }
+
+          handle {
+              respond 403
+          }
+        '';
+      };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [443];
 }

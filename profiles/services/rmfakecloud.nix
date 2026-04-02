@@ -1,12 +1,10 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }: let
   port = 3123;
-  name = "rmfakecloud";
-  url = "https://${name}.${config.lhf.tailscale.tailnet}";
+  url = "https://rmfakecloud.lhf.pt";
 
   package = let
     rev = "4f21ea9860f849057d621eefdafeb65e50a632c9";
@@ -35,10 +33,6 @@
         };
     });
 in {
-  imports = [
-    ./caddy-tailscale.nix
-  ];
-
   systemd.services.rmfakecloud = {
     requires = ["garage.service"];
     after = ["garage.service"];
@@ -64,15 +58,24 @@ in {
       environmentFile = config.sops.secrets.rmfakecloud-env.path;
       storageUrl = "https://local.appspot.com";
     };
-    caddy.virtualHosts = {
-      "${name}:80".extraConfig = ''
-        bind tailscale/${name}
-        redir ${url} permanent
-      '';
-      ${url}.extraConfig = ''
-        bind tailscale/${name}
-        reverse_proxy :${toString port}
-      '';
+
+    caddy = {
+      enable = true;
+      virtualHosts.${url} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @tailscale remote_ip 100.64.0.0/10
+          handle @tailscale {
+              reverse_proxy :${toString port}
+          }
+
+          handle {
+              respond 403
+          }
+        '';
+      };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [443];
 }
