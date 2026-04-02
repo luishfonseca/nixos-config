@@ -49,7 +49,7 @@ in {
         # sudo garage bucket create rmfakecloud
         # sudo garage bucket allow --read --write --owner rmfakecloud --key rmfakecloud
         # sudo garage bucket allow --read rmfakecloud --key admin
-        AWS_ENDPOINT_URL = "https://s3.${config.lhf.tailscale.tailnet}";
+        AWS_ENDPOINT_URL = "https://s3.lhf.pt";
         AWS_REGION = "garage";
         S3_PATH_STYLE = "true";
         S3_BUCKET_NAME = "rmfakecloud";
