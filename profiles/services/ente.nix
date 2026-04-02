@@ -5,10 +5,11 @@
 }: let
   port = 8094;
   hosts = {
-    photos = "photos.lhf.pt";
+    api = "ente.lhf.pt";
     accounts = "ente-accounts.lhf.pt";
+    photos = "photos.lhf.pt";
+    cast = "cast.lhf.pt";
     public-albums = "albums.lhf.pt";
-    api = "ente-api.lhf.pt";
   };
 in {
   systemd.services.ente = {
@@ -39,6 +40,7 @@ in {
         };
         apps = {
           accounts = "https://${hosts.accounts}";
+          cast = "https://${hosts.cast}";
           public-albums = "https://${hosts.public-albums}";
         };
         webauthn = {
@@ -70,12 +72,12 @@ in {
     caddy = {
       enable = true;
       virtualHosts = let
-        webApp = enteApp: api:
+        webApp = enteApp:
           config.services.ente.web.package.override {
             inherit enteApp;
             enteMainUrl = "https://${hosts.photos}";
             extraBuildEnv = {
-              NEXT_PUBLIC_ENTE_ENDPOINT = "https://${api}";
+              NEXT_PUBLIC_ENTE_ENDPOINT = "https://${hosts.api}";
               NEXT_PUBLIC_ENTE_PHOTOS_ENDPOINT = "https://${hosts.photos}";
               NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT = "https://${hosts.public-albums}";
               NEXT_TELEMETRY_DISABLED = "1";
@@ -87,7 +89,7 @@ in {
           extraConfig = ''
             @tailscale remote_ip 100.64.0.0/10
             handle @tailscale {
-                root * ${webApp "photos" hosts.api}
+                root * ${webApp "photos"}
                 try_files {path} {path}.html /index.html
                 file_server
                 header Access-Control-Allow-Origin "https://${hosts.photos}"
@@ -103,7 +105,7 @@ in {
           extraConfig = ''
             @tailscale remote_ip 100.64.0.0/10
             handle @tailscale {
-              root * ${webApp "accounts" hosts.api}
+              root * ${webApp "accounts"}
               try_files {path} {path}.html /index.html
               file_server
               header Access-Control-Allow-Origin "https://${hosts.accounts}"
@@ -132,10 +134,19 @@ in {
             }
           '';
         };
+        ${hosts.cast} = {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            root * ${webApp "cast"}
+            try_files {path} {path}.html /index.html
+            file_server
+            header Access-Control-Allow-Origin "https://${hosts.cast}"
+          '';
+        };
         ${hosts.public-albums} = {
           useACMEHost = "lhf.pt";
           extraConfig = ''
-            root * ${webApp "photos" hosts.api}
+            root * ${webApp "photos"}
             try_files {path} {path}.html /index.html
             file_server
             header Access-Control-Allow-Origin "https://${hosts.public-albums}"
