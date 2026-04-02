@@ -65,10 +65,19 @@ in {
       ${publicUrl} = {
         useACMEHost = "lhf.pt";
         extraConfig = ''
-          @allowed path ${lib.concatMapStringsSep " " (b: "/${b}/*") publicBuckets}
-          handle @allowed {
+          @tailscale remote_ip 100.64.0.0/10
+          handle @tailscale {
               reverse_proxy :${toString s3Port}
           }
+
+          @public_read {
+              path ${lib.concatMapStringsSep " " (b: "/${b}/*") publicBuckets}
+              method GET HEAD OPTIONS
+          }
+          handle @public_read {
+              reverse_proxy :${toString s3Port}
+          }
+
           handle {
               respond 403
           }
