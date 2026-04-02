@@ -52,6 +52,8 @@ in {
         # TODO: does it make sense to set ~. on common/networking.nix?
         resolved.domains = lib.mkForce []; # global ~. breaks dns
       };
+
+      networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
     }
     (lib.mkIf cfg.autostart.enable {
       services.tailscale = {
