@@ -11,6 +11,7 @@
     bundle.server
     exit-node
     storage-box
+    services.https-redirect
     services.backup-server
     services.rmfakecloud
     services.opencloud
