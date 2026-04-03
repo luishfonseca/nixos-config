@@ -42,15 +42,10 @@ in {
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
-      services = {
-        tailscale = {
-          enable = true;
-          openFirewall = true;
-          extraSetFlags = ["--operator=${config.user.name}"];
-        };
-
-        # TODO: does it make sense to set ~. on common/networking.nix?
-        resolved.domains = lib.mkForce []; # global ~. breaks dns
+      services.tailscale = {
+        enable = true;
+        openFirewall = true;
+        extraSetFlags = ["--operator=${config.user.name}"];
       };
 
       networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];

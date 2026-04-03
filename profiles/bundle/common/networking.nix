@@ -14,6 +14,9 @@
         IPv6AcceptRA = "yes";
         DHCP = "yes";
       };
+      dhcpV4Config.UseDNS = false;
+      dhcpV6Config.UseDNS = false;
+      ipv6AcceptRAConfig.UseDNS = false;
     };
   };
 
@@ -21,7 +24,6 @@
 
   services.resolved = {
     enable = true;
-    domains = ["~."]; # always use systemd-resolved
     dnssec = "true";
     dnsovertls = "true";
   };
