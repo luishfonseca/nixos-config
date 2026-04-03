@@ -77,48 +77,57 @@ echo "secret" | sops -e --filename-override secrets/host/name /dev/stdin > secre
 
 ## Adding a New Service
 
-Service profiles live in `profiles/services/` and are auto-imported by `rakeNixLeaves`. Each service gets its own Tailscale node and Caddy reverse proxy.
+Service profiles live in `profiles/services/` and are auto-imported by `rakeNixLeaves`. Services are reverse-proxied by Caddy using a wildcard ACME cert for `*.lhf.pt` and access-restricted via Tailscale IP matching.
 
 Structure of a service profile (`profiles/services/<name>.nix`):
 
 ```nix
 {config, ...}: let
   port = <port>;
-  name = "<name>";
-  url = "https://${name}.${config.lhf.tailscale.tailnet}";
+  url = "https://<name>.lhf.pt";
 in {
-  imports = [
-    ./caddy-tailscale.nix
-  ];
-
   services = {
     <name> = {
       enable = true;
       # service-specific config
     };
 
-    caddy.virtualHosts = {
-      "${name}:80".extraConfig = ''
-        bind tailscale/${name}
-        redir ${url} permanent
-      '';
-      ${url}.extraConfig = ''
-        bind tailscale/${name}
-        reverse_proxy :${toString port}
-      '';
+    caddy = {
+      enable = true;
+      virtualHosts.${url} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @tailscale remote_ip 100.64.0.0/10
+          handle @tailscale {
+              reverse_proxy :${toString port}
+          }
+
+          # Optional: expose specific paths publicly
+          # @public path /public/*
+          # handle @public {
+          #     reverse_proxy :${toString port}
+          # }
+
+          handle {
+              respond 403
+          }
+        '';
+      };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [443];
 }
 ```
 
 Key patterns:
-- Import `./caddy-tailscale.nix` for Tailscale-authenticated Caddy
-- Bind Caddy to `tailscale/${name}` — this creates a Tailscale node per service
-- Add an HTTP-to-HTTPS redirect vhost alongside the main vhost
+- Caddy vhosts use `useACMEHost = "lhf.pt"` — the wildcard cert is configured in `hosts/pollux.nix` via Cloudflare DNS challenge
+- Restrict access to Tailscale clients with `@tailscale remote_ip 100.64.0.0/10`; add extra `@public` matchers for paths that should be publicly accessible
 - If the service needs secrets, use `environmentFile = config.sops.secrets.<name>-env.path`
 - If the service depends on another (e.g. Garage S3), add `systemd.services.<name> = { requires = ["garage.service"]; after = ["garage.service"]; }`
 - If the service needs persistent state beyond its default `/var/lib`, declare paths in `persist.system.directories`
 - Add the service to the host's imports: `services.<name>` in `hosts/<host>.nix`
+- Open port 443 in the firewall
 
 ## Deploying a New Host
 
