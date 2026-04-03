@@ -8,6 +8,23 @@
   radicalePort = 5232;
   url = "https://opencloud.lhf.pt";
 
+  csp = (pkgs.formats.yaml {}).generate "csp.yaml" {
+    directives = {
+      "child-src" = ["'self'"];
+      "connect-src" = ["'self'" "blob:" "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"];
+      "default-src" = ["'none'"];
+      "font-src" = ["'self'" "https://esm.sh/"];
+      "frame-ancestors" = ["'self'"];
+      "frame-src" = ["'self'" "blob:"];
+      "img-src" = ["'self'" "data:" "blob:" "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"];
+      "manifest-src" = ["'self'"];
+      "media-src" = ["'self'"];
+      "object-src" = ["'self'" "blob:"];
+      "script-src" = ["'self'" "'unsafe-inline'"];
+      "style-src" = ["'self'" "'unsafe-inline'"];
+    };
+  };
+
   mkRadicaleRoutes = endpoints:
     lib.mapAttrsToList (endpoint: name: {
       inherit endpoint;
@@ -17,6 +34,12 @@
       additional_headers = [{"X-Script-Name" = name;}];
     })
     endpoints;
+
+  excalidraw = pkgs.fetchzip {
+    url = "https://github.com/mschneider82/opencloud-excalidraw/releases/download/v0.0.1/web-app-excalidraw.zip";
+    stripRoot = false;
+    hash = "sha256-dNvj7TDWurCboqr6VMwlBx6D/LNN8DbeJ0/GPVB4SVY=";
+  };
 
   externalSites = pkgs.fetchzip {
     url = "https://github.com/opencloud-eu/web-extensions/releases/download/external-sites-v1.3.0/external-sites-1.3.0.zip";
@@ -37,6 +60,9 @@
   });
 
   webApps = pkgs.runCommand "opencloud-web-apps" {} ''
+    mkdir -p $out/excalidraw
+    cp -r ${excalidraw}/* $out/excalidraw
+
     mkdir -p $out/external-sites
     cp -r ${externalSites}/* $out/external-sites
     cp ${externalSitesConfig} $out/external-sites/config.json
@@ -69,9 +95,10 @@ in {
       enable = true;
       inherit url port;
       address = "127.0.0.1";
-      environment.WEB_ASSET_APPS_PATH = "${webApps}";
       environmentFile = config.sops.secrets.opencloud-env.path;
       settings = {
+        frontend.check_for_updates = false;
+        web.asset.apps_path = webApps;
         storage-users = {
           # sudo garage key create opencloud
           # sudo garage bucket create opencloud
@@ -87,6 +114,7 @@ in {
         };
         proxy = {
           http.tls = false;
+          csp_config_file_location = csp;
           additional_policies = [
             {
               name = "default";
