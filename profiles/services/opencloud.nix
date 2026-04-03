@@ -4,9 +4,16 @@
   pkgs,
   ...
 }: let
-  port = 9200;
-  radicalePort = 5232;
-  url = "https://opencloud.lhf.pt";
+  hosts = {
+    opencloud = "cloud.lhf.pt";
+    collabora = "office.lhf.pt";
+  };
+
+  ports = {
+    opencloud = 9200;
+    radicale = 5232;
+    collabora = 9980;
+  };
 
   csp = (pkgs.formats.yaml {}).generate "csp.yaml" {
     directives = {
@@ -15,7 +22,7 @@
       "default-src" = ["'none'"];
       "font-src" = ["'self'" "https://esm.sh/"];
       "frame-ancestors" = ["'self'"];
-      "frame-src" = ["'self'" "blob:"];
+      "frame-src" = ["'self'" "blob:" "https://${hosts.collabora}"];
       "img-src" = ["'self'" "data:" "blob:" "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"];
       "manifest-src" = ["'self'"];
       "media-src" = ["'self'"];
@@ -28,7 +35,7 @@
   mkRadicaleRoutes = endpoints:
     lib.mapAttrsToList (endpoint: name: {
       inherit endpoint;
-      backend = "http://127.0.0.1:${toString radicalePort}";
+      backend = "http://127.0.0.1:${toString ports.radicale}";
       remote_user_header = "X-Remote-User";
       skip_x_access_token = true;
       additional_headers = [{"X-Script-Name" = name;}];
@@ -69,8 +76,8 @@
   '';
 in {
   systemd.services.opencloud = {
-    requires = ["garage.service"];
-    after = ["garage.service"];
+    requires = ["garage.service" "coolwsd.service"];
+    after = ["garage.service" "coolwsd.service"];
   };
 
   persist.system.directories = ["/etc/opencloud"];
@@ -83,8 +90,8 @@ in {
       content = ''
         chain output {
           type filter hook output priority 0; policy accept;
-          tcp dport ${toString radicalePort} meta skuid 990 accept
-          tcp dport ${toString radicalePort} reject
+          tcp dport ${toString ports.radicale} meta skuid 990 accept
+          tcp dport ${toString ports.radicale} reject
         }
       '';
     };
@@ -93,8 +100,13 @@ in {
   services = {
     opencloud = {
       enable = true;
-      inherit url port;
+      url = "https://${hosts.opencloud}";
+      port = ports.opencloud;
       address = "127.0.0.1";
+      environment = {
+        OC_LOG_LEVEL = "warn";
+        OC_ADD_RUN_SERVICES = "collaboration";
+      };
       environmentFile = config.sops.secrets.opencloud-env.path;
       settings = {
         frontend.check_for_updates = false;
@@ -127,6 +139,16 @@ in {
             }
           ];
         };
+        collaboration = {
+          wopi.wopisrc = "https://${hosts.opencloud}";
+          app = {
+            name = "Office";
+            product = "Collabora";
+            addr = "http://127.0.0.1:${toString ports.collabora}";
+            insecure = true;
+            proofkeys.disable = true;
+          };
+        };
       };
     };
 
@@ -134,7 +156,7 @@ in {
       enable = true;
       settings = {
         server = {
-          hosts = ["127.0.0.1:${toString radicalePort}"];
+          hosts = ["127.0.0.1:${toString ports.radicale}"];
           ssl = false;
         };
         auth.type = "http_x_remote_user";
@@ -153,32 +175,71 @@ in {
       };
     };
 
-    caddy = {
+    collabora-online = {
       enable = true;
-      virtualHosts.${url} = {
-        useACMEHost = "lhf.pt";
-        extraConfig = ''
-          @allowed remote_ip 100.64.0.0/10 127.0.0.1
-          handle @allowed {
-              reverse_proxy :${toString port}
-          }
-
-          @public path /s/* /files/upload/* /remote.php/dav/public-files/* /app/list
-          handle @public {
-              reverse_proxy :${toString port}
-          }
-
-          @static path_regexp \.(js|mjs|css|woff2?|ttf|svg|png|jpe?g|ico|json)$
-          handle @static {
-              reverse_proxy :${toString port}
-          }
-
-          handle {
-              respond 403
-          }
-        '';
+      port = ports.collabora;
+      settings = {
+        ssl = {
+          enable = false;
+          termination = true;
+        };
+        net = {
+          listen = "127.0.0.1";
+          post_allow.host = ["127.0.0.1"];
+        };
+        storage.wopi = {
+          "@allow" = true;
+          host = [hosts.opencloud];
+        };
+        server_name = hosts.collabora;
       };
     };
+
+    caddy = {
+      enable = true;
+      virtualHosts = {
+        ${hosts.opencloud} = {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            @allowed remote_ip 100.64.0.0/10 127.0.0.1
+            handle @allowed {
+                reverse_proxy :${toString ports.opencloud}
+            }
+
+            @public path /s/* /files/upload/* /remote.php/dav/public-files/* /external-office/public/* /app/list /app/open /ocs/v1.php/cloud/capabilities
+            handle @public {
+                reverse_proxy :${toString ports.opencloud}
+            }
+
+            @static path_regexp \.(js|mjs|css|woff2?|ttf|svg|png|jpe?g|ico|json)$
+            handle @static {
+                reverse_proxy :${toString ports.opencloud}
+            }
+
+            handle {
+                respond 403
+            }
+          '';
+        };
+        ${hosts.collabora} = {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            reverse_proxy :${toString ports.collabora}
+          '';
+        };
+      };
+    };
+  };
+
+  fileSystems."/usr/share/fonts/collabora" = {
+    device = "${pkgs.symlinkJoin {
+      name = "collabora-fonts";
+      paths = with pkgs; [
+        nerd-fonts.departure-mono
+        corefonts
+      ];
+    }}/share/fonts";
+    options = ["bind"];
   };
 
   networking.firewall.allowedTCPPorts = [443];
