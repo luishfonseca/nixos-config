@@ -20,7 +20,7 @@
       "child-src" = ["'self'"];
       "connect-src" = ["'self'" "blob:" "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"];
       "default-src" = ["'none'"];
-      "font-src" = ["'self'" "https://esm.sh/"];
+      "font-src" = ["'self'" "data:" "https://esm.sh/"];
       "frame-ancestors" = ["'self'"];
       "frame-src" = ["'self'" "blob:" "https://${hosts.collabora}"];
       "img-src" = ["'self'" "data:" "blob:" "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"];
