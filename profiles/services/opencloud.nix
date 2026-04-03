@@ -48,10 +48,22 @@
     hash = "sha256-dNvj7TDWurCboqr6VMwlBx6D/LNN8DbeJ0/GPVB4SVY=";
   };
 
+  calendar = pkgs.fetchzip {
+    url = "https://github.com/mschneider82/opencloud-web-calendar/releases/download/v0.0.5/web-app-calendar.zip";
+    stripRoot = false;
+    hash = "sha256-DJBDprRPOa48o+BVIoOm2zCPgZxAoGG3QI7DqtEESyo=";
+  };
+
   externalSites = pkgs.fetchzip {
     url = "https://github.com/opencloud-eu/web-extensions/releases/download/external-sites-v1.3.0/external-sites-1.3.0.zip";
     hash = "sha256-++ZuTpLkTiAYSbIRzajmzSopfmBqpzY1iG1yCJmxhXA=";
   };
+
+  hideDefaultCalendar = pkgs.writeText "hide-default-calendar.css" ''
+    [data-test-id="com.github.opencloud-eu.web.runtime.app-menu-item.Calendar"] {
+        display: none;
+    }
+  '';
 
   externalSitesConfig = pkgs.writeText "external-sites-config.json" (builtins.toJSON {
     config.sites = [
@@ -67,8 +79,14 @@
   });
 
   webApps = pkgs.runCommand "opencloud-web-apps" {} ''
+    mkdir -p $out/css
+    cp ${hideDefaultCalendar} $out/css/hide-default-calendar.css
+
     mkdir -p $out/excalidraw
     cp -r ${excalidraw}/* $out/excalidraw
+
+    mkdir -p $out/web-calendar
+    cp -r ${calendar}/* $out/web-calendar
 
     mkdir -p $out/external-sites
     cp -r ${externalSites}/* $out/external-sites
@@ -137,7 +155,12 @@ in {
       environmentFile = config.sops.secrets.opencloud-env.path;
       settings = {
         frontend.check_for_updates = false;
-        web.asset.apps_path = webApps;
+        web = {
+          asset.apps_path = webApps;
+          web.config.styles = [
+            {href = "/assets/apps/css/hide-default-calendar.css";}
+          ];
+        };
         storage-users = {
           # sudo garage key create opencloud
           # sudo garage bucket create opencloud
