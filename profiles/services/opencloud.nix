@@ -75,9 +75,36 @@
     cp ${externalSitesConfig} $out/external-sites/config.json
   '';
 in {
-  systemd.services.opencloud = {
-    requires = ["garage.service" "coolwsd.service"];
-    after = ["garage.service" "coolwsd.service"];
+  systemd.services = {
+    opencloud = {
+      requires = ["garage.service" "coolwsd.service"];
+      after = ["garage.service" "coolwsd.service"];
+    };
+
+    collabora-proofkey = {
+      before = ["coolwsd.service"];
+      requiredBy = ["coolwsd.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        StateDirectory = "cool";
+        RuntimeDirectory = "coolwsd-config";
+        User = "cool";
+        Group = "cool";
+      };
+      script = ''
+        ln -s ${config.services.collabora-online.package}/etc/coolwsd/* "$RUNTIME_DIRECTORY/"
+        if [ ! -f "$STATE_DIRECTORY/proof_key" ]; then
+          ${pkgs.openssh}/bin/ssh-keygen -t rsa -N "" -m PEM -f "$STATE_DIRECTORY/proof_key"
+        fi
+        ln -sf "$STATE_DIRECTORY/proof_key" "$RUNTIME_DIRECTORY/proof_key"
+        ln -sf "$STATE_DIRECTORY/proof_key.pub" "$RUNTIME_DIRECTORY/proof_key.pub"
+      '';
+    };
+
+    coolwsd.serviceConfig.BindReadOnlyPaths = [
+      "/run/coolwsd-config:${config.services.collabora-online.package}/etc/coolwsd"
+    ];
   };
 
   persist.system.directories = ["/etc/opencloud"];
@@ -146,7 +173,6 @@ in {
             product = "Collabora";
             addr = "http://127.0.0.1:${toString ports.collabora}";
             insecure = true;
-            proofkeys.disable = true;
           };
         };
       };
