@@ -25,6 +25,7 @@
       allowed-users = ["root" config.user.name];
       auto-optimise-store = true;
       sandbox = true;
+      download-buffer-size = 524288000;
     };
 
     gc = {
