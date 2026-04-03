@@ -87,8 +87,8 @@ in {
         ${hosts.photos} = {
           useACMEHost = "lhf.pt";
           extraConfig = ''
-            @tailscale remote_ip 100.64.0.0/10
-            handle @tailscale {
+            @allowed remote_ip 100.64.0.0/10 127.0.0.1
+            handle @allowed {
                 root * ${webApp "photos"}
                 try_files {path} {path}.html /index.html
                 file_server
@@ -103,8 +103,8 @@ in {
         ${hosts.accounts} = {
           useACMEHost = "lhf.pt";
           extraConfig = ''
-            @tailscale remote_ip 100.64.0.0/10
-            handle @tailscale {
+            @allowed remote_ip 100.64.0.0/10 127.0.0.1
+            handle @allowed {
               root * ${webApp "accounts"}
               try_files {path} {path}.html /index.html
               file_server
@@ -119,8 +119,8 @@ in {
         ${hosts.api} = {
           useACMEHost = "lhf.pt";
           extraConfig = ''
-            @tailscale remote_ip 100.64.0.0/10
-            handle @tailscale {
+            @allowed remote_ip 100.64.0.0/10 127.0.0.1
+            handle @allowed {
                 reverse_proxy :${toString port}
             }
 

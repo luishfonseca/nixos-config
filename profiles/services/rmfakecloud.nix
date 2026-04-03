@@ -64,8 +64,8 @@ in {
       virtualHosts.${url} = {
         useACMEHost = "lhf.pt";
         extraConfig = ''
-          @tailscale remote_ip 100.64.0.0/10
-          handle @tailscale {
+          @allowed remote_ip 100.64.0.0/10 127.0.0.1
+          handle @allowed {
               reverse_proxy :${toString port}
           }
 

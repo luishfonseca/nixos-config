@@ -97,8 +97,8 @@ in {
       virtualHosts.${url} = {
         useACMEHost = "lhf.pt";
         extraConfig = ''
-          @tailscale remote_ip 100.64.0.0/10
-          handle @tailscale {
+          @allowed remote_ip 100.64.0.0/10 127.0.0.1
+          handle @allowed {
               reverse_proxy :${toString port}
           }
 
@@ -122,7 +122,7 @@ in {
 
 Key patterns:
 - Caddy vhosts use `useACMEHost = "lhf.pt"` — the wildcard cert is configured in `hosts/pollux.nix` via Cloudflare DNS challenge
-- Restrict access to Tailscale clients with `@tailscale remote_ip 100.64.0.0/10`; add extra `@public` matchers for paths that should be publicly accessible
+- Restrict access to Tailscale clients and localhost with `@allowed remote_ip 100.64.0.0/10 127.0.0.1`; localhost is needed so services can reach their own endpoints through Caddy; add extra `@public` matchers for paths that should be publicly accessible
 - If the service needs secrets, use `environmentFile = config.sops.secrets.<name>-env.path`
 - If the service depends on another (e.g. Garage S3), add `systemd.services.<name> = { requires = ["garage.service"]; after = ["garage.service"]; }`
 - If the service needs persistent state beyond its default `/var/lib`, declare paths in `persist.system.directories`
