@@ -39,6 +39,12 @@
     ];
   };
 
+  # emit events for the sysrq key
+  services.udev.extraHwdb = ''
+    evdev:atkbd:dmi:*:svnAiStone:pnX5SP4NAG:*
+      KEYBOARD_KEY_f8=sysrq
+  '';
+
   boot = {
     consoleLogLevel = 3;
 

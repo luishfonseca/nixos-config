@@ -57,6 +57,8 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
   persist.home.files = [".cache/wofi-drun"];
 
+  sops.secrets.picgo-secret.owner = config.user.name;
+
   hm = {
     home = {
       pointerCursor = {
@@ -78,9 +80,15 @@ with inputs.nix-colors.colorSchemes.dracula; {
         networkmanagerapplet
         brightnessctl
 
-        # https://wiki.archlinux.org/title/Screen_capture#Wayland
-        grim
-        slurp
+        (pkgs.writeShellScriptBin "screenshot" ''
+          set -euo pipefail
+          ${pkgs.hyprshot}/bin/hyprshot "$@" -o $(mktemp -d) -- echo | \
+            ${pkgs.findutils}/bin/xargs -I{} curl -s -X POST https://picgo.lhf.pt/upload \
+              -F "files=@{}" \
+              -H "Authorization: Bearer $(<${config.sops.secrets.picgo-secret.path})" | \
+            ${pkgs.jq}/bin/jq -r '.result[0]' | \
+            ${pkgs.wl-clipboard}/bin/wl-copy
+        '')
       ];
     };
 
@@ -220,6 +228,10 @@ with inputs.nix-colors.colorSchemes.dracula; {
           "$mod, Space, exec, $run $menu --show drun"
           "$mod, V, exec, $run cliphist list | wofi --show dmenu | cliphist decode | wl-copy"
           "$mod, L, exec, $run loginctl lock-session"
+
+          "$mod, PRINT, exec, screenshot -m window"
+          ", PRINT, exec, screenshot -m output"
+          "$mod SHIFT, PRINT, exec, screenshot -m region"
 
           "$mod, C, togglespecialworkspace, config"
 
