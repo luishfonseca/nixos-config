@@ -93,6 +93,11 @@
     cp ${externalSitesConfig} $out/external-sites/config.json
   '';
 in {
+  lhf.backup.pause = [
+    "opencloud.service"
+    "radicale.service"
+  ];
+
   systemd.services = {
     opencloud = {
       requires = ["garage.service" "coolwsd.service"];
