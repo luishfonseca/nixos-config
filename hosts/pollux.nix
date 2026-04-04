@@ -23,6 +23,7 @@
   lhf.tailscale.splitDns = {
     enable = true;
     domain = "lhf.pt";
+    bypass = ["mail"];
   };
 
   security.acme = {

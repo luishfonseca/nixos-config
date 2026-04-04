@@ -30,6 +30,11 @@ in {
         type = types.str;
         description = "Domain to resolve to this host within the tailnet (e.g., lhf.pt)";
       };
+      bypass = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Subdomains to resolve normally";
+      };
     };
     exitNode = {
       enable = mkEnableOption "NetworkManager-based VPN toggle for a Tailscale exit node";
@@ -74,7 +79,9 @@ in {
           server = {
             interface = [config.services.tailscale.interfaceName];
             access-control = ["100.64.0.0/10 allow"];
-            local-zone = [''"${cfg.splitDns.domain}." redirect''];
+            local-zone =
+              [''"${cfg.splitDns.domain}." redirect'']
+              ++ map (sub: ''"${sub}.${cfg.splitDns.domain}." transparent'') cfg.splitDns.bypass;
             local-data = [''"${cfg.splitDns.domain}. IN CNAME ${config.networking.hostName}.${cfg.tailnet}."''];
           };
           forward-zone = [
