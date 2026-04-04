@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "picgo": "2.0.3",
-    "picgo-plugin-s3": "1.5.2"
+    "picgo-plugin-s3": "1.5.2",
+    "picgo-plugin-compress-next": "1.5.2",
+    "busboy": "^1.6.0"
   }
 }
