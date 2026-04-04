@@ -13,8 +13,8 @@
   };
 in {
   systemd.services.ente = {
-    requires = ["garage.service"];
-    after = ["garage.service"];
+    requires = ["garage.service" "postgresql.service"];
+    after = ["garage.service" "postgresql.service"];
   };
 
   sops.secrets = {
@@ -28,10 +28,14 @@ in {
   environment.systemPackages = [pkgs.ente-cli];
   persist.home.directories = [".ente"];
 
+  lhf.localDB = {
+    enable = true;
+    dbs = ["ente"];
+  };
+
   services = {
     ente.api = {
       enable = true;
-      enableLocalDB = true;
       domain = hosts.api;
       settings = {
         http = {
@@ -46,6 +50,12 @@ in {
         webauthn = {
           rpid = hosts.accounts;
           rporigins = ["https://${hosts.accounts}"];
+        };
+        db = {
+          inherit (config.lhf.localDB) port;
+          host = "/run/postgresql";
+          name = "ente";
+          user = "ente";
         };
         s3 = {
           use_path_style_urls = true;
