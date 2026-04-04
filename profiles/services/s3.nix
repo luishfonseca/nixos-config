@@ -6,8 +6,10 @@
 }: let
   port = 3900;
   rpcPort = 3901;
+  webPort = 3902;
   adminPort = 3903;
   url = "s3.lhf.pt";
+  web = ["img.lhf.pt"];
 in {
   systemd.services.garage = {
     requires = ["vault.service"];
@@ -39,6 +41,11 @@ in {
           s3_region = "garage";
         };
 
+        s3_web = {
+          bind_addr = "127.0.0.1:${toString webPort}";
+          root_domain = "lhf.pt";
+        };
+
         admin = {
           api_bind_addr = "127.0.0.1:${toString adminPort}";
           admin_token = "@env:GARAGE_ADMIN_TOKEN";
@@ -48,34 +55,43 @@ in {
 
     caddy = {
       enable = true;
-      virtualHosts.${url} = let
-        public = {
-          ente = "GET HEAD PUT OPTIONS";
-        };
-      in {
-        useACMEHost = "lhf.pt";
-        extraConfig = ''
-          @allowed remote_ip 100.64.0.0/10 127.0.0.1
-          handle @allowed {
-              reverse_proxy :${toString port}
-          }
-
-          ${lib.concatStringsSep "\n\n" (lib.mapAttrsToList (bucket: methods: ''
-              @${bucket} {
-                  path /${bucket}/*
-                  method ${methods}
+      virtualHosts =
+        {
+          ${url} = let
+            public = {
+              ente = "GET HEAD PUT OPTIONS";
+            };
+          in {
+            useACMEHost = "lhf.pt";
+            extraConfig = ''
+              @allowed remote_ip 100.64.0.0/10 127.0.0.1
+              handle @allowed {
+                  reverse_proxy :${toString port}
               }
-              handle  {
-                  reverse_proxy @${bucket} :${toString port}
-              }
-            '')
-            public)}
 
-          handle {
-              respond 403
-          }
-        '';
-      };
+              ${lib.concatStringsSep "\n\n" (lib.mapAttrsToList (bucket: methods: ''
+                  @${bucket} {
+                      path /${bucket}/*
+                      method ${methods}
+                  }
+                  handle  {
+                      reverse_proxy @${bucket} :${toString port}
+                  }
+                '')
+                public)}
+
+              handle {
+                  respond 403
+              }
+            '';
+          };
+        }
+        // lib.genAttrs web (_: {
+          useACMEHost = "lhf.pt";
+          extraConfig = ''
+            reverse_proxy :${toString webPort}
+          '';
+        });
     };
   };
 

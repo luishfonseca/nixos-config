@@ -23,7 +23,7 @@
       "font-src" = ["'self'" "data:" "https://esm.sh/"];
       "frame-ancestors" = ["'self'"];
       "frame-src" = ["'self'" "blob:" "https://${hosts.collabora}"];
-      "img-src" = ["'self'" "data:" "blob:" "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"];
+      "img-src" = ["'self'" "data:" "blob:" "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/" "https://img.lhf.pt"];
       "manifest-src" = ["'self'"];
       "media-src" = ["'self'"];
       "object-src" = ["'self'" "blob:"];

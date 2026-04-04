@@ -16,6 +16,7 @@
     services.rmfakecloud
     services.opencloud
     services.ente
+    services.picgo
     services.s3
   ];
 
