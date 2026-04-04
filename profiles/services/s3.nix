@@ -20,6 +20,25 @@ in {
   environment.systemPackages = [pkgs.minio-client];
   persist.home.directories = [".mc"];
 
+  lhf.backup = {
+    exclude = [
+      "/nix/pst${config.services.garage.settings.metadata_dir}/db.sqlite"
+      "/nix/pst${config.services.garage.settings.metadata_dir}/db.sqlite-shm"
+      "/nix/pst${config.services.garage.settings.metadata_dir}/db.sqlite-wal"
+    ];
+    hooks.garage = {
+      user = "root"; # todo change once garage isn't nobody
+      depends = ["garage.service"];
+      script = pkgs.writeShellScript "pre-backup" ''
+        set -a
+        . ${config.services.garage.environmentFile}
+
+        rm -rf ${config.services.garage.settings.metadata_dir}/snapshots/*
+        exec ${config.services.garage.package}/bin/garage meta snapshot
+      '';
+    };
+  };
+
   services = {
     garage = {
       enable = true;
