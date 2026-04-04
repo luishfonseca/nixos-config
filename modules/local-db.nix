@@ -1,5 +1,6 @@
 {
   lib,
+  pkgs,
   config,
   ...
 }: let
@@ -29,6 +30,29 @@ in {
           ensureDBOwnership = true;
         })
         cfg.dbs;
+    };
+
+    lhf.backup = {
+      exclude = ["/nix/pst${config.services.postgresql.dataDir}"];
+      hooks.postgresql = {
+        user = "postgres";
+        depends = ["postgresql.target"];
+        script = pkgs.writeShellScript "pre-backup" ''
+          set -e -o pipefail
+
+          umask 0077
+          mkdir -p /var/lib/postgresql/backup
+          cd /var/lib/postgresql/backup
+
+          if [ -e db.bak ]; then
+            rm -f db.bak.prev
+            mv db.bak db.bak.prev
+          fi
+
+          ${config.services.postgresql.package}/bin/pg_dumpall > db.bak.tmp
+          mv db.bak.tmp db.bak
+        '';
+      };
     };
   };
 }

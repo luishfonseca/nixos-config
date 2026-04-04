@@ -23,6 +23,32 @@ in {
       example = ["/nix/pst/var/lib/docker"];
       description = "Paths to exclude from backup";
     };
+    hooks = mkOption {
+      type = types.attrsOf (types.submodule {
+        options = {
+          script = mkOption {
+            type = types.package;
+            description = "Script to run before backup";
+          };
+          user = mkOption {
+            type = types.str;
+            description = "User to run the hook as";
+          };
+          depends = mkOption {
+            type = types.listOf types.str;
+            default = [];
+            description = "Systemd units this hook requires (and waits for)";
+          };
+        };
+      });
+      default = {};
+      description = "Scripts to run before backup";
+    };
+    pause = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Units to stop during the backup";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -37,6 +63,18 @@ in {
         export BORG_PASSCOMMAND="cat ${config.sops.secrets.borg-passphrase.path}"
         export BORG_REPO="${cfg.repo}"
         exec borg "$@"
+      '')
+
+      (pkgs.writeShellScriptBin "borg-ncdu" ''
+        if [ "$(id -u)" -ne 0 ]; then
+          echo "borg-ncdu must be run as root" >&2
+          exit 1
+        fi
+
+        exec ${pkgs.nix}/bin/nix eval --json \
+            config#nixosConfigurations."$(hostname)".config.lhf.backup.exclude \
+          | ${pkgs.jq}/bin/jq -r '.[] | "--exclude", .' \
+          | ${pkgs.findutils}/bin/xargs -o ${pkgs.ncdu}/bin/ncdu /nix/pst
       '')
     ];
 
@@ -56,5 +94,28 @@ in {
         monthly = 6;
       };
     };
+
+    systemd.services =
+      (lib.mapAttrs' (name: hook:
+        lib.nameValuePair "borgbackup-job-default-hook-${name}" {
+          requires = hook.depends;
+          after = hook.depends;
+          wantedBy = ["borgbackup-job-default.service"];
+          before = ["borgbackup-job-default.service"];
+          serviceConfig = {
+            Type = "oneshot";
+            User = hook.user;
+            ExecStart = hook.script;
+          };
+        })
+      cfg.hooks)
+      // {
+        borgbackup-job-default = {
+          conflicts = cfg.pause;
+          after = cfg.pause;
+          onSuccess = cfg.pause;
+          onFailure = cfg.pause;
+        };
+      };
   };
 }
