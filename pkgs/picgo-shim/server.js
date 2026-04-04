@@ -22,6 +22,7 @@ picgo.setConfig({
   'settings.server': {
     host: process.env.PICGO_HOST,
     port: process.env.PICGO_PORT,
+    secret: process.env.PICGO_SECRET,
   }
 })
 

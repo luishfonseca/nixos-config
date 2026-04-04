@@ -41,8 +41,24 @@ in {
     virtualHosts.${url} = {
       useACMEHost = "lhf.pt";
       extraConfig = ''
+        log {
+            format filter {
+                request>uri query {
+                    replace key REDACTED
+                }
+            }
+        }
+
         @allowed remote_ip 100.64.0.0/10 127.0.0.1
         handle @allowed {
+            handle /shim* {
+                vars token {query.key}
+                rewrite * /shim?
+                reverse_proxy :${toString port} {
+                    header_up Authorization "Bearer {vars.token}"
+                }
+            }
+
             reverse_proxy :${toString port}
         }
 
