@@ -59,23 +59,18 @@ in {
       storageUrl = "https://local.appspot.com";
     };
 
-    caddy = {
-      enable = true;
-      virtualHosts.${url} = {
-        useACMEHost = "lhf.pt";
-        extraConfig = ''
-          @allowed remote_ip 100.64.0.0/10 127.0.0.1
-          handle @allowed {
-              reverse_proxy :${toString port}
-          }
+    caddy.virtualHosts.${url} = {
+      useACMEHost = "lhf.pt";
+      extraConfig = ''
+        @allowed remote_ip 100.64.0.0/10 127.0.0.1
+        handle @allowed {
+            reverse_proxy :${toString port}
+        }
 
-          handle {
-              respond 403
-          }
-        '';
-      };
+        handle {
+            respond 403
+        }
+      '';
     };
   };
-
-  networking.firewall.allowedTCPPorts = [443];
 }

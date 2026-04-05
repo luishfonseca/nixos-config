@@ -249,38 +249,35 @@ in {
       };
     };
 
-    caddy = {
-      enable = true;
-      virtualHosts = {
-        ${hosts.opencloud} = {
-          useACMEHost = "lhf.pt";
-          extraConfig = ''
-            @allowed remote_ip 100.64.0.0/10 127.0.0.1
-            handle @allowed {
-                reverse_proxy :${toString ports.opencloud}
-            }
+    caddy.virtualHosts = {
+      ${hosts.opencloud} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @allowed remote_ip 100.64.0.0/10 127.0.0.1
+          handle @allowed {
+              reverse_proxy :${toString ports.opencloud}
+          }
 
-            @public path /s/* /files/upload/* /remote.php/dav/public-files/* /external-office/public/* /app/list /app/open /ocs/v1.php/cloud/capabilities
-            handle @public {
-                reverse_proxy :${toString ports.opencloud}
-            }
+          @public path /s/* /files/upload/* /remote.php/dav/public-files/* /external-office/public/* /app/list /app/open /ocs/v1.php/cloud/capabilities
+          handle @public {
+              reverse_proxy :${toString ports.opencloud}
+          }
 
-            @static path_regexp \.(js|mjs|css|woff2?|ttf|svg|png|jpe?g|ico|json)$
-            handle @static {
-                reverse_proxy :${toString ports.opencloud}
-            }
+          @static path_regexp \.(js|mjs|css|woff2?|ttf|svg|png|jpe?g|ico|json)$
+          handle @static {
+              reverse_proxy :${toString ports.opencloud}
+          }
 
-            handle {
-                respond 403
-            }
-          '';
-        };
-        ${hosts.collabora} = {
-          useACMEHost = "lhf.pt";
-          extraConfig = ''
-            reverse_proxy :${toString ports.collabora}
-          '';
-        };
+          handle {
+              respond 403
+          }
+        '';
+      };
+      ${hosts.collabora} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          reverse_proxy :${toString ports.collabora}
+        '';
       };
     };
   };
@@ -295,6 +292,4 @@ in {
     }}/share/fonts";
     options = ["bind"];
   };
-
-  networking.firewall.allowedTCPPorts = [443];
 }

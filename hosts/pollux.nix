@@ -11,7 +11,8 @@
     bundle.server
     exit-node
     storage-box
-    services.https-redirect
+    services.caddy
+    services.bind-rpz
     services.backup-server
     services.rmfakecloud
     services.opencloud
@@ -19,25 +20,6 @@
     services.picgo
     services.s3
   ];
-
-  lhf.tailscale.splitDns = {
-    enable = true;
-    domain = "lhf.pt";
-    bypass = ["mail"];
-  };
-
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "luis@lhf.pt";
-    certs = {
-      "lhf.pt" = {
-        extraDomainNames = ["*.lhf.pt"];
-        group = "caddy";
-        dnsProvider = "cloudflare";
-        environmentFile = config.sops.secrets.cf-dns-api-token.path;
-      };
-    };
-  };
 
   networkUnlock = rec {
     server = {

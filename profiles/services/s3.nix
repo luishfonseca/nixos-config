@@ -72,47 +72,42 @@ in {
       };
     };
 
-    caddy = {
-      enable = true;
-      virtualHosts =
-        {
-          ${url} = let
-            public = {
-              ente = "GET HEAD PUT OPTIONS";
-            };
-          in {
-            useACMEHost = "lhf.pt";
-            extraConfig = ''
-              @allowed remote_ip 100.64.0.0/10 127.0.0.1
-              handle @allowed {
-                  reverse_proxy :${toString port}
-              }
-
-              ${lib.concatStringsSep "\n\n" (lib.mapAttrsToList (bucket: methods: ''
-                  @${bucket} {
-                      path /${bucket}/*
-                      method ${methods}
-                  }
-                  handle  {
-                      reverse_proxy @${bucket} :${toString port}
-                  }
-                '')
-                public)}
-
-              handle {
-                  respond 403
-              }
-            '';
+    caddy.virtualHosts =
+      {
+        ${url} = let
+          public = {
+            ente = "GET HEAD PUT OPTIONS";
           };
-        }
-        // lib.genAttrs web (_: {
+        in {
           useACMEHost = "lhf.pt";
           extraConfig = ''
-            reverse_proxy :${toString webPort}
-          '';
-        });
-    };
-  };
+            @allowed remote_ip 100.64.0.0/10 127.0.0.1
+            handle @allowed {
+                reverse_proxy :${toString port}
+            }
 
-  networking.firewall.allowedTCPPorts = [443];
+            ${lib.concatStringsSep "\n\n" (lib.mapAttrsToList (bucket: methods: ''
+                @${bucket} {
+                    path /${bucket}/*
+                    method ${methods}
+                }
+                handle  {
+                    reverse_proxy @${bucket} :${toString port}
+                }
+              '')
+              public)}
+
+            handle {
+                respond 403
+            }
+          '';
+        };
+      }
+      // lib.genAttrs web (_: {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          reverse_proxy :${toString webPort}
+        '';
+      });
+  };
 }

@@ -68,36 +68,6 @@ in {
         in ["--advertise-tags=${tags}"];
       };
     })
-    # Requires adding this host's Tailscale IP as a nameserver restricted
-    # to the configured domain in the Tailscale admin console:
-    # https://login.tailscale.com/admin/dns
-    (lib.mkIf cfg.splitDns.enable {
-      services.unbound = {
-        enable = true;
-        resolveLocalQueries = false;
-        settings = {
-          server = {
-            interface = [config.services.tailscale.interfaceName];
-            access-control = ["100.64.0.0/10 allow"];
-            local-zone =
-              [''"${cfg.splitDns.domain}." redirect'']
-              ++ map (sub: ''"${sub}.${cfg.splitDns.domain}." transparent'') cfg.splitDns.bypass;
-            local-data = [''"${cfg.splitDns.domain}. IN CNAME ${config.networking.hostName}.${cfg.tailnet}."''];
-          };
-          forward-zone = [
-            {
-              name = "${cfg.tailnet}.";
-              forward-addr = ["100.100.100.100"];
-            }
-          ];
-        };
-      };
-
-      networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
-        allowedTCPPorts = [53];
-        allowedUDPPorts = [53];
-      };
-    })
     (lib.mkIf cfg.exitNode.enable {
       services.tailscale.useRoutingFeatures = "client";
 

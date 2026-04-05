@@ -79,92 +79,87 @@ in {
         internal.admin = "1580559962386438";
       };
     };
-    caddy = {
-      enable = true;
-      virtualHosts = let
-        webApp = enteApp:
-          config.services.ente.web.package.override {
-            inherit enteApp;
-            enteMainUrl = "https://${hosts.photos}";
-            extraBuildEnv = {
-              NEXT_PUBLIC_ENTE_ENDPOINT = "https://${hosts.api}";
-              NEXT_PUBLIC_ENTE_PHOTOS_ENDPOINT = "https://${hosts.photos}";
-              NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT = "https://${hosts.public-albums}";
-              NEXT_TELEMETRY_DISABLED = "1";
-            };
+    caddy.virtualHosts = let
+      webApp = enteApp:
+        config.services.ente.web.package.override {
+          inherit enteApp;
+          enteMainUrl = "https://${hosts.photos}";
+          extraBuildEnv = {
+            NEXT_PUBLIC_ENTE_ENDPOINT = "https://${hosts.api}";
+            NEXT_PUBLIC_ENTE_PHOTOS_ENDPOINT = "https://${hosts.photos}";
+            NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT = "https://${hosts.public-albums}";
+            NEXT_TELEMETRY_DISABLED = "1";
           };
-      in {
-        ${hosts.photos} = {
-          useACMEHost = "lhf.pt";
-          extraConfig = ''
-            @allowed remote_ip 100.64.0.0/10 127.0.0.1
-            handle @allowed {
-                root * ${webApp "photos"}
-                try_files {path} {path}.html /index.html
-                file_server
-                header Access-Control-Allow-Origin "https://${hosts.photos}"
-            }
-
-            handle {
-                respond 403
-            }
-          '';
         };
-        ${hosts.accounts} = {
-          useACMEHost = "lhf.pt";
-          extraConfig = ''
-            @allowed remote_ip 100.64.0.0/10 127.0.0.1
-            handle @allowed {
-              root * ${webApp "accounts"}
+    in {
+      ${hosts.photos} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @allowed remote_ip 100.64.0.0/10 127.0.0.1
+          handle @allowed {
+              root * ${webApp "photos"}
               try_files {path} {path}.html /index.html
               file_server
-              header Access-Control-Allow-Origin "https://${hosts.accounts}"
-            }
+              header Access-Control-Allow-Origin "https://${hosts.photos}"
+          }
 
-            handle {
-                respond 403
-            }
-          '';
-        };
-        ${hosts.api} = {
-          useACMEHost = "lhf.pt";
-          extraConfig = ''
-            @allowed remote_ip 100.64.0.0/10 127.0.0.1
-            handle @allowed {
-                reverse_proxy :${toString port}
-            }
-
-            @public path /public-collection*
-            handle  {
-                reverse_proxy @public :${toString port}
-            }
-
-            handle {
-                respond 403
-            }
-          '';
-        };
-        ${hosts.cast} = {
-          useACMEHost = "lhf.pt";
-          extraConfig = ''
-            root * ${webApp "cast"}
+          handle {
+              respond 403
+          }
+        '';
+      };
+      ${hosts.accounts} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @allowed remote_ip 100.64.0.0/10 127.0.0.1
+          handle @allowed {
+            root * ${webApp "accounts"}
             try_files {path} {path}.html /index.html
             file_server
-            header Access-Control-Allow-Origin "https://${hosts.cast}"
-          '';
-        };
-        ${hosts.public-albums} = {
-          useACMEHost = "lhf.pt";
-          extraConfig = ''
-            root * ${webApp "photos"}
-            try_files {path} {path}.html /index.html
-            file_server
-            header Access-Control-Allow-Origin "https://${hosts.public-albums}"
-          '';
-        };
+            header Access-Control-Allow-Origin "https://${hosts.accounts}"
+          }
+
+          handle {
+              respond 403
+          }
+        '';
+      };
+      ${hosts.api} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          @allowed remote_ip 100.64.0.0/10 127.0.0.1
+          handle @allowed {
+              reverse_proxy :${toString port}
+          }
+
+          @public path /public-collection*
+          handle  {
+              reverse_proxy @public :${toString port}
+          }
+
+          handle {
+              respond 403
+          }
+        '';
+      };
+      ${hosts.cast} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          root * ${webApp "cast"}
+          try_files {path} {path}.html /index.html
+          file_server
+          header Access-Control-Allow-Origin "https://${hosts.cast}"
+        '';
+      };
+      ${hosts.public-albums} = {
+        useACMEHost = "lhf.pt";
+        extraConfig = ''
+          root * ${webApp "photos"}
+          try_files {path} {path}.html /index.html
+          file_server
+          header Access-Control-Allow-Origin "https://${hosts.public-albums}"
+        '';
       };
     };
   };
-
-  networking.firewall.allowedTCPPorts = [443];
 }
