@@ -60,6 +60,12 @@ in {
       } max-policy-ttl 5;
     '';
     extraConfig = ''
+      zone "tail9db2a.ts.net" {
+          type forward;
+          forward only;
+          forwarders { 100.100.100.100; };
+      };
+
       include "${config.sops.secrets.bind-ddns-key.path}";
       tls cf { remote-hostname "one.one.one.one"; };
     '';
