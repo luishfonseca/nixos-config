@@ -2,7 +2,7 @@
   config,
   pkgs,
   ...
-}: let 
+}: let
   nameserver = "100.123.137.111"; # pollux
 in {
   security.acme = {
