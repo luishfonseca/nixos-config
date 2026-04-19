@@ -51,53 +51,29 @@
         ctv = "q8_0";
       };
 
-      qwen3-coder-next = {
-        model = "${modelsDir}/unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q4_K_XL.gguf";
+      "qwen3.6" = {
+        model = "${modelsDir}/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf";
+        mmproj = "${modelsDir}/unsloth/Qwen3.6-35B-A3B-GGUF/mmproj-F16.gguf";
+        ctx-size = 262144;
+        temp = 0.6;
+        top-p = 0.95;
+        top-k = 20;
+        min-p = 0.0;
+        presence-penalty = 0.0;
+        repeat-penalty = 1.0;
+        chat-template-kwargs = "{\"enable_thinking\": true}";
+      };
+
+      gemma-4 = {
+        model = "${modelsDir}/unsloth/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf";
+        mmproj = "${modelsDir}/unsloth/gemma-4-26B-A4B-it-GGUF/mmproj-F16.gguf";
         ctx-size = 262144;
         temp = 1.0;
         top-p = 0.95;
-        min-p = 0.01;
-        top-k = 40;
-      };
-
-      "qwen3.5" = {
-        model = "${modelsDir}/unsloth/Qwen3.5-35B-A3B-GGUF/Qwen3.5-35B-A3B-UD-Q4_K_XL.gguf";
-        mmproj = "${modelsDir}/unsloth/Qwen3.5-35B-A3B-GGUF/mmproj-F16.gguf";
-        ctx-size = 262144;
-        temp = 0.7;
-        top-p = 0.8;
-        top-k = 20;
-        min-p = 0.0;
-        presence-penalty = 1.5;
+        top-k = 64;
+        presence-penalty = 1.0;
         repeat-penalty = 1.0;
-        chat-template-kwargs = "{\"enable_thinking\": false}";
-      };
-
-      glm-ocr = {
-        model = "${modelsDir}/ggml-org/GLM-OCR-GGUF/GLM-OCR-Q8_0.gguf";
-        mmproj = "${modelsDir}/ggml-org/GLM-OCR-GGUF/mmproj-GLM-OCR-Q8_0.gguf";
-        ctx-size = 131072;
-        temp = 0.0;
-        top-k = 1.0;
-        top-p = 1.0;
-        min-p = 0.0;
-      };
-
-      bge-m3 = rec {
-        model = "${modelsDir}/gpustack/bge-m3-GGUF/bge-m3-Q8_0.gguf";
-        ctx-size = 8192;
-        b = ctx-size;
-        ub = ctx-size;
-        embedding = true;
-        pooling = "cls";
-      };
-
-      bge-reranker-v2-m3 = rec {
-        model = "${modelsDir}/gpustack/bge-reranker-v2-m3-GGUF/bge-reranker-v2-m3-Q8_0.gguf";
-        ctx-size = 8192;
-        b = ctx-size;
-        ub = ctx-size;
-        reranking = true;
+        chat-template-kwargs = "{\"enable_thinking\": true}";
       };
     };
   };
