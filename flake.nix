@@ -75,14 +75,6 @@
 
     hardware.url = "github:NixOS/nixos-hardware/master";
 
-    vscode-server = {
-      url = "github:nix-community/nixos-vscode-server";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-
     pre-commit-hooks-nix = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs = {
@@ -97,6 +89,17 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         systems.follows = "systems";
+      };
+    };
+
+    kimi = {
+      url = "github:MoonshotAI/kimi-cli";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+        pyproject-nix.follows = "pyproject-nix";
+        uv2nix.follows = "uv2nix";
+        pyproject-build-systems.follows = "pyproject-build-systems";
       };
     };
 
@@ -135,6 +138,28 @@
       url = "github:hercules-ci/gitignore.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    pyproject-nix = {
+      url = "github:pyproject-nix/pyproject.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix";
+      inputs = {
+        pyproject-nix.follows = "pyproject-nix";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs";
+      inputs = {
+        pyproject-nix.follows = "pyproject-nix";
+        uv2nix.follows = "uv2nix";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
   };
 
   outputs = inputs: let
@@ -157,7 +182,10 @@
         extraChannels = {inherit (inputs) unstable pr-mcpo;};
         pkgsPath = ./pkgs;
       })
-      (final: _: {inherit (inputs.nixos-anywhere.packages.${final.stdenv.hostPlatform.system}) nixos-anywhere;})
+      (final: _: {
+        inherit (inputs.nixos-anywhere.packages.${final.stdenv.hostPlatform.system}) nixos-anywhere;
+        inherit (inputs.kimi.packages.${final.stdenv.hostPlatform.system}) kimi-cli;
+      })
       inputs.rust-overlay.overlays.default
     ];
 
