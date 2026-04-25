@@ -242,6 +242,10 @@
               (writeShellScriptBin "remote-rebuild" ''
                 exec nixos-rebuild $2 --flake .#$1 --build-host $1 --target-host $1 --ask-sudo-password --no-reexec
               '')
+
+              (writeShellScriptBin "rekey-secrets" ''
+                exec find secrets -type f | xargs -I {} sops updatekeys -y {}
+              '')
             ]
             ++ checks.${system}.pre-commit-check.enabledPackages;
         };
