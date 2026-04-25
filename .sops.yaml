@@ -6,7 +6,7 @@ keys: &all
 deployers: &deployers
 - *procyon
 creation_rules:
-- path_regex: secrets/.*
+- path_regex: secrets/[^/]+$
   age: *all
 - path_regex: secrets/deployer/.*
   age: *deployers
