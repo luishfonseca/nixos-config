@@ -30,7 +30,7 @@ in {
         "github.com/luishfonseca/caddy-cname-sync@v0.1.0"
         "github.com/caddy-dns/rfc2136@v1.0.0"
       ];
-      hash = "sha256-rLzHmyF3q/woBioVD0nRObbNFPy8I4N2hbYuOecRtfU=";
+      hash = "sha256-Pq7jifl2ofenueXeNFn7dppadsZNmJyGXmwwzxoe+r8=";
     };
     globalConfig = ''
       cname_sync {

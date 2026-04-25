@@ -18,6 +18,7 @@
     services.ente
     services.picgo
     services.s3
+    services.mail
   ];
 
   networkUnlock = rec {
