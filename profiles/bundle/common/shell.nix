@@ -27,8 +27,14 @@
   };
 
   hm = {
-    home.file.".cache/nix-index/files".source =
-      inputs.nix-index-database.packages.${pkgs.stdenv.hostPlatform.system}.nix-index-database;
+    home = {
+      file.".cache/nix-index/files".source =
+        inputs.nix-index-database.packages.${pkgs.stdenv.hostPlatform.system}.nix-index-database;
+      shell = {
+        enableShellIntegration = true;
+        enableFishIntegration = true;
+      };
+    };
 
     xdg.stateFile."nix/profiles/profile/manifest.json".text = ''
       {"elements":[],"version":2}

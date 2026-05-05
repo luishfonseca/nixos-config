@@ -94,13 +94,17 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
     programs = {
       wofi.enable = true;
-      kitty = {
+      ghostty = {
         enable = true;
         settings = {
-          confirm_os_window_close = 0;
-          scrollback_lines = 10000;
-          hide_window_decorations = "yes";
-          notify_on_cmd_finish = "invisible 20";
+          initial-window = false;
+          quit-after-last-window-closed = false;
+          confirm-close-surface = false;
+          scrollback-limit = 10000000;
+          window-decoration = false;
+          notify-on-command-finish = "unfocused";
+          notify-on-command-finish-after = "20s";
+          notify-on-command-finish-action = "no-bell,notify";
         };
       };
     };
@@ -153,7 +157,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
       settings = {
         "$mod" = "SUPER";
         "$run" = "uwsm app --";
-        "$term" = "kitty --single-instance";
+        "$term" = "ghostty";
         "$bar" = "ashell";
         "$menu" = "wofi";
 
@@ -191,7 +195,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
           disable_splash_rendering = true;
           focus_on_activate = true;
           enable_swallow = true;
-          swallow_regex = "^(kitty)$";
+          swallow_regex = "^(ghostty)$";
         };
 
         dwindle = {
@@ -201,7 +205,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
 
         exec-once = [
           "systemd-inhibit --who='hyprland config' --why='Custom keybind' --what=handle-power-key sleep infinity & echo $! > /tmp/.hyprland-systemd-inhibit"
-          "$run $term --start-as=hidden"
+          "$run $term"
           "$run $bar"
         ];
 
@@ -224,7 +228,7 @@ with inputs.nix-colors.colorSchemes.dracula; {
         ];
 
         bind = [
-          "$mod, Return, exec, $run $term"
+          "$mod, Return, exec, $run $term +new-window"
           "$mod, Space, exec, $run $menu --show drun"
           "$mod, V, exec, $run cliphist list | wofi --show dmenu | cliphist decode | wl-copy"
           "$mod, L, exec, $run loginctl lock-session"
