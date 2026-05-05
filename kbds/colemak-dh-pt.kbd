@@ -13,7 +13,12 @@
     ext (layer-while-held extend)
     nav (layer-while-held navigation)
     sym (layer-while-held symbols)
-    dk^ (one-shot-release 500 (layer-while-held dk-circumflex))
+
+    +^   (one-shot-release 500 (layer-while-held dk-circumflex))
+    +sft (one-shot 2000 lsft)
+    +ctl (one-shot 2000 lctl)
+    +alt (one-shot 2000 lalt)
+    +met (one-shot 2000 lmet)
 
     s1 (t! ucode 1 ¹)
     s2 (t! ucode º ²)
@@ -51,9 +56,9 @@
 (deflayer extend
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
-    _    _    _    _    _    _    _    _    _    _    _    _    _         _    _    _ 
-    _    _    _    _    _    _    _    _    _    _    _    _    _         _    _    _    _
-    _    _    @nav                _              _    _                   _         _   
+    _    _    @+ctl @+sft @+met _ _    _    _    _    _    _    _         _    _    _ 
+    _    _    _    _    @+alt _   _    _    _    _    _    _    _         _    _    _    _
+    _    _    @nav                ret            _    _                   _         _   
 )
 
 (deflayer navigation
@@ -68,7 +73,7 @@
     _    @s1  @s2  @s3  @s4  @s5  _    _    _    @s9  @s0  @s-  @s=  _    _    _    _    _
     _    _    _    @~a  _    _    _    _    @'u  _    _    @s[  @s]  _    _    _    _    _
     _    @'a  @`a  _    _    _    _    _    @'e  @'i  @'o  @~o  _         _    _    _ 
-    lsft _    @dk^ @,c  _    _    _    _    _    _    _    _    lsft      _    _    _    _
+    lsft _    @+^  @,c  _    _    _    _    _    _    _    _    lsft      _    _    _    _
     _    _    _                   _              _    _                   _         _   
 )
 
