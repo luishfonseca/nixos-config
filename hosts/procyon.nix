@@ -1,6 +1,8 @@
 {
   profiles,
+  inputs,
   config,
+  pkgs,
   ...
 }: {
   imports = with profiles; [
@@ -13,6 +15,28 @@
 
     cpu-amd
   ];
+
+  services.kanata = {
+    enable = true;
+    package = pkgs.kanata;
+    keyboards.procyon = {
+      config = builtins.readFile "${inputs.self}/kbds/colemak-dh-pt.kbd";
+      devices = ["/dev/input/by-path/platform-i8042-serio-0-event-kbd"];
+      extraDefCfg = ''
+        process-unmapped-keys yes
+      '';
+    };
+  };
+
+  systemd.services.reset-keymap = {
+    before = ["kanata-procyon.service"];
+    wantedBy = ["kanata-procyon.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.kbd}/bin/loadkeys us";
+      RemainAfterExit = true;
+    };
+  };
 
   lhf.boot.disk = {
     mirror = true;
@@ -38,12 +62,6 @@
       "eDP-1, 2560x1600@180, 0x0, 1.6"
     ];
   };
-
-  # emit events for the sysrq key
-  services.udev.extraHwdb = ''
-    evdev:atkbd:dmi:*:svnAiStone:pnX5SP4NAG:*
-      KEYBOARD_KEY_f8=sysrq
-  '';
 
   boot = {
     consoleLogLevel = 3;
