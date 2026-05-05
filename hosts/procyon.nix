@@ -18,13 +18,9 @@
 
   services.kanata = {
     enable = true;
-    package = pkgs.kanata;
     keyboards.procyon = {
       config = builtins.readFile "${inputs.self}/kbds/colemak-dh-pt.kbd";
       devices = ["/dev/input/by-path/platform-i8042-serio-0-event-kbd"];
-      extraDefCfg = ''
-        process-unmapped-keys yes
-      '';
     };
   };
 

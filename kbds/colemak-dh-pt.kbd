@@ -1,124 +1,63 @@
 (defsrc 
-    grv 1   2   3   4   5   6   7   8   9   0   -   =   bspc    nlck kp/ kp* kp-
-    tab q   w   e   r   t   y   u   i   o   p   [   ]   ret     kp7 kp8 kp9 kp+
-    caps a  s   d   f   g   h   j   k   l   ;   '   \           kp4 kp5 kp6
-    lsft lsgt z x   c   v   b   n   m   ,   .   /   rsft        kp1 kp2 kp3 kprt
-    lctl lmet lalt          spc         ralt rctl               kp0     kp.  
+    grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc nlck kp/  kp*  kp-
+    tab  q    w    e    r    t    y    u    i    o    p    [    ]    ret  kp7  kp8  kp9  kp+
+    caps a    s    d    f    g    h    j    k    l    ;    '    \         kp4  kp5  kp6
+    lsft lsgt z    x    c    v    b    n    m    ,    .    /    rsft      kp1  kp2  kp3  kprt
+    lctl lmet lalt           spc            ralt rctl                     kp0       kp.  
 )
 
-(deftemplate dk-entry (key lower upper)
-    $key (fork (unicode $lower) (unicode $upper) (lsft rsft)))
+(deftemplate ucode (lower upper)
+    (fork (unicode $lower) (unicode $upper) (lsft rsft)))
 
 (defalias
-    sym1 (layer-while-held symbols1)
-    sym2 (layer-while-held symbols2)
+    sym (layer-while-held symbols)
+    dk^ (one-shot-release 500 (layer-while-held dk-circumflex))
 
-    dk-acute (one-shot-release 500 (layer-while-held dk-acute))
-    dk-tilde (one-shot-release 500 (layer-while-held dk-tilde))
-    dk-grave (one-shot-release 500 (layer-while-held dk-grave))
-    dk-circumflex (one-shot-release 500 (layer-while-held dk-circumflex))
-    dk-umlaut (one-shot-release 500 (layer-while-held dk-umlaut))
-    dk-cedilla (one-shot-release 500 (layer-while-held dk-cedilla))
+    s1 (t! ucode 1 ¹)
+    s2 (t! ucode º ²)
+    s3 (t! ucode ª ³)
+    s4 (t! ucode ¢ £)
+    s5 (t! ucode € ¥)
+    s9 (t! ucode ‘ “)
+    s0 (t! ucode ’ ”)
+    s- (t! ucode – —)
+    s= (t! ucode × ÷)
+    s[ (t! ucode « ‹)
+    s] (t! ucode » ›)
+    'a (t! ucode á Á)
+    'e (t! ucode é É)
+    'i (t! ucode í Í)
+    'o (t! ucode ó Ó)
+    'u (t! ucode ú Ú)
+    ~a (t! ucode ã Ã)
+    ~o (t! ucode õ Õ)
+    `a (t! ucode à À)
+    ^a (t! ucode â Â)
+    ^e (t! ucode ê Ê)
+    ^o (t! ucode ô Ô)
+    ,c (t! ucode ç Ç)
 )
 
 (deflayer colemak-dh  
-    _   _   _   _   _   _   _   _   _   _   _   _   _   _       _   _   _   _
-    _   q   w   f   p   b   j   l   u   y   ;   _   _   _       _   _   _   _
-    _   a   r   s   t   g   m   n   e   i   o   _   _           _   _   _
-    _   z   x   c   d   v   lsgt k  h   _   _   _   _           _   _   _   _
-    _   _   _               _           @sym1 _                 _       _  
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    q    w    f    p    b    j    l    u    y    ;    _    _    _    _    _    _    _
+    _    a    r    s    t    g    m    n    e    i    o    _    _         _    _    _ 
+    _    z    x    c    d    v    lsgt k    h    _    _    _    _         _    _    _    _
+    _    _    _                   _              @sym _                   _         _   
 )
 
-(deflayermap (symbols1) ;; https://colemak.com/Multilingual
-    2 (unicode º)
-    3 (unicode ª)
-    4 (unicode ¢)
-    5 (unicode €)
-    9 (unicode ‘)
-    0 (unicode ’)
-    - (unicode –)
-    = (unicode ×)
-    [ (unicode «)
-    ] (unicode »)
-
-    a (unicode á)          ;; a
-    k (unicode é)          ;; e
-    l (unicode í)          ;; i
-    ; (unicode ó)          ;; o
-    i (unicode ú)          ;; u
-    f @dk-acute            ;; t
-
-    e (unicode ã)          ;; f
-    ' (unicode õ)
-    grv @dk-tilde
-
-    s @dk-grave            ;; r
-
-    z @dk-circumflex       ;; x
-
-    o (unicode ü)          ;; y
-    c @dk-umlaut           ;; d
-
-    x (unicode ç)          ;; c
-    , @dk-cedilla
-
-    lsft @sym2
-    rsft @sym2
+(deflayer symbols  
+    _    @s1  @s2  @s3  @s4  @s5  _    _    _    @s9  @s0  @s-  @s=  _    _    _    _    _
+    _    _    _    @~a  _    _    _    _    @'u  _    _    @s[  @s]  _    _    _    _    _
+    _    @'a  @`a  _    _    _    _    _    @'e  @'i  @'o  @~o  _         _    _    _ 
+    lsft _    @dk^ @,c  _    _    _    _    _    _    _    _    rsft      _    _    _    _
+    _    _    _                   _              _    _                   _         _   
 )
 
-(deflayermap (symbols2)
-    1 (unicode ¹)
-    2 (unicode ²)
-    3 (unicode ³)
-    4 (unicode £)
-    5 (unicode ¥)
-    9 (unicode “)
-    0 (unicode ”)
-    - (unicode —)
-    = (unicode ÷)
-    [ (unicode ‹)
-    ] (unicode ›)
-)
-
-(deflayermap (dk-acute)
-    lsft lsft
-    rsft rsft
-    (t! dk-entry a á Á)
-    (t! dk-entry k é É)    ;; e
-    (t! dk-entry l í Í)    ;; i
-    (t! dk-entry ; ó Ó)    ;; o
-    (t! dk-entry i ú Ú)    ;; u
-)
-
-(deflayermap (dk-tilde)
-    lsft lsft
-    rsft rsft
-    (t! dk-entry a ã Ã)
-    (t! dk-entry ; õ Õ)    ;; o
-)
-
-(deflayermap (dk-grave)
-    lsft lsft
-    rsft rsft
-    (t! dk-entry a à À)
-)
-
-(deflayermap (dk-circumflex)
-    lsft lsft
-    rsft rsft
-    (t! dk-entry a â Â)
-    (t! dk-entry k ê Ê)    ;; e
-    (t! dk-entry ; ô Ô)    ;; o
-)
-
-(deflayermap (dk-umlaut)
-    lsft lsft
-    rsft rsft
-    (t! dk-entry i ü Ü)    ;; u
-)
-
-(deflayermap (dk-cedilla)
-    lsft lsft
-    rsft rsft
-    (t! dk-entry x ç Ç)    ;; c
+(deflayer dk-circumflex
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    @^a  _    _    _    _    _    _    @^e  _    @^o  _    _         _    _    _ 
+    lsft  _   _    _    _    _    _    _    _    _    _    _    rsft      _    _    _    _
+    _    _    _                   _              _    _                   _         _   
 )
