@@ -7,9 +7,11 @@
 )
 
 (deftemplate ucode (lower upper)
-    (fork (unicode $lower) (unicode $upper) (lsft rsft)))
+    (fork (unicode $lower) (unicode $upper) (lsft)))
 
 (defalias
+    ext (layer-while-held extend)
+    nav (layer-while-held navigation)
     sym (layer-while-held symbols)
     dk^ (one-shot-release 500 (layer-while-held dk-circumflex))
 
@@ -41,16 +43,32 @@
 (deflayer colemak-dh  
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    q    w    f    p    b    j    l    u    y    ;    _    _    _    _    _    _    _
-    _    a    r    s    t    g    m    n    e    i    o    _    _         _    _    _ 
+    @ext a    r    s    t    g    m    n    e    i    o    _    _         _    _    _ 
     _    z    x    c    d    v    lsgt k    h    _    _    _    _         _    _    _    _
     _    _    _                   _              @sym _                   _         _   
+)
+
+(deflayer extend
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _         _    _    _ 
+    _    _    _    _    _    _    _    _    _    _    _    _    _         _    _    _    _
+    _    _    @nav                _              _    _                   _         _   
+)
+
+(deflayer navigation
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    home up   end  pgup _    _    _    _    _    _    _
+    _    _    lctl lsft lmet _    _    left down rght pgdn _    _         _    _    _ 
+    _    _    _    _    lalt _    _    _    _    _    _    _    _         _    _    _    _
+    _    _    _                   _              _    _                   _         _   
 )
 
 (deflayer symbols  
     _    @s1  @s2  @s3  @s4  @s5  _    _    _    @s9  @s0  @s-  @s=  _    _    _    _    _
     _    _    _    @~a  _    _    _    _    @'u  _    _    @s[  @s]  _    _    _    _    _
     _    @'a  @`a  _    _    _    _    _    @'e  @'i  @'o  @~o  _         _    _    _ 
-    lsft _    @dk^ @,c  _    _    _    _    _    _    _    _    rsft      _    _    _    _
+    lsft _    @dk^ @,c  _    _    _    _    _    _    _    _    lsft      _    _    _    _
     _    _    _                   _              _    _                   _         _   
 )
 
@@ -58,6 +76,14 @@
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
     _    @^a  _    _    _    _    _    _    @^e  _    @^o  _    _         _    _    _ 
-    lsft  _   _    _    _    _    _    _    _    _    _    _    rsft      _    _    _    _
+    lsft _    _    _    _    _    _    _    _    _    _    _    lsft      _    _    _    _
+    _    _    _                   _              _    _                   _         _   
+)
+
+(deflayer empty
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _         _    _    _ 
+    _    _    _    _    _    _    _    _    _    _    _    _    _         _    _    _    _
     _    _    _                   _              _    _                   _         _   
 )
